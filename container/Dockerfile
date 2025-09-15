@@ -5,8 +5,10 @@
 
 FROM debian:stable-slim
 
-# Optional build tools for compiling native extensions
-ARG INCLUDE_BUILD_TOOLS=0
+# Core/optional build tools for compiling native extensions
+# By default, include the core toolchain needed for building Python/Rust extensions
+ARG INCLUDE_BUILD_TOOLS=1
+ARG INCLUDE_EXTRA_TOOLS=1
 
 # 1) Base packages and tini
 RUN set -eux; \
@@ -35,13 +37,38 @@ RUN set -eux; \
     apt-get install -y --no-install-recommends nodejs; \
     rm -rf /var/lib/apt/lists/*
 
-# 3b) Optionally install C/C++ build toolchain (keeps Git blocked)
+# 3b) Core toolchain for native builds (keeps Git blocked)
+# Includes GCC toolchain, binutils, pkg-config, CMake, Ninja, and Python headers
 RUN set -eux; \
     if [ "$INCLUDE_BUILD_TOOLS" = "1" ]; then \
         apt-get update; \
         apt-get install -y --no-install-recommends \
             build-essential \
-            pkg-config; \
+            binutils \
+            pkg-config \
+            cmake \
+            ninja-build \
+            python3-dev; \
+        rm -rf /var/lib/apt/lists/*; \
+    fi
+
+# 3c) Optional extras for performance/debugging/packaging and plotting build deps
+RUN set -eux; \
+    if [ "$INCLUDE_EXTRA_TOOLS" = "1" ]; then \
+        apt-get update; \
+        apt-get install -y --no-install-recommends \
+            clang \
+            lld \
+            ccache \
+            gdb \
+            valgrind \
+            patchelf \
+            wget \
+            unzip \
+            libfreetype6-dev \
+            libpng-dev \
+            libgomp1 \
+            libstdc++6; \
         rm -rf /var/lib/apt/lists/*; \
     fi
 
@@ -54,9 +81,10 @@ RUN set -eux; \
 RUN set -eux; \
     groupadd -g 1000 dev && useradd -m -u 1000 -g 1000 -s /bin/bash dev
 
-# 6) Environment for Codex
+# 6) Environment for Codex and Rust
 ENV CODEX_HOME=/home/dev/.codex \
-    NODE_OPTIONS=--unhandled-rejections=strict
+    NODE_OPTIONS=--unhandled-rejections=strict \
+    PATH=/home/dev/.cargo/bin:$PATH
 
 # 7) Block git/gh/git-lfs via wrapper scripts (extra defense)
 RUN set -eux; \
@@ -68,9 +96,15 @@ RUN set -eux; \
 RUN set -eux; echo '#!/bin/sh' > /usr/local/bin/afplay && chmod +x /usr/local/bin/afplay
 
 USER dev
+
+# 9) Install Rust toolchain via rustup for non-root user
+RUN set -eux; \
+    curl -fsSL https://sh.rustup.rs | sh -s -- -y; \
+    /home/dev/.cargo/bin/rustup toolchain install stable
+
 WORKDIR /workspace
 
-# 9) Healthcheck is a no-op (Codex runs via exec)
+# 10) Healthcheck is a no-op (Codex runs via exec)
 HEALTHCHECK NONE
 
 ENTRYPOINT ["/usr/bin/tini","--"]

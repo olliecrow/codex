@@ -4,27 +4,21 @@ set -euo pipefail
 # Build Codex CLI container image (always fresh, no cache)
 #
 # Usage:
-#   ./build.sh [--with-toolchain]
-#
-# Flags:
-#   --with-toolchain  Include C/C++ build tools (build-essential, pkg-config)
+#   ./build.sh
 
 cd "$(dirname "$0")"
 
-INCLUDE_TOOLCHAIN=0
-if [[ "${1:-}" == "--with-toolchain" ]]; then
-  INCLUDE_TOOLCHAIN=1
-fi
+# Core toolchain and extras are included by default
+INCLUDE_TOOLCHAIN=1
+INCLUDE_EXTRAS=1
 
 echo "Building codex_container (fresh, no cache, pull base images)..."
-if [[ "$INCLUDE_TOOLCHAIN" -eq 1 ]]; then
-  echo "Including C/C++ build toolchain in image."
-fi
+echo "Including core native build toolchain in image."
+echo "Including extras (clang/lld, ccache, gdb, valgrind, patchelf, wget, unzip, libfreetype6-dev, libpng-dev, libgomp1)."
 
 CMD=(docker build --pull --no-cache -t codex_container)
-if [[ "$INCLUDE_TOOLCHAIN" -eq 1 ]]; then
-  CMD+=(--build-arg INCLUDE_BUILD_TOOLS=1)
-fi
+CMD+=(--build-arg INCLUDE_BUILD_TOOLS=$INCLUDE_TOOLCHAIN)
+CMD+=(--build-arg INCLUDE_EXTRA_TOOLS=$INCLUDE_EXTRAS)
 CMD+=(.)
 
 "${CMD[@]}"
