@@ -112,7 +112,6 @@ else
   # Launch Codex TUI in fully autonomous mode, using desired model settings
   docker exec -it "$CONTAINER_NAME" bash -lc \
     'codex --dangerously-bypass-approvals-and-sandbox \
-           --skip-git-repo-check \
            --cd /workspace \
            --config approval_policy="never" \
            --config model="gpt-5" \

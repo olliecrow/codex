@@ -72,19 +72,44 @@ RUN set -eux; \
         rm -rf /var/lib/apt/lists/*; \
     fi
 
+# 3d) Runtime libs and developer conveniences
+# - OpenCV runtime libs (libgl1, libglib2.0-0) for cv2 usage
+# - ffmpeg for optional video recording, ripgrep for dev convenience
+# - patchelf required by some build/test flows; sccache to speed Rust builds
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        libgl1 \
+        libglib2.0-0 \
+        ffmpeg \
+        ripgrep \
+        patchelf \
+        sccache; \
+    rm -rf /var/lib/apt/lists/*
+
 # 4) Install Codex CLI from npm
 RUN set -eux; \
     npm install -g @openai/codex; \
     npm cache clean --force
 
+# 4b) Install uv CLI (install then place in /usr/local/bin)
+RUN set -eux; \
+    curl -LsSf https://astral.sh/uv/install.sh | sh; \
+    install -m 0755 /root/.local/bin/uv /usr/local/bin/uv
+
 # 5) Create non-root user
 RUN set -eux; \
     groupadd -g 1000 dev && useradd -m -u 1000 -g 1000 -s /bin/bash dev
 
-# 6) Environment for Codex and Rust
+# 6) Environment for Codex, uv, and Rust
+# - PATH adds uv (root .local) and both root/dev Rust bins for flexibility
+# - UV_LINK_MODE=copy helps avoid hardlink warnings in container filesystems
+# - Prefer uv-managed Python for simplicity and reproducibility
 ENV CODEX_HOME=/home/dev/.codex \
     NODE_OPTIONS=--unhandled-rejections=strict \
-    PATH=/home/dev/.cargo/bin:$PATH
+    PATH="/home/dev/.cargo/bin:$PATH" \
+    UV_LINK_MODE=copy \
+    UV_PYTHON_PREFERENCE=managed
 
 # 7) Block git/gh/git-lfs via wrapper scripts (extra defense)
 RUN set -eux; \

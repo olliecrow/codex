@@ -52,14 +52,17 @@ If you run component tests or training that use Python with `uv` and native exte
 
 Included by default:
 - Core native toolchain: `build-essential`, `binutils`, `pkg-config`, `cmake`, `ninja-build`, `python3-dev`
-- Rust toolchain via `rustup` for user `dev` (stable installed; `~/.cargo/bin` on PATH)
-- Extras: `clang`, `lld`, `ccache`, `gdb`, `valgrind`, `patchelf`, `wget`, `unzip`, `libfreetype6-dev`, `libpng-dev`, `libgomp1`
+- Rust toolchain via `rustup` for user `dev` (stable installed; cargo/rustc available on PATH)
+- uv CLI preinstalled (on PATH)
+- Runtime libs and tools: `libgl1`, `libglib2.0-0`, `patchelf`, `ffmpeg`, `ripgrep`, `sccache`
+- Extras: `clang`, `lld`, `ccache`, `gdb`, `valgrind`, `wget`, `unzip`, `libfreetype6-dev`, `libpng-dev`, `libgomp1`
 
 Verification inside the container shell:
 ```
 cc --version && g++ --version && ld --version
 pkg-config --version && cmake --version && ninja --version
 rustc --version && cargo --version
+uv --version
 ```
 
 Then from the repo root:
@@ -69,3 +72,4 @@ Then from the repo root:
 
 Notes:
 - Security posture unchanged: no additional host mounts; Git remains blocked via APT pin and command wrappers; `.git` still mounted read‑only.
+- Default env: `PATH=/home/dev/.cargo/bin:$PATH`, `UV_LINK_MODE=copy`, `UV_PYTHON_PREFERENCE=managed`
