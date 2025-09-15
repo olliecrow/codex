@@ -18,8 +18,8 @@
 
 **ALL AVAILABLE AGENTS**:
 - general-purpose: General-purpose agent for researching complex questions, searching for code, and executing multi-step tasks
-- statusline-setup: Use this agent to configure the user's Codex CLI status line setting
-- output-mode-setup: Use this agent to create a Codex CLI output mode
+- statusline-setup: Use this agent to configure the user's Claude Code status line setting
+- output-mode-setup: Use this agent to create a Claude Code output mode
 - assumption-checker: Analysis agent that verifies system invariants and assumptions are maintained
 - large-file-reader: Analysis agent that processes large files exceeding context windows with lossless information preservation
 - performance-profiler: Analysis agent that profiles performance bottlenecks and inefficiencies
@@ -39,26 +39,26 @@
 
 **IMPORTANT**: You can and should use multiple copies of the same agent type when it will provide better coverage or parallel processing of different aspects of the task.
 
-## CRITICAL WORKSPACE RULE: Codex CLI's /plan Directory
+## CRITICAL WORKSPACE RULE: Claude Code's /plan Directory
 
-**ABSOLUTE REQUIREMENT**: The `/plan` directory at the root of the workspace is Codex CLI'S DEDICATED WORKSPACE - THE ONLY location for ALL of Codex CLI's temporary work, planning files, artifacts, test scripts, reports, and any files that Codex CLI creates during planning, investigation, and task execution. This directory is NOT for user files.
+**ABSOLUTE REQUIREMENT**: The `/plan` directory at the root of the workspace is CLAUDE CODE'S DEDICATED WORKSPACE - THE ONLY location for ALL of Claude Code's temporary work, planning files, artifacts, test scripts, reports, and any files that Claude Code creates during planning, investigation, and task execution. This directory is NOT for user files.
 
-**MANDATORY Codex CLI /plan USAGE**:
-- **CREATE /plan if it doesn't exist** - Codex CLI's first action when starting any work
-- **ALL Codex CLI temporary files MUST go in /plan** - No exceptions, ever
-- **ALL Codex CLI markdown files go in /plan** - Unless explicitly requested by user to create elsewhere
-- **ALL Codex CLI test scripts and experiments go in /plan** - Never create these in the main project
-- **ALL Codex CLI debugging artifacts go in /plan** - Logs, traces, temporary outputs
-- **ALL Codex CLI planning documentation stays in /plan** - This is Codex CLI's permanent planning workspace
+**MANDATORY CLAUDE CODE /plan USAGE**:
+- **CREATE /plan if it doesn't exist** - Claude Code's first action when starting any work
+- **ALL Claude Code temporary files MUST go in /plan** - No exceptions, ever
+- **ALL Claude Code markdown files go in /plan** - Unless explicitly requested by user to create elsewhere
+- **ALL Claude Code test scripts and experiments go in /plan** - Never create these in the main project
+- **ALL Claude Code debugging artifacts go in /plan** - Logs, traces, temporary outputs
+- **ALL Claude Code planning documentation stays in /plan** - This is Claude Code's permanent planning workspace
 - **NEVER commit /plan to GitHub** - This directory is gitignored and never enters version control
-- **NEVER create Codex CLI temporary files outside /plan** - The main workspace is for user's production code only
+- **NEVER create Claude Code temporary files outside /plan** - The main workspace is for user's production code only
 - **USER FILES STAY IN MAIN WORKSPACE** - User's actual project files remain in the main workspace, not in /plan
 
-**ENFORCEMENT**: Before Codex CLI creates ANY file, ask: "Is this the user's actual project file or Codex CLI's working file?" If it's Codex CLI's working file (planning, investigation, temporary), it MUST go in /plan. User's actual project files stay in the main workspace.
+**ENFORCEMENT**: Before Claude Code creates ANY file, ask: "Is this the user's actual project file or Claude Code's working file?" If it's Claude Code's working file (planning, investigation, temporary), it MUST go in /plan. User's actual project files stay in the main workspace.
 
 ## Agent Strategy
 
-This command orchestrates comprehensive planning workflows using Codex CLI's plan markdown files (stored in /plan) as the central coordination mechanism. ALL agents spawned from this command MUST adhere to the Codex CLI /plan directory rule - any temporary work, experiments, or artifacts they create MUST be placed in Codex CLI's /plan workspace, NOT in the user's main workspace.
+This command orchestrates comprehensive planning workflows using Claude Code's plan markdown files (stored in /plan) as the central coordination mechanism. ALL agents spawned from this command MUST adhere to the Claude Code /plan directory rule - any temporary work, experiments, or artifacts they create MUST be placed in Claude Code's /plan workspace, NOT in the user's main workspace.
 
 ## Collaboration & Communication Excellence
 
@@ -181,35 +181,35 @@ From the explicit list above, select agents from these categories for planning n
 
 ## Temporary File and Thinking Space Management
 
-### Codex CLI's Ultra-Thinking and Working Memory Space (ALL IN /plan)
-- **SINGLE FILE PRINCIPLE**: Codex CLI creates ONE comprehensive markdown file IN /plan for ALL thinking, planning, and investigations
-- **CONTINUOUS DOCUMENTATION**: Codex CLI keeps adding to the same file IN /plan throughout the entire task lifecycle
-- **LOCATION REQUIREMENT**: ALL Codex CLI thinking files MUST be created in Codex CLI's /plan workspace (e.g., `/plan/comprehensive_task_thinking.md`)
+### Claude Code's Ultra-Thinking and Working Memory Space (ALL IN /plan)
+- **SINGLE FILE PRINCIPLE**: Claude Code creates ONE comprehensive markdown file IN /plan for ALL thinking, planning, and investigations
+- **CONTINUOUS DOCUMENTATION**: Claude Code keeps adding to the same file IN /plan throughout the entire task lifecycle
+- **LOCATION REQUIREMENT**: ALL Claude Code thinking files MUST be created in Claude Code's /plan workspace (e.g., `/plan/comprehensive_task_thinking.md`)
 - **NAMING**: Use descriptive names that indicate the comprehensive nature, always prefixed with /plan/
-- **CONTENT ACCUMULATION**: Never split Codex CLI's thinking across files - always append to maintain full context IN /plan
-- **HISTORICAL VALUE**: Codex CLI's previous attempts, failed experiments, and debugging steps IN /plan provide crucial context
-- **CLEANUP CONSIDERATION**: Only cleanup truly temporary artifacts IN Codex CLI's /plan, preserve comprehensive thinking files
-- **Codex CLI'S PLAN FILES**: The /plan/ directory contains Codex CLI's permanent, comprehensive project memory files - NOT user files
+- **CONTENT ACCUMULATION**: Never split Claude Code's thinking across files - always append to maintain full context IN /plan
+- **HISTORICAL VALUE**: Claude Code's previous attempts, failed experiments, and debugging steps IN /plan provide crucial context
+- **CLEANUP CONSIDERATION**: Only cleanup truly temporary artifacts IN Claude Code's /plan, preserve comprehensive thinking files
+- **CLAUDE CODE'S PLAN FILES**: The /plan/ directory contains Claude Code's permanent, comprehensive project memory files - NOT user files
 
-### Strict No-Report Policy (Outside of Codex CLI's /plan)
-- **NEVER** create Codex CLI report files, summary files, or documentation files ANYWHERE except in Codex CLI's /plan/
-- **NEVER** leave Codex CLI temporary markdown files in the user's main repository - they ALL go in Codex CLI's /plan/
-- **EXCEPTION**: Only create persistent files outside Codex CLI's /plan when explicitly requested with phrases like "create a report file in the project"
-- **Codex CLI'S PLAN FILES**: The /plan/ directory is THE ONLY location for ALL of Codex CLI's planning documents, reports, and temporary work
-- **OUTPUT**: Present findings directly in conversation unless explicitly asked to save to Codex CLI's /plan/
+### Strict No-Report Policy (Outside of Claude Code's /plan)
+- **NEVER** create Claude Code report files, summary files, or documentation files ANYWHERE except in Claude Code's /plan/
+- **NEVER** leave Claude Code temporary markdown files in the user's main repository - they ALL go in Claude Code's /plan/
+- **EXCEPTION**: Only create persistent files outside Claude Code's /plan when explicitly requested with phrases like "create a report file in the project"
+- **CLAUDE CODE'S PLAN FILES**: The /plan/ directory is THE ONLY location for ALL of Claude Code's planning documents, reports, and temporary work
+- **OUTPUT**: Present findings directly in conversation unless explicitly asked to save to Claude Code's /plan/
 - **USER'S SPACE**: The main workspace remains clean for user's actual project files
 
-### Cleanup Requirements (Focus on Codex CLI's /plan Organization)
-- **ZERO TOLERANCE**: NO Codex CLI temporary files should EVER exist outside of Codex CLI's /plan/
-- **IMMEDIATE VIOLATION**: Creating Codex CLI temporary files outside /plan is a critical error
-- **ORGANIZATION**: Keep Codex CLI's /plan/ organized with subdirectories (current/, backlog/, complete/)
-- **PRESERVE /plan/**: NEVER delete Codex CLI's /plan/ directory structure - it's Codex CLI's project memory
-- **VERIFY**: Use LS to confirm ALL Codex CLI temporary work is contained within /plan/
-- **USER SPACE PROTECTION**: Ensure user's main workspace remains clean of Codex CLI's working files
+### Cleanup Requirements (Focus on Claude Code's /plan Organization)
+- **ZERO TOLERANCE**: NO Claude Code temporary files should EVER exist outside of Claude Code's /plan/
+- **IMMEDIATE VIOLATION**: Creating Claude Code temporary files outside /plan is a critical error
+- **ORGANIZATION**: Keep Claude Code's /plan/ organized with subdirectories (current/, backlog/, complete/)
+- **PRESERVE /plan/**: NEVER delete Claude Code's /plan/ directory structure - it's Claude Code's project memory
+- **VERIFY**: Use LS to confirm ALL Claude Code temporary work is contained within /plan/
+- **USER SPACE PROTECTION**: Ensure user's main workspace remains clean of Claude Code's working files
 
-## Comprehensive Markdown File Philosophy (ALL IN Codex CLI's /plan)
+## Comprehensive Markdown File Philosophy (ALL IN Claude Code's /plan)
 
-The user will provide a plan file - a reference to a comprehensive markdown file IN Codex CLI'S /plan DIRECTORY that serves as the complete repository of ALL information for a task. This file MUST be located in Codex CLI's /plan workspace and should contain:
+The user will provide a plan file - a reference to a comprehensive markdown file IN CLAUDE CODE'S /plan DIRECTORY that serves as the complete repository of ALL information for a task. This file MUST be located in Claude Code's /plan workspace and should contain:
 
 **EVERYTHING IN ONE PLACE**:
 - All initial thinking and scoping
@@ -222,28 +222,28 @@ The user will provide a plan file - a reference to a comprehensive markdown file
 
 **CONTINUOUS GROWTH**: The file grows continuously as work progresses. Never create a new file when you can add to an existing one. Each addition provides valuable context for future work.
 
-**CONTEXT PRESERVATION**: By maintaining everything in a single file, anyone can understand the complete journey of the task - what was tried, what worked, what didn't, and why decisions were made. the plan.md file (stored in Codex CLI's /plan directory) allows multiple people/agents to work on a task, whilst maintaining a concrete log of the task, including all thoughts, planning, executing, implementation, bugs, fixes, errors, verification, validation, etc that has been thought of, attempted, or completed. think of a plan markdown file as Codex CLI's scratchpad for anything relevant to a specific plan or task - this is Codex CLI's working space, not the user's project space.
+**CONTEXT PRESERVATION**: By maintaining everything in a single file, anyone can understand the complete journey of the task - what was tried, what worked, what didn't, and why decisions were made. the plan.md file (stored in Claude Code's /plan directory) allows multiple people/agents to work on a task, whilst maintaining a concrete log of the task, including all thoughts, planning, executing, implementation, bugs, fixes, errors, verification, validation, etc that has been thought of, attempted, or completed. think of a plan markdown file as Claude Code's scratchpad for anything relevant to a specific plan or task - this is Claude Code's working space, not the user's project space.
 
 the more a task is worked on, the more gets added to the plan markdown file. it is a continuous scratch pad for all work. so just continue adding more and more information to it that might be useful for someone in the future - eg someone who is unfamiliar and has no context can come to the plan markdown, get fully up to speed, understand everything, and then potentially contribute/continue work on it.
 
 the document may be in on of a few states:
 - start: the scoping  out phase. fleshing out details. building ideas. testing concepts. developing understanding. setting boundaries. ask lots of clarifying questions.
-- plan: build concrete plan. flesh out all details. no detail is too small. leave no stone left unturned. plan out everything from start to finish. explain logic and reasoning behind all choices. ask clarifying questions. planning may involve writing/running small standalone code snippets IN Codex CLI'S /plan DIRECTORY to scope out various behaviours. ALL Codex CLI test scripts, experiments, and temporary code MUST be created in Codex CLI's /plan. ensure that any of these temporary files in Codex CLI's /plan get cleaned up when they have served their purpose - adding any findings to the plan markdown in Codex CLI's /plan as you go. 
-- execute: execute the plan. follow the plan step by step. use a highly detailed todo list to keep track of everything. never move onto the next step prior to the last step being complete. always start the execute stage by running all the project tests to assess how project is at atm - make note of this, this is important as it will be used to tell if we've broken anything. dont stop until execution of totally complete, or you have further questions that are required to be answered in order to continue executing. pay lots of attention to detail. constantly refer back to the plan. add further items to the todo list as they come up to ensure that you dont forget to get round to them. update Codex CLI's plan markdown (in /plan) as you go with relevant information - Codex CLI's plan markdown is Codex CLI's scratchpad, so use it, and continually refer back to it. always write tests. tests should not just be written to conform to the code that has been written. tests should be written and developed independently in a standalone manner using first principles thinking of how a specific test case should be crafted. the purpose of the tests is to ensure that the underlying code is functioning as expected, not just to tick a box. ensure that tests cover base cases, corner/edge cases, simple examples, and complex examples.
+- plan: build concrete plan. flesh out all details. no detail is too small. leave no stone left unturned. plan out everything from start to finish. explain logic and reasoning behind all choices. ask clarifying questions. planning may involve writing/running small standalone code snippets IN CLAUDE CODE'S /plan DIRECTORY to scope out various behaviours. ALL Claude Code test scripts, experiments, and temporary code MUST be created in Claude Code's /plan. ensure that any of these temporary files in Claude Code's /plan get cleaned up when they have served their purpose - adding any findings to the plan markdown in Claude Code's /plan as you go. 
+- execute: execute the plan. follow the plan step by step. use a highly detailed todo list to keep track of everything. never move onto the next step prior to the last step being complete. always start the execute stage by running all the project tests to assess how project is at atm - make note of this, this is important as it will be used to tell if we've broken anything. dont stop until execution of totally complete, or you have further questions that are required to be answered in order to continue executing. pay lots of attention to detail. constantly refer back to the plan. add further items to the todo list as they come up to ensure that you dont forget to get round to them. update Claude Code's plan markdown (in /plan) as you go with relevant information - Claude Code's plan markdown is Claude Code's scratchpad, so use it, and continually refer back to it. always write tests. tests should not just be written to conform to the code that has been written. tests should be written and developed independently in a standalone manner using first principles thinking of how a specific test case should be crafted. the purpose of the tests is to ensure that the underlying code is functioning as expected, not just to tick a box. ensure that tests cover base cases, corner/edge cases, simple examples, and complex examples.
 - verify: verify the implementation. check that the tests run. compare the test run against the original baseline tests run completed previously. verify and validated that there are no bugs, and that the code is simple, intuitive, safe, robust, and follows all best practises. i expect that the verification state should take a really long time. verification is a really important step in the process. dont stop until everything has been fully verified. checking the implementation for gotchas or unexpected behaviour is a key part of verification. if issues are found, its important that these are recorded and then we move back into the start/plan/execute states, where further work must be undertaken.
 - complete: the task is fully complete. all task specs have been completed, and verified. there is absolutely nothing left to do.
 
-make full use of Codex CLI's plan markdown file IN Codex CLI's /plan. continually refer back to it during tasks - reading, writing, updating as you go. use it for whatever you think it might be useful for. REMEMBER: ALL Codex CLI plan files are in Codex CLI's /plan, ALL Codex CLI temporary work happens in Codex CLI's /plan.
+make full use of Claude Code's plan markdown file IN Claude Code's /plan. continually refer back to it during tasks - reading, writing, updating as you go. use it for whatever you think it might be useful for. REMEMBER: ALL Claude Code plan files are in Claude Code's /plan, ALL Claude Code temporary work happens in Claude Code's /plan.
 
-keep Codex CLI's markdown file IN Codex CLI's /plan updated as you go with your current thinking, theories, what you have tried, whats worked, what hasnt worked, debugging steps, etc. ALL Codex CLI experimental scripts, test files, and temporary artifacts MUST be created in Codex CLI's /plan.
+keep Claude Code's markdown file IN Claude Code's /plan updated as you go with your current thinking, theories, what you have tried, whats worked, what hasnt worked, debugging steps, etc. ALL Claude Code experimental scripts, test files, and temporary artifacts MUST be created in Claude Code's /plan.
 
 dont be eager to jumping into implementing anything. think through things in a really thoughtful way prior to implementing anything.
 
 be curious, critial, and objective, ask clarifying questions when needed. leave no room for ambiguity. remember the questions and answers in the plan markdown file.
 
-we will only ever work with a single plan markdown file at a time IN Codex CLI'S /plan DIRECTORY. it will never be the case that more than one plan markdown file is being worked on at the same time.
+we will only ever work with a single plan markdown file at a time IN CLAUDE CODE'S /plan DIRECTORY. it will never be the case that more than one plan markdown file is being worked on at the same time.
 
-continually read and write to Codex CLI's plan markdown file IN Codex CLI's /plan as you see necessary. add/manage context of the task in Codex CLI's plan markdown file. never remove relevant context that could be helpful in future. CRITICAL: ALL Codex CLI plan files exist in Codex CLI's /plan, NO Codex CLI plan files should ever be created outside of Codex CLI's /plan workspace.
+continually read and write to Claude Code's plan markdown file IN Claude Code's /plan as you see necessary. add/manage context of the task in Claude Code's plan markdown file. never remove relevant context that could be helpful in future. CRITICAL: ALL Claude Code plan files exist in Claude Code's /plan, NO Claude Code plan files should ever be created outside of Claude Code's /plan workspace.
 
 ## Ultra-Thinking Mode Option
 
@@ -262,28 +262,28 @@ Leverage the Task tool strategically throughout the planning workflow:
 
 ### Phase-Based Agent Deployment
 
-**CRITICAL**: ALL independent agents must be launched TOGETHER in parallel! ALL agents MUST use Codex CLI's /plan for their temporary work - never the user's main workspace!
+**CRITICAL**: ALL independent agents must be launched TOGETHER in parallel! ALL agents MUST use Claude Code's /plan for their temporary work - never the user's main workspace!
 
 **During Planning Phase:**
-Launch ALL orchestration and research agents SIMULTANEOUSLY in ONE message with multiple Task tool calls. Never wait for one agent before launching another. Ensure ALL agents know to use Codex CLI's /plan for any temporary files or experiments - never the user's main workspace.
+Launch ALL orchestration and research agents SIMULTANEOUSLY in ONE message with multiple Task tool calls. Never wait for one agent before launching another. Ensure ALL agents know to use Claude Code's /plan for any temporary files or experiments - never the user's main workspace.
 
 **During Execution Phase:**  
-Deploy ALL implementation and validation agents TOGETHER when their tasks don't conflict. Use a single message with multiple Task invocations. ALL Codex CLI test scripts and experiments MUST be in Codex CLI's /plan workspace.
+Deploy ALL implementation and validation agents TOGETHER when their tasks don't conflict. Use a single message with multiple Task invocations. ALL Claude Code test scripts and experiments MUST be in Claude Code's /plan workspace.
 
 **During Verification Phase:**
-Launch ALL analysis and validation agents AT ONCE in a single message. Maximum parallelism ensures comprehensive coverage. All Codex CLI verification artifacts go in Codex CLI's /plan workspace.
+Launch ALL analysis and validation agents AT ONCE in a single message. Maximum parallelism ensures comprehensive coverage. All Claude Code verification artifacts go in Claude Code's /plan workspace.
 
 ## Agent Instruction Template
 
 When spawning agents in planning mode, ALWAYS include in their instructions:
-- "Use `/plan` directory for ALL temporary files, reports, and artifacts - this is Codex CLI's workspace, NOT for user files"
-- "Create any working markdown files in `/plan` directory (Codex CLI's workspace)"
+- "Use `/plan` directory for ALL temporary files, reports, and artifacts - this is Claude Code's workspace, NOT for user files"
+- "Create any working markdown files in `/plan` directory (Claude Code's workspace)"
 - "Do not create files in the main project unless they are core project files for the user's project"
-- "The `/plan` directory is Codex CLI's designated workspace for all non-essential files - user files remain in main workspace"
-- "NEVER put user files or user-requested project files in `/plan` - only Codex CLI's working files go there"
+- "The `/plan` directory is Claude Code's designated workspace for all non-essential files - user files remain in main workspace"
+- "NEVER put user files or user-requested project files in `/plan` - only Claude Code's working files go there"
 
 **Throughout All Phases:**
-Always batch agent deployments - if 3 agents can work independently, launch all 3 in ONE message, not three separate messages. EVERY agent MUST adhere to Codex CLI's /plan directory rule - use Codex CLI's /plan for working files, not the user's main workspace.
+Always batch agent deployments - if 3 agents can work independently, launch all 3 in ONE message, not three separate messages. EVERY agent MUST adhere to Claude Code's /plan directory rule - use Claude Code's /plan for working files, not the user's main workspace.
 
 ### Parallel Agent Optimization
 
@@ -349,13 +349,13 @@ ensure that care is always placed into ensuring that associated code is consider
 ## Task Completion
 
 After completing any planning task:
-1. Review what files/directories were created or modified (distinguish between user project files in main workspace and Codex CLI files in `/plan`)
-2. Clean up temporary Codex CLI artifacts within `/plan` specific to your actions
+1. Review what files/directories were created or modified (distinguish between user project files in main workspace and Claude Code files in `/plan`)
+2. Clean up temporary Claude Code artifacts within `/plan` specific to your actions
 3. Validate that core functionality remains intact
 4. Report only what was actually accomplished
-5. Ensure `/plan` directory remains available for future Codex CLI work
-6. Verify no temporary Codex CLI files were accidentally created outside of `/plan` in the user's workspace
-7. Confirm user files and project files remain properly organized in main workspace, separate from Codex CLI's `/plan` workspace
+5. Ensure `/plan` directory remains available for future Claude Code work
+6. Verify no temporary Claude Code files were accidentally created outside of `/plan` in the user's workspace
+7. Confirm user files and project files remain properly organized in main workspace, separate from Claude Code's `/plan` workspace
 
 always ask clarifying questions if something is ambiguous or not 100% clear to you. questions are highly encouraged.
 
@@ -373,15 +373,15 @@ Manage planning, executing, and verification.
 
 ## Plan Directory Structure - Optimized for Long Single Files
 
-**CRITICAL FOUNDATION**: Codex CLI's /plan directory is THE ONLY location for ALL of Codex CLI's non-production work! User's production files stay in the main workspace.
+**CRITICAL FOUNDATION**: Claude Code's /plan directory is THE ONLY location for ALL of Claude Code's non-production work! User's production files stay in the main workspace.
 
-### Codex CLI's Directory Organization with Comprehensive Files
-- `/plan/current/`: Contains ONE or very few comprehensive markdown files for ALL of Codex CLI's current work
-- `/plan/backlog/`: Contains comprehensive markdown files for Codex CLI's future work (prefer fewer, larger files)
-- `/plan/complete/`: Archive of Codex CLI's completed comprehensive task files (never delete these)
-- `/plan/experiments/`: ALL of Codex CLI's test scripts, debugging code, and experimental implementations
-- `/plan/artifacts/`: ANY of Codex CLI's temporary outputs, logs, or generated files during development
-- `/plan/scratch/`: Codex CLI's quick temporary work that will be deleted soon
+### Claude Code's Directory Organization with Comprehensive Files
+- `/plan/current/`: Contains ONE or very few comprehensive markdown files for ALL of Claude Code's current work
+- `/plan/backlog/`: Contains comprehensive markdown files for Claude Code's future work (prefer fewer, larger files)
+- `/plan/complete/`: Archive of Claude Code's completed comprehensive task files (never delete these)
+- `/plan/experiments/`: ALL of Claude Code's test scripts, debugging code, and experimental implementations
+- `/plan/artifacts/`: ANY of Claude Code's temporary outputs, logs, or generated files during development
+- `/plan/scratch/`: Claude Code's quick temporary work that will be deleted soon
 
 ### File Management Principles
 **CONSOLIDATION FIRST**:
@@ -398,25 +398,25 @@ Manage planning, executing, and verification.
 
 **EXAMPLE STRUCTURE**:
 ```
-/plan/current/comprehensive_project.md  (ALL of Codex CLI's current work)
-/plan/backlog/future_features.md        (ALL of Codex CLI's backlog items)
-/plan/complete/q4_2024_work.md         (Codex CLI's completed comprehensive record)
-/plan/experiments/test_api.py          (Codex CLI's temporary test script)
-/plan/artifacts/debug_output.log       (Codex CLI's temporary debug log)
-/plan/scratch/quick_calc.js            (Codex CLI's temporary calculation)
+/plan/current/comprehensive_project.md  (ALL of Claude Code's current work)
+/plan/backlog/future_features.md        (ALL of Claude Code's backlog items)
+/plan/complete/q4_2024_work.md         (Claude Code's completed comprehensive record)
+/plan/experiments/test_api.py          (Claude Code's temporary test script)
+/plan/artifacts/debug_output.log       (Claude Code's temporary debug log)
+/plan/scratch/quick_calc.js            (Claude Code's temporary calculation)
 ```
 
-**ENFORCEMENT**: Before creating ANY file, ask: "Is this the user's actual project file or Codex CLI's working file?" If it's Codex CLI's working file, it MUST go in Codex CLI's /plan! User's project files stay in the main workspace.
+**ENFORCEMENT**: Before creating ANY file, ask: "Is this the user's actual project file or Claude Code's working file?" If it's Claude Code's working file, it MUST go in Claude Code's /plan! User's project files stay in the main workspace.
 
 ## Comprehensive Knowledge Management
 
-### Codex CLI's KNOWLEDGE.md - The Consolidated Learning Repository
-- **SINGLE SOURCE**: Maintain `/plan/KNOWLEDGE.md` as Codex CLI's ONE comprehensive knowledge base
+### Claude Code's KNOWLEDGE.md - The Consolidated Learning Repository
+- **SINGLE SOURCE**: Maintain `/plan/KNOWLEDGE.md` as Claude Code's ONE comprehensive knowledge base
 - **CONTINUOUS UPDATES**: Constantly add new learnings, never fragment into multiple knowledge files
-- **COMPREHENSIVE SCOPE**: Include ALL of Codex CLI's fundamental knowledge, principles, and learnings in this single file
+- **COMPREHENSIVE SCOPE**: Include ALL of Claude Code's fundamental knowledge, principles, and learnings in this single file
 - **ORGANIZED GROWTH**: Use clear sections and headers, but keep everything in one file for maximum context
 - **DISTILLED WISDOM**: While comprehensive, focus on distilled principles and fundamental truths
-- **NO FRAGMENTATION**: Never create separate knowledge files - always add to Codex CLI's main KNOWLEDGE.md in /plan
+- **NO FRAGMENTATION**: Never create separate knowledge files - always add to Claude Code's main KNOWLEDGE.md in /plan
 
 ### Working with Long Markdown Files
 - **APPEND, DON'T SPLIT**: When a file gets long, add sections rather than creating new files
@@ -428,40 +428,40 @@ Manage planning, executing, and verification.
 ## Workflow
 
 1. **Plan before coding**  
-   - Outline each change in Codex CLI's `/plan/` and self-review it.
+   - Outline each change in Claude Code's `/plan/` and self-review it.
    - Planning should take a really long time.
    - All details should be fully fleshed out prior to executing or writing any code.
    - Search on the internet.
-   - Conduct investigations, run independent tests/debugging/scripts IN Codex CLI's /plan/experiments/.
-   - ALL Codex CLI test scripts and temporary code MUST be created in Codex CLI's /plan/, NEVER in the user's main workspace.
-   - Update Codex CLI's plan markdown in /plan/ constantly with findings.
-   - Cleanup Codex CLI's temporary files in /plan/scratch/ and /plan/experiments/ after use.
+   - Conduct investigations, run independent tests/debugging/scripts IN Claude Code's /plan/experiments/.
+   - ALL Claude Code test scripts and temporary code MUST be created in Claude Code's /plan/, NEVER in the user's main workspace.
+   - Update Claude Code's plan markdown in /plan/ constantly with findings.
+   - Cleanup Claude Code's temporary files in /plan/scratch/ and /plan/experiments/ after use.
 2. **Execute atomically**  
    - Complete and verify one step before the next.
    - When executing the plan, only move onto the next stage/step when the prior stage/step has been completed and fully validated/verified.
    - Atomically verify steps/stages as you go.
    - Constantly update the markdown file(s) with relevant information.
 3. **Stay tidy**  
-   - Delete all Codex CLI temporary artifacts IN Codex CLI's /plan/scratch/ and /plan/experiments/ when done.  
-   - Codex CLI's `/plan/` directory structure and core planning files must never be removed.
-   - NO Codex CLI temporary files should EVER exist outside of Codex CLI's /plan/.
-   - Ensure that Codex CLI's plan markdowns in /plan/ are updated and labelled correctly.
-   - Ensure that Codex CLI's plan markdowns are moved between /plan/backlog/, /plan/current/, and /plan/complete/ appropriately.
-   - Keep user's main workspace clean of Codex CLI's working files.
-4. **Manage Codex CLI's past, current, and future plans**  
-   - Manage Codex CLI's plan markdown files.
-   - Update, change status, and move Codex CLI's plan markdowns according to the progression and status.
-   - eg feel free to move Codex CLI's markdown plan files between `/plan/backlog/`, `/plan/current/`, `/plan/complete/` as needed or makes sense.
-   - Create new plans that should be completed in future into Codex CLI's `/plan/backlog/` directory so that we don't forget to get round to them at some point in the future. Prior to creating new tasks, always ask if its OK to create the new tasks. It's important to confirm that the user agrees with what to add to the backlog prior to adding stuff to the backlog.
+   - Delete all Claude Code temporary artifacts IN Claude Code's /plan/scratch/ and /plan/experiments/ when done.  
+   - Claude Code's `/plan/` directory structure and core planning files must never be removed.
+   - NO Claude Code temporary files should EVER exist outside of Claude Code's /plan/.
+   - Ensure that Claude Code's plan markdowns in /plan/ are updated and labelled correctly.
+   - Ensure that Claude Code's plan markdowns are moved between /plan/backlog/, /plan/current/, and /plan/complete/ appropriately.
+   - Keep user's main workspace clean of Claude Code's working files.
+4. **Manage Claude Code's past, current, and future plans**  
+   - Manage Claude Code's plan markdown files.
+   - Update, change status, and move Claude Code's plan markdowns according to the progression and status.
+   - eg feel free to move Claude Code's markdown plan files between `/plan/backlog/`, `/plan/current/`, `/plan/complete/` as needed or makes sense.
+   - Create new plans that should be completed in future into Claude Code's `/plan/backlog/` directory so that we don't forget to get round to them at some point in the future. Prior to creating new tasks, always ask if its OK to create the new tasks. It's important to confirm that the user agrees with what to add to the backlog prior to adding stuff to the backlog.
 
 
 ## Notes
 
-- If Codex CLI's /plan directory or any subdirectories don't exist, CREATE THEM IMMEDIATELY (eg `/plan/`, `/plan/backlog/`, `/plan/current/`, `/plan/complete/`, `/plan/experiments/`, `/plan/artifacts/`, `/plan/scratch/`, `/plan/KNOWLEDGE.md`)
-- **ABSOLUTE RULE**: NO Codex CLI temporary files, test scripts, experiments, or artifacts should EVER be created outside of Codex CLI's /plan/
-- **ENFORCEMENT**: This is a CRITICAL rule - violation of Codex CLI's /plan directory rule is a serious error
-- **REMINDER TO AGENTS**: ALL agents spawned MUST be informed about Codex CLI's /plan directory rule - use /plan for Codex CLI's work, keep user's main workspace clean
-- **USER SPACE PROTECTION**: The main workspace is reserved for the user's actual project files, not Codex CLI's working files
+- If Claude Code's /plan directory or any subdirectories don't exist, CREATE THEM IMMEDIATELY (eg `/plan/`, `/plan/backlog/`, `/plan/current/`, `/plan/complete/`, `/plan/experiments/`, `/plan/artifacts/`, `/plan/scratch/`, `/plan/KNOWLEDGE.md`)
+- **ABSOLUTE RULE**: NO Claude Code temporary files, test scripts, experiments, or artifacts should EVER be created outside of Claude Code's /plan/
+- **ENFORCEMENT**: This is a CRITICAL rule - violation of Claude Code's /plan directory rule is a serious error
+- **REMINDER TO AGENTS**: ALL agents spawned MUST be informed about Claude Code's /plan directory rule - use /plan for Claude Code's work, keep user's main workspace clean
+- **USER SPACE PROTECTION**: The main workspace is reserved for the user's actual project files, not Claude Code's working files
 
 ==========
 
