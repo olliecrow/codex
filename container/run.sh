@@ -114,7 +114,7 @@ else
     'codex --dangerously-bypass-approvals-and-sandbox \
            --cd /workspace \
            --config approval_policy="never" \
-           --config model="gpt-5" \
+           --config model="gpt-5-codex" \
            --config model_reasoning_effort="high"'
 fi
 
