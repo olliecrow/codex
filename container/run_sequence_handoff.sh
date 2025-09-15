@@ -394,7 +394,7 @@ EOF"
   # Run the stage with retry mechanism
   log_with_timestamp "⚡ Codex is processing stage $stage_name..."
   local codex_start_time=$(date +%s)
-  retry_codex_operation "Codex stage execution for $stage_name" "docker exec '$CONTAINER_NAME' bash -lc 'cd /workspace && cat /tmp/stage_prompt.txt | codex exec --dangerously-bypass-approvals-and-sandbox --config approval_policy=\"never\" --config model=\"gpt-5\" --config model_reasoning_effort=\"high\"'"
+  retry_codex_operation "Codex stage execution for $stage_name" "docker exec '$CONTAINER_NAME' bash -lc 'cd /workspace && cat /tmp/stage_prompt.txt | codex exec --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --config approval_policy=\"never\" --config model=\"gpt-5\" --config model_reasoning_effort=\"high\"'"
   local stage_exit_code=$?
   local codex_end_time=$(date +%s)
   local codex_duration=$((codex_end_time - codex_start_time))
@@ -426,7 +426,7 @@ EOF"
   local handoff_start_time=$(date +%s)
   log_with_timestamp "🔄 Requesting handoff summary from Codex..."
 
-  retry_codex_operation "Codex handoff generation for $stage_name" "docker exec '$CONTAINER_NAME' bash -lc 'cd /workspace && cat /tmp/handoff_prompt.txt | codex exec --dangerously-bypass-approvals-and-sandbox --config approval_policy=\"never\" --config model=\"gpt-5\" --config model_reasoning_effort=\"high\"' > '$handoff_file'"
+  retry_codex_operation "Codex handoff generation for $stage_name" "docker exec '$CONTAINER_NAME' bash -lc 'cd /workspace && cat /tmp/handoff_prompt.txt | codex exec --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --config approval_policy=\"never\" --config model=\"gpt-5\" --config model_reasoning_effort=\"high\"' > '$handoff_file'"
   local handoff_end_time=$(date +%s)
   local handoff_duration=$((handoff_end_time - handoff_start_time))
 
@@ -616,4 +616,3 @@ ls -la "$HOST_HANDOFF_DIR" | while read line; do
     log_with_timestamp "   $line"
   fi
 done
-
