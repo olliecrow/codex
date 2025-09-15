@@ -5,6 +5,9 @@
 
 FROM debian:stable-slim
 
+# Optional build tools for compiling native extensions
+ARG INCLUDE_BUILD_TOOLS=0
+
 # 1) Base packages and tini
 RUN set -eux; \
     apt-get update; \
@@ -31,6 +34,16 @@ RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends nodejs; \
     rm -rf /var/lib/apt/lists/*
+
+# 3b) Optionally install C/C++ build toolchain (keeps Git blocked)
+RUN set -eux; \
+    if [ "$INCLUDE_BUILD_TOOLS" = "1" ]; then \
+        apt-get update; \
+        apt-get install -y --no-install-recommends \
+            build-essential \
+            pkg-config; \
+        rm -rf /var/lib/apt/lists/*; \
+    fi
 
 # 4) Install Codex CLI from npm
 RUN set -eux; \
@@ -62,4 +75,3 @@ HEALTHCHECK NONE
 
 ENTRYPOINT ["/usr/bin/tini","--"]
 CMD ["bash"]
-
