@@ -212,7 +212,7 @@ STAGES=(
 generate_handoff_prompt() {
   local stage_name="$1"
   local stage_num="$2"
-  echo "/plan Save all information from this chat into your markdown plan file(s), then generate a comprehensive handoff summary.
+  echo "Save all information from this chat into your markdown plan file(s), then generate a comprehensive handoff summary.
 
 IMPORTANT: Before writing your summary, examine the handoff directory at /workspace/plan/handoffs/ and read ALL prior stage handoff files (stage_1_handoff.txt, stage_2_handoff.txt, etc.) to understand the complete workflow context.
 
@@ -326,18 +326,30 @@ get_stage_prompt() {
 
   # PRODUCTION STAGES
   case "$stage_name" in
-    "investigate") echo "/plan conduct deep and thorough investigations, research, testing, debugging, etc on the task at hand. do not plan/execute yet, just investigate/research. $PLAN_SUFFIX" ;;
-    "plan") echo "/plan create/continue to flesh out the plan. ensure that there is defined scope, no ambiguity, and no chance for overly complex solutions or overengineering. do not start executing the plan yet, just plan. $PLAN_SUFFIX" ;;
-    "executeverify") echo "/plan review the plan and context to date - figure out if there are remaining tasks left to complete. if there is nothing left to execute then verify everything. if there is nothing left to execute or verify, then just return (do nothing). otherwise, execute all remaining tasks then verify that everything has been completed correctly in accordance with the plan and project principles. $PLAN_SUFFIX" ;;
-    "replan") echo "/plan take a moment to take a step back and take in everything in /plan/handoffs/. review all the investigations, planning, execution, verification to date. establish a consolidated plan for moving forward. what has been done, and what needs to be done. if there is nothing left to execute then verify everything. review everything against the original task and requirements. if there is nothing left to execute or verify, then just return (do nothing). otherwise, create a new plan for getting to the finish line from here. $PLAN_SUFFIX" ;;
-    "cleanup") echo "/plan conduct a deep and thorough cleanup of the project. remove all files and directories that are no longer needed. dont remove the /plan/handoffs directory." ;;
-    "summary") echo "/plan summarize this conversation so far. output the summary here (not into a file). dont remove the /plan/handoffs directory." ;;
+    "investigate") echo "conduct deep and thorough investigations, research, testing, debugging, etc on the task at hand. do not plan/execute yet, just investigate/research. $PLAN_SUFFIX" ;;
+    "plan") echo "create/continue to flesh out the plan. ensure that there is defined scope, no ambiguity, and no chance for overly complex solutions or overengineering. do not start executing the plan yet, just plan. $PLAN_SUFFIX" ;;
+    "executeverify") echo "review the plan and context to date - figure out if there are remaining tasks left to complete. if there is nothing left to execute then verify everything. if there is nothing left to execute or verify, then just return (do nothing). otherwise, execute all remaining tasks then verify that everything has been completed correctly in accordance with the plan and project principles. $PLAN_SUFFIX" ;;
+    "replan") echo "take a moment to take a step back and take in everything in /plan/handoffs/. review all the investigations, planning, execution, verification to date. establish a consolidated plan for moving forward. what has been done, and what needs to be done. if there is nothing left to execute then verify everything. review everything against the original task and requirements. if there is nothing left to execute or verify, then just return (do nothing). otherwise, create a new plan for getting to the finish line from here. $PLAN_SUFFIX" ;;
+    "cleanup") echo "conduct a deep and thorough cleanup of the project. remove all files and directories that are no longer needed. dont remove the /plan/handoffs directory." ;;
+    "summary") echo "summarize this conversation so far. output the summary here (not into a file). dont remove the /plan/handoffs directory." ;;
   esac
 
   # # DEBUG STAGES
   # case "$stage_name" in
   #   "test_joke") echo "/joke Create a test file called debug_test.txt with the session ID in it. Output all jokes so far in your context into a file unique to this stage.txt" ;;
   # esac
+}
+
+# Stream arbitrary content into a file inside the container without risking
+# heredoc delimiter collisions (e.g. when the payload already contains "EOF").
+copy_into_container_file() {
+  local content="$1"
+  local destination="$2"
+
+  {
+    printf '%s' "$content"
+    printf '\n'
+  } | docker exec -i "$CONTAINER_NAME" bash -c "cat > \"$destination\""
 }
 
 # Execute a single stage with handoff
@@ -384,9 +396,7 @@ $context"
   # Send prompt into container temp file
   log_with_timestamp "📤 Sending prompt to Codex container..."
   local prompt_send_start=$(date +%s)
-  docker exec "$CONTAINER_NAME" bash -c "cat > /tmp/stage_prompt.txt << 'EOF'
-$full_prompt
-EOF"
+  copy_into_container_file "$full_prompt" "/tmp/stage_prompt.txt"
   local prompt_send_end=$(date +%s)
   local prompt_send_duration=$((prompt_send_end - prompt_send_start))
   log_with_timestamp "⏱️  Prompt transfer took ${prompt_send_duration}s"
@@ -414,9 +424,7 @@ EOF"
 
   # Time the handoff prompt send
   local handoff_prompt_start=$(date +%s)
-  docker exec "$CONTAINER_NAME" bash -c "cat > /tmp/handoff_prompt.txt << 'EOF'
-$handoff_prompt
-EOF"
+  copy_into_container_file "$handoff_prompt" "/tmp/handoff_prompt.txt"
   local handoff_prompt_end=$(date +%s)
   local handoff_prompt_duration=$((handoff_prompt_end - handoff_prompt_start))
   log_with_timestamp "⏱️  Handoff prompt transfer took ${handoff_prompt_duration}s"
