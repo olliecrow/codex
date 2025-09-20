@@ -142,7 +142,7 @@ run_codex_exec() {
   log "Copying prompt into container"
   printf '%s\n' "$prompt_text" | docker exec -i "$CONTAINER_NAME" bash -lc "cat > '$remote_path'"
 
-  local cmd="cd /workspace && cat '$remote_path' | codex exec --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --config approval_policy=\"never\" --config model=\"gpt-5-codex\" --config model_reasoning_effort=\"high\""
+  local cmd="cd /workspace && cat '$remote_path' | codex exec --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --config approval_policy=\"never\" --config model=\"gpt-5\" --config model_reasoning_effort=\"high\""
   if [[ "$use_resume_flag" == true ]]; then
     cmd="$cmd resume --last"
     log "Running codex exec with resume --last"
