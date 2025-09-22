@@ -195,69 +195,73 @@ log_with_timestamp ""
 update_workflow_status "STARTING" "" "Initializing workflow components"
 
 # PRODUCTION STAGES
-STAGES=(
-  "investigate"
-  "plan"
-  # "plan"
-  "executeverify"
-  # "executeverify"
-  "replan"
-  "executeverify"
-  # "executeverify"
-  "cleanup"
-  "summary"
-)
+# If SHORT_WORKFLOW=1, run a reduced set of stages to speed up validation while preserving coverage.
+if [[ "${SHORT_WORKFLOW:-}" == "1" ]]; then
+  STAGES=(
+    "investigate"
+    "plan"
+    "executeverify"
+    "cleanup"
+    "summary"
+  )
+else
+  STAGES=(
+    "investigate"
+    "plan"
+    # "plan"
+    "executeverify"
+    # "executeverify"
+    "replan"
+    "executeverify"
+    # "executeverify"
+    "cleanup"
+    "summary"
+  )
+fi
 
 # Rolling handoff prompt - consolidates all prior work into current summary
 generate_handoff_prompt() {
   local stage_name="$1"
   local stage_num="$2"
-  echo "Save all information from this chat into your markdown plan file(s), then generate a comprehensive handoff summary.
+  cat <<EOF
+Save all information from this chat into your plan/notes files, then generate a comprehensive handoff summary.
 
-IMPORTANT: Before writing your summary, examine the handoff directory at /workspace/plan/handoffs/ and read ALL prior stage handoff files (stage_1_handoff.txt, stage_2_handoff.txt, etc.) to understand the complete workflow context.
+BEFORE YOU WRITE ANYTHING:
+- Examine the handoff directory at /workspace/plan/handoffs/ and read ALL prior stage handoff files (stage_1_handoff.txt, stage_2_handoff.txt, etc.).
+- Consolidate the original task, all prior work, and the work completed in this stage.
 
-Your handoff summary should consolidate:
-1. ALL essential information from the original task
-2. ALL work completed in previous stages (from prior handoffs)  
-3. ALL work completed in this current stage (from this chat)
+STRICT FORMAT REQUIREMENTS:
+- Use the EXACT section headers below, each on its own line, starting with "## ":
+  ## Consolidated Workflow Summary: $stage_name (Stage $stage_num)
+  ## Complete Task Context
+  ## Current Workflow State
+  ## For Next Stage
+  ## Instructions
+- Do NOT include markdown code fences or extra headings.
+- Output as plain text with those header lines (no additional markdown features).
+ - Output as plain text with those header lines (no additional markdown features).
+$( if [ "${SHORT_WORKFLOW:-}" = "1" ]; then echo "- Keep it concise: target 600 words or less; avoid repeating unchanged context."; fi )
 
-Include:
+CONTENT GUIDANCE (under the required headers above):
+- Complete Task Context: Original task; all work completed across ALL stages; files created/modified/deleted (code + plan/docs); critical decisions; blockers; a timeline across all stages.
+- Current Workflow State: Status of the main objective; relevant files/dirs; intermediate results; overall progress.
+- For Next Stage: Focus areas; constraints; files/dirs to inspect; all context needed to continue; if complete, state clearly.
+- Instructions: This handoff will be the ONLY context for the next stage; include everything critical; prefer actionable and specific content and file paths.
 
-## Consolidated Workflow Summary: $stage_name (Stage $stage_num)
+Write a detailed handoff for another engineer to take over.
+EOF
+}
 
-## Complete Task Context
-- Original task and requirements
-- All work completed across ALL stages so far
-- All project files created, modified, or deleted (all stages)
-- All plan/markdown/txt/etc files created, modified, or deleted (all stages)
-- All critical decisions made throughout workflow
-- Any blockers or issues encountered (any stage)
-- Maintain a timelines across all stages.
-
-## Current Workflow State
-- Complete status of the main task/objective
-- All relevant files and directories from entire workflow
-- All intermediate results and findings so far
-- Progress made across all stages
-
-## For Next Stage
-- What the next stage should focus on
-- Any specific requirements or constraints
-- Files/directories they should examine first
-- Complete context needed to continue the work
-- If workflow is complete, clearly state this
-
-## Instructions
-- This summary will be the ONLY context passed to the next stage
-- Include everything important from the entire workflow so far
-- No word limit - be as comprehensive as needed
-- Focus on actionable information and concrete results
-- Include specific file paths and complete status
-- This is a rolling summary - each stage builds on all previous work
-
-Write a very detailed handoff document for another person to take over.
-
-Output this consolidated handoff summary in plain text (not markdown) for easy parsing."
+# Validate that a handoff file contains the required headers.
+validate_handoff_file() {
+  local file="$1"
+  local missing=0
+  grep -q '^## Consolidated Workflow Summary' "$file" || missing=1
+  grep -q '^## Complete Task Context' "$file" || missing=1
+  grep -q '^## Current Workflow State' "$file" || missing=1
+  grep -q '^## For Next Stage' "$file" || missing=1
+  grep -q '^## Instructions' "$file" || missing=1
+  return $missing
 }
 
 # Build context prompt from most recent handoff only (rolling summary approach)
@@ -442,6 +446,18 @@ $context"
   local handoff_words=$(wc -w < "$handoff_file" 2>/dev/null || echo "0")
   log_with_timestamp "📊 Handoff summary: $handoff_words words, generated in ${handoff_duration}s"
   log_with_timestamp "💾 Handoff saved to: $handoff_file"
+  # Validate required headers; if missing, re-prompt once with stricter instructions
+  if ! validate_handoff_file "$handoff_file"; then
+    log_with_timestamp "⚠️  Handoff missing required headers; attempting corrective regeneration..."
+    local correction_prompt="The previously generated handoff summary did not include the exact required section headers. Regenerate it now.\n\nREQUIREMENTS (must match exactly):\n## Consolidated Workflow Summary: $stage_name (Stage $stage_num)\n## Complete Task Context\n## Current Workflow State\n## For Next Stage\n## Instructions\n\nRules:\n- No code fences.\n- Use plain text with exactly the headers above and detailed content under each.\n- Before writing, re-examine /workspace/plan/handoffs/ to include ALL prior context and the current stage's results."
+    copy_into_container_file "$correction_prompt" "/tmp/handoff_prompt_strict.txt"
+    retry_codex_operation "Codex handoff correction for $stage_name" "docker exec '$CONTAINER_NAME' bash -lc 'cd /workspace && cat /tmp/handoff_prompt_strict.txt | codex exec --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --config approval_policy=\"never\" --config model=\"gpt-5\" --config model_reasoning_effort=\"high\"' > '$handoff_file'"
+    if validate_handoff_file "$handoff_file"; then
+      log_with_timestamp "✅ Corrective regeneration succeeded; required headers present."
+    else
+      log_with_timestamp "⚠️  Corrective regeneration still missing required headers; proceeding with existing file."
+    fi
+  fi
 
   # Clean up temp files
   docker exec "$CONTAINER_NAME" rm -f "/tmp/stage_prompt.txt" "/tmp/handoff_prompt.txt" || true
@@ -511,7 +527,12 @@ log_with_timestamp "🐳 Container name: $CONTAINER_NAME"
 
 cleanup() {
   log_with_timestamp "🧹 Cleaning up container and finalizing logs..."
-  update_workflow_status "CLEANUP" "" "Removing container and finalizing"
+  # Preserve WORKFLOW_STATUS=WORKFLOW_COMPLETED; write cleanup details separately
+  if [ -n "$HOST_HANDOFF_DIR" ]; then
+    echo "CLEANUP_AT=$(date)" > "$HOST_HANDOFF_DIR/workflow_cleanup.txt"
+    echo "CONTAINER=$CONTAINER_NAME" >> "$HOST_HANDOFF_DIR/workflow_cleanup.txt"
+    log_with_timestamp "🗒️  Cleanup note saved to: $HOST_HANDOFF_DIR/workflow_cleanup.txt"
+  fi
   docker rm -f "$CONTAINER_NAME" > /dev/null 2>&1 || true
 
   # Create final workflow summary
