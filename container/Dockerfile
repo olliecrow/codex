@@ -88,8 +88,9 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/*
 
 # 4) Install Codex CLI from npm
+# Pin to 0.41.0 (latest release without mandatory dangerous-command approvals)
 RUN set -eux; \
-    npm install -g @openai/codex; \
+    npm install -g @openai/codex@0.41.0; \
     npm cache clean --force
 
 # 4b) Install uv CLI (install then place in /usr/local/bin)
