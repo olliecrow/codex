@@ -100,6 +100,13 @@ log_message() {
   fi
 }
 
+preview_block() {
+  local block="$1"
+  local preview
+  preview=$(echo "$block" | tr '\n' ' ' | sed 's/  */ /g')
+  printf '%.160s' "$preview"
+}
+
 generate_handoff_prompt() {
   cat <<'EOF'
 Generate a comprehensive handoff summary of everything done in this conversation.
@@ -203,11 +210,14 @@ run_codex_exec() {
   local use_resume_flag="$2"
   local output_file="${3:-}"
   local remote_path="/tmp/run_sequence_prompt.txt"
+  local char_count=${#prompt_text}
+  local line_count
+  line_count=$(printf '%s\n' "$prompt_text" | awk 'END{print NR}')
 
-  log "Copying prompt into container"
+  log_message "Copying prompt into container: $remote_path (${line_count} line(s), ${char_count} character(s))"
   printf '%s\n' "$prompt_text" | docker exec -i "$CONTAINER_NAME" bash -lc "cat > '$remote_path'"
 
-  local cmd="cd /workspace && cat '$remote_path' | codex exec --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --config approval_policy=\"never\" --config model=\"gpt-5-codex\" --config model_reasoning_effort=\"high\""
+  local cmd="cd /workspace && cat '$remote_path' | codex exec --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --config approval_policy="never" --config model="gpt-5-codex" --config model_reasoning_effort="high""
   if [[ "$use_resume_flag" == true ]]; then
     cmd="$cmd resume --last"
     log "Running codex exec with resume --last"
@@ -217,6 +227,7 @@ run_codex_exec() {
 
   local exit_code=0
   if [[ -n "$output_file" ]]; then
+    log_message "Streaming Codex output to $output_file"
     set +e
     docker exec -i "$CONTAINER_NAME" bash -lc "$cmd" | tee -a "$output_file"
     exit_code=${PIPESTATUS[0]}
@@ -230,6 +241,7 @@ run_codex_exec() {
 
   log "Codex exec finished (exit code: $exit_code)"
   docker exec "$CONTAINER_NAME" bash -lc "rm -f '$remote_path'" >/dev/null 2>&1 || true
+  log_message "Removed temporary prompt file from container: $remote_path"
 
   if [[ $exit_code -ne 0 ]]; then
     return $exit_code
@@ -268,6 +280,7 @@ $prompt_text"
     log_message "Prompt: $preview"
   fi
 
+  log_message "Conversation $conversation_num output file: $conversation_output_file"
   : > "$conversation_output_file"
 
   log_message "Starting Codex conversation..."
@@ -275,6 +288,7 @@ $prompt_text"
   local exit_code=$?
 
   log_message "Conversation $conversation_num completed (exit code: $exit_code)"
+  log_message "Conversation $conversation_num raw output captured at $conversation_output_file"
   LAST_CONVERSATION_OUTPUT_FILE="$conversation_output_file"
 
   return $exit_code
@@ -282,11 +296,16 @@ $prompt_text"
 
 process_current_conversation() {
   if [[ ${#CURRENT_CONVERSATION_PROMPTS[@]} -eq 0 ]]; then
+    log_message "Conversation $CONVERSATION_NUM: no queued prompt blocks to process."
     return
   fi
 
   local combined_prompt=""
-  for prompt_block in "${CURRENT_CONVERSATION_PROMPTS[@]}"; do
+  log_message "Conversation $CONVERSATION_NUM: combining ${#CURRENT_CONVERSATION_PROMPTS[@]} block(s): ${CURRENT_BLOCK_IDS[*]}"
+  for idx in "${!CURRENT_CONVERSATION_PROMPTS[@]}"; do
+    local prompt_block="${CURRENT_CONVERSATION_PROMPTS[$idx]}"
+    local block_ref="${CURRENT_BLOCK_IDS[$idx]:-?}"
+    log_message " - Block ${block_ref} preview: $(preview_block "$prompt_block")"
     if [[ -n "$combined_prompt" ]]; then
       combined_prompt+=$'\n\n'
     fi
@@ -295,6 +314,7 @@ process_current_conversation() {
 
   combined_prompt+=$'\n\n'
   combined_prompt+="$(generate_handoff_prompt)"
+  log_message "Conversation $CONVERSATION_NUM: auto handoff summary prompt appended."
 
   if [[ $CONVERSATION_NUM -eq 1 ]]; then
     run_prompt_with_handoff "$combined_prompt" "$CONVERSATION_NUM" false ""
@@ -313,34 +333,59 @@ process_current_conversation() {
   fi
 
   CURRENT_CONVERSATION_PROMPTS=()
+  CURRENT_BLOCK_IDS=()
   CONVERSATION_NUM=$((CONVERSATION_NUM + 1))
 }
+
+log_message "Prompt file: $PROMPTS_FILE"
+log_message "Project directory: $PROJECT_DIR"
+log_message "Total prompt blocks detected: ${#PROMPTS[@]}"
+
+for idx in "${!PROMPTS[@]}"; do
+  block_num=$((idx + 1))
+  block_text="${PROMPTS[$idx]}"
+  if [[ $block_text == /compact* ]]; then
+    log_message "Block #$block_num: /compact marker encountered."
+  else
+    log_message "Block #$block_num preview: $(preview_block "$block_text")"
+  fi
+done
 
 log "Total prompt blocks: ${#PROMPTS[@]}"
 
 CONVERSATION_NUM=1
 CURRENT_CONVERSATION_PROMPTS=()
+CURRENT_BLOCK_IDS=()
 PREVIOUS_HANDOFF=""
 FIRST_PROMPT=""
 LAST_CONVERSATION_OUTPUT_FILE=""
 
-for prompt_block in "${PROMPTS[@]}"; do
+for idx in "${!PROMPTS[@]}"; do
+  prompt_block="${PROMPTS[$idx]}"
+  block_num=$((idx + 1))
+
   if [[ $CONVERSATION_NUM -eq 1 && -z "$FIRST_PROMPT" ]]; then
     FIRST_PROMPT="$prompt_block"
     echo "$FIRST_PROMPT" > "$HOST_HANDOFF_DIR/initial_task.txt"
-    log_message "Initial task saved to $HOST_HANDOFF_DIR/initial_task.txt"
+    log_message "Initial task saved to $HOST_HANDOFF_DIR/initial_task.txt (block #$block_num)."
   fi
 
   if [[ $prompt_block == /compact* ]]; then
+    log_message "Block #$block_num issued /compact. Processing current queue for conversation $CONVERSATION_NUM."
     process_current_conversation
 
     rest="${prompt_block#/compact}"
     rest="${rest# }"
+    CURRENT_BLOCK_IDS=()
     if [[ -n "$rest" ]]; then
+      log_message "Block #$block_num remainder queued for next conversation: $(preview_block "$rest")"
       CURRENT_CONVERSATION_PROMPTS+=("$rest")
+      CURRENT_BLOCK_IDS+=("${block_num}*")
     fi
   else
     CURRENT_CONVERSATION_PROMPTS+=("$prompt_block")
+    CURRENT_BLOCK_IDS+=("$block_num")
+    log_message "Queued block #$block_num for conversation $CONVERSATION_NUM (queued blocks: ${CURRENT_BLOCK_IDS[*]})."
   fi
 done
 
