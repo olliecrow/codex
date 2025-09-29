@@ -10,12 +10,11 @@ Usage:
   $(basename "$0") /path/to/project /path/to/prompts.txt
 
 Description:
-  Sequentially feeds prompts to Codex CLI in a single conversation. Prompts are
-  separated by blank lines, so each block of text (one or more lines) separated
-  by an empty line is treated as a single prompt. A block that begins with
-  /compact will trigger the compact command before sending the remainder of the
-  block. After the first prompt, Codex's built-in resume support (--last) keeps
-  the conversation alive.
+  Sequentially feeds prompts to Codex CLI. Prompts are separated by blank lines,
+  so each block of text (one or more lines) separated by an empty line is
+  treated as a single prompt. A block that begins with /compact finalizes the
+  current conversation, captures a handoff summary, and starts a fresh Codex
+  conversation seeded with that summary plus any remaining text in the block.
 EOF
 }
 
@@ -78,11 +77,76 @@ if ! check_codex_auth; then
   exit 1
 fi
 
+HOST_HANDOFF_DIR="$PROJECT_DIR/plan/handoffs"
+mkdir -p "$HOST_HANDOFF_DIR"
+
+WORKFLOW_STATUS_FILE="$HOST_HANDOFF_DIR/workflow_status.txt"
+WORKFLOW_LOG_FILE="$HOST_HANDOFF_DIR/workflow_log.txt"
+echo "STARTED: $(date)" > "$WORKFLOW_STATUS_FILE"
+: > "$WORKFLOW_LOG_FILE"
+
 log() {
   local msg="$1"
   local ts
   ts="$(date '+%Y-%m-%d %H:%M:%S')"
   echo "[$ts] $msg"
+}
+
+log_message() {
+  local message="$1"
+  echo "$message"
+  if [[ -n "${WORKFLOW_LOG_FILE:-}" ]]; then
+    printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$message" >> "$WORKFLOW_LOG_FILE"
+  fi
+}
+
+generate_handoff_prompt() {
+  cat <<'EOF'
+Generate a comprehensive handoff summary of everything done in this conversation.
+
+Include:
+- What was accomplished
+- Any files created or modified
+- Key decisions or findings
+- Current state of the project
+- Important context for continuation
+
+Be thorough but concise. This summary will be the only context passed forward.
+Output in plain text format.
+EOF
+}
+
+write_handoff_from_output() {
+  local source_file="$1"
+  local destination_file="$2"
+
+  if [[ -z "$source_file" || ! -f "$source_file" ]]; then
+    printf 'Warning: Missing conversation output for handoff\n' | tee "$destination_file"
+    return
+  fi
+
+  local summary_header=""
+  local header_candidates=(
+    "## HANDOFF SUMMARY"
+    "## Comprehensive Handoff Summary"
+    "## Handoff Summary"
+  )
+
+  for header in "${header_candidates[@]}"; do
+    if grep -q "^$header" "$source_file"; then
+      summary_header="$header"
+      break
+    fi
+  done
+
+  if [[ -n "$summary_header" ]]; then
+    awk -v header="$summary_header" '$0 == header {printing=1} printing {print}' "$source_file" > "$destination_file"
+    if [[ ! -s "$destination_file" ]]; then
+      cp "$source_file" "$destination_file"
+    fi
+  else
+    cp "$source_file" "$destination_file"
+  fi
 }
 
 HOST_TZ="$(detect_host_timezone)"
@@ -137,6 +201,7 @@ log "Container ready"
 run_codex_exec() {
   local prompt_text="$1"
   local use_resume_flag="$2"
+  local output_file="${3:-}"
   local remote_path="/tmp/run_sequence_prompt.txt"
 
   log "Copying prompt into container"
@@ -150,52 +215,139 @@ run_codex_exec() {
     log "Running codex exec (new session)"
   fi
 
-  docker exec -i "$CONTAINER_NAME" bash -lc "$cmd"
-  log "Codex exec finished"
+  local exit_code=0
+  if [[ -n "$output_file" ]]; then
+    set +e
+    docker exec -i "$CONTAINER_NAME" bash -lc "$cmd" | tee -a "$output_file"
+    exit_code=${PIPESTATUS[0]}
+    set -e
+  else
+    set +e
+    docker exec -i "$CONTAINER_NAME" bash -lc "$cmd"
+    exit_code=$?
+    set -e
+  fi
+
+  log "Codex exec finished (exit code: $exit_code)"
   docker exec "$CONTAINER_NAME" bash -lc "rm -f '$remote_path'" >/dev/null 2>&1 || true
+
+  if [[ $exit_code -ne 0 ]]; then
+    return $exit_code
+  fi
+
+  return 0
 }
 
-TOTAL_MESSAGES=0
-for line in "${PROMPTS[@]}"; do
-  if [[ $line == /compact* ]]; then
-    rest="${line#/compact}"
-    rest="${rest# }"
-    TOTAL_MESSAGES=$((TOTAL_MESSAGES + 1))
-    [[ -n "$rest" ]] && TOTAL_MESSAGES=$((TOTAL_MESSAGES + 1))
+run_prompt_with_handoff() {
+  local prompt_text="$1"
+  local conversation_num="$2"
+  local is_handoff_continuation="$3"
+  local previous_handoff="$4"
+  local conversation_output_file="$HOST_HANDOFF_DIR/conversation_${conversation_num}_output.txt"
+
+  log_message "=================================="
+  log_message "Conversation $conversation_num"
+  log_message "=================================="
+
+  local full_prompt
+  if [[ "$is_handoff_continuation" == true && -n "$previous_handoff" ]]; then
+    full_prompt="Previous conversation summary:
+$previous_handoff
+
+Current task:
+$prompt_text"
   else
-    TOTAL_MESSAGES=$((TOTAL_MESSAGES + 1))
+    full_prompt="$prompt_text"
   fi
-done
 
-log "Total prompts: ${#PROMPTS[@]}, total messages (including compact splits): $TOTAL_MESSAGES"
+  local preview
+  preview="$(echo "$prompt_text" | head -c 100)"
+  if [[ ${#prompt_text} -gt 100 ]]; then
+    log_message "Prompt preview: ${preview}..."
+  else
+    log_message "Prompt: $preview"
+  fi
 
-COUNTER=0
-HAVE_SESSION=false
-for original in "${PROMPTS[@]}"; do
-  if [[ $original == /compact* ]]; then
-    rest="${original#/compact}"
-    rest="${rest# }"
+  : > "$conversation_output_file"
 
-    COUNTER=$((COUNTER + 1))
-    log "Prompt $COUNTER/$TOTAL_MESSAGES: /compact"
-    if [[ "$HAVE_SESSION" == true ]]; then
-      run_codex_exec "/compact" true
-    else
-      log "Skipping /compact because no active conversation yet"
+  log_message "Starting Codex conversation..."
+  run_codex_exec "$full_prompt" false "$conversation_output_file"
+  local exit_code=$?
+
+  log_message "Conversation $conversation_num completed (exit code: $exit_code)"
+  LAST_CONVERSATION_OUTPUT_FILE="$conversation_output_file"
+
+  return $exit_code
+}
+
+process_current_conversation() {
+  if [[ ${#CURRENT_CONVERSATION_PROMPTS[@]} -eq 0 ]]; then
+    return
+  fi
+
+  local combined_prompt=""
+  for prompt_block in "${CURRENT_CONVERSATION_PROMPTS[@]}"; do
+    if [[ -n "$combined_prompt" ]]; then
+      combined_prompt+=$'\n\n'
     fi
+    combined_prompt+="$prompt_block"
+  done
 
+  combined_prompt+=$'\n\n'
+  combined_prompt+="$(generate_handoff_prompt)"
+
+  if [[ $CONVERSATION_NUM -eq 1 ]]; then
+    run_prompt_with_handoff "$combined_prompt" "$CONVERSATION_NUM" false ""
+  else
+    run_prompt_with_handoff "$combined_prompt" "$CONVERSATION_NUM" true "$PREVIOUS_HANDOFF"
+  fi
+
+  local handoff_file="$HOST_HANDOFF_DIR/prompt_${CONVERSATION_NUM}_handoff.txt"
+  write_handoff_from_output "$LAST_CONVERSATION_OUTPUT_FILE" "$handoff_file"
+  if [[ -f "$handoff_file" ]]; then
+    PREVIOUS_HANDOFF="$(cat "$handoff_file")"
+    log_message "Handoff saved: $handoff_file"
+  else
+    PREVIOUS_HANDOFF=""
+    log_message "Warning: handoff file missing for conversation $CONVERSATION_NUM"
+  fi
+
+  CURRENT_CONVERSATION_PROMPTS=()
+  CONVERSATION_NUM=$((CONVERSATION_NUM + 1))
+}
+
+log "Total prompt blocks: ${#PROMPTS[@]}"
+
+CONVERSATION_NUM=1
+CURRENT_CONVERSATION_PROMPTS=()
+PREVIOUS_HANDOFF=""
+FIRST_PROMPT=""
+LAST_CONVERSATION_OUTPUT_FILE=""
+
+for prompt_block in "${PROMPTS[@]}"; do
+  if [[ $CONVERSATION_NUM -eq 1 && -z "$FIRST_PROMPT" ]]; then
+    FIRST_PROMPT="$prompt_block"
+    echo "$FIRST_PROMPT" > "$HOST_HANDOFF_DIR/initial_task.txt"
+    log_message "Initial task saved to $HOST_HANDOFF_DIR/initial_task.txt"
+  fi
+
+  if [[ $prompt_block == /compact* ]]; then
+    process_current_conversation
+
+    rest="${prompt_block#/compact}"
+    rest="${rest# }"
     if [[ -n "$rest" ]]; then
-      COUNTER=$((COUNTER + 1))
-      log "Prompt $COUNTER/$TOTAL_MESSAGES: $rest"
-      run_codex_exec "$rest" "$HAVE_SESSION"
-      HAVE_SESSION=true
+      CURRENT_CONVERSATION_PROMPTS+=("$rest")
     fi
   else
-    COUNTER=$((COUNTER + 1))
-    log "Prompt $COUNTER/$TOTAL_MESSAGES: $original"
-    run_codex_exec "$original" "$HAVE_SESSION"
-    HAVE_SESSION=true
+    CURRENT_CONVERSATION_PROMPTS+=("$prompt_block")
   fi
 done
+
+process_current_conversation
+
+echo "COMPLETED: $(date)" >> "$WORKFLOW_STATUS_FILE"
 
 log "All prompts processed."
+log_message "All prompts processed successfully. Conversations executed: $((CONVERSATION_NUM - 1))"
+log_message "Handoff files saved in: $HOST_HANDOFF_DIR"
