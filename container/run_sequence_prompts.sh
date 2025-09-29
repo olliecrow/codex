@@ -10,11 +10,11 @@ Usage:
   $(basename "$0") /path/to/project /path/to/prompts.txt
 
 Description:
-  Sequentially feeds prompts to Codex CLI. Prompts are separated by blank lines,
-  so each block of text (one or more lines) separated by an empty line is
-  treated as a single prompt. A block that begins with /compact finalizes the
-  current conversation, captures a handoff summary, and starts a fresh Codex
-  conversation seeded with that summary plus any remaining text in the block.
+  Sequentially feeds prompts to Codex CLI. Each non-empty block of text
+  separated by a blank line is sent to Codex as an individual prompt. A line
+  that begins with /compact finalizes the current conversation, captures a
+  handoff summary, and starts a fresh Codex conversation seeded with that
+  summary plus prompts that follow.
 EOF
 }
 
@@ -119,6 +119,7 @@ Include:
 - Important context for continuation
 
 Be thorough but concise. This summary will be the only context passed forward.
+Begin your response with the exact header `## HANDOFF SUMMARY`.
 Output in plain text format.
 EOF
 }
@@ -250,91 +251,102 @@ run_codex_exec() {
   return 0
 }
 
-run_prompt_with_handoff() {
-  local prompt_text="$1"
-  local conversation_num="$2"
-  local is_handoff_continuation="$3"
-  local previous_handoff="$4"
-  local conversation_output_file="$HOST_HANDOFF_DIR/conversation_${conversation_num}_output.txt"
+run_conversation() {
+  local conversation_num="$1"
+
+  if [[ ${#CURRENT_CONVERSATION_PROMPTS[@]} -eq 0 ]]; then
+    log_message "Conversation $conversation_num: no queued prompt blocks to process."
+    return 0
+  fi
 
   log_message "=================================="
   log_message "Conversation $conversation_num"
   log_message "=================================="
+  log_message "Conversation $conversation_num: queued block ids -> ${CURRENT_BLOCK_IDS[*]}"
 
-  local full_prompt
-  if [[ "$is_handoff_continuation" == true && -n "$previous_handoff" ]]; then
-    full_prompt="Previous conversation summary:
-$previous_handoff
-
-Current task:
-$prompt_text"
-  else
-    full_prompt="$prompt_text"
-  fi
-
-  local preview
-  preview="$(echo "$prompt_text" | head -c 100)"
-  if [[ ${#prompt_text} -gt 100 ]]; then
-    log_message "Prompt preview: ${preview}..."
-  else
-    log_message "Prompt: $preview"
-  fi
-
+  local conversation_output_file="$HOST_HANDOFF_DIR/conversation_${conversation_num}_output.txt"
   log_message "Conversation $conversation_num output file: $conversation_output_file"
   : > "$conversation_output_file"
-
-  log_message "Starting Codex conversation..."
-  run_codex_exec "$full_prompt" false "$conversation_output_file"
-  local exit_code=$?
-
-  log_message "Conversation $conversation_num completed (exit code: $exit_code)"
-  log_message "Conversation $conversation_num raw output captured at $conversation_output_file"
   LAST_CONVERSATION_OUTPUT_FILE="$conversation_output_file"
 
-  return $exit_code
+  local is_first_prompt=true
+  local prompt_exit_code=0
+
+  for idx in "${!CURRENT_CONVERSATION_PROMPTS[@]}"; do
+    local prompt_block="${CURRENT_CONVERSATION_PROMPTS[$idx]}"
+    local block_ref="${CURRENT_BLOCK_IDS[$idx]:-?}"
+    log_message "Conversation $conversation_num prompt $((idx + 1)) (block $block_ref) preview: $(preview_block "$prompt_block")"
+
+    local prompt_payload="$prompt_block"
+    local resume_flag=false
+    # Each run_sequence_prompts invocation uses an isolated Codex workspace, so resume --last stays scoped to this conversation.
+    if [[ $is_first_prompt == true ]]; then
+      if [[ -n "$PREVIOUS_HANDOFF" ]]; then
+        log_message "Conversation $conversation_num: injecting previous handoff summary into first prompt."
+        prompt_payload="Previous conversation summary:
+$PREVIOUS_HANDOFF
+
+Current task:
+$prompt_payload"
+      fi
+      log_message "Conversation $conversation_num: starting Codex session."
+      resume_flag=false
+    else
+      resume_flag=true
+      log_message "Conversation $conversation_num: resuming Codex session for next prompt."
+    fi
+
+    if run_codex_exec "$prompt_payload" "$resume_flag" "$conversation_output_file"; then
+      log_message "Conversation $conversation_num prompt $((idx + 1)) completed successfully."
+    else
+      prompt_exit_code=$?
+      log_message "Conversation $conversation_num prompt $((idx + 1)) failed (exit code: $prompt_exit_code)."
+      return $prompt_exit_code
+    fi
+
+    is_first_prompt=false
+  done
+
+  log_message "Conversation $conversation_num: requesting handoff summary prompt."
+  if run_codex_exec "$(generate_handoff_prompt)" true "$conversation_output_file"; then
+    log_message "Conversation $conversation_num handoff summary captured."
+  else
+    prompt_exit_code=$?
+    log_message "Conversation $conversation_num handoff summary failed (exit code: $prompt_exit_code)."
+    return $prompt_exit_code
+  fi
+
+  local handoff_file="$HOST_HANDOFF_DIR/prompt_${conversation_num}_handoff.txt"
+  write_handoff_from_output "$conversation_output_file" "$handoff_file"
+  if [[ -f "$handoff_file" ]]; then
+    PREVIOUS_HANDOFF="$(cat "$handoff_file")"
+    log_message "Conversation $conversation_num handoff saved: $handoff_file"
+  else
+    PREVIOUS_HANDOFF=""
+    log_message "Warning: handoff file missing for conversation $conversation_num"
+  fi
+
+  log_message "Conversation $conversation_num completed successfully."
+  return 0
 }
 
 process_current_conversation() {
   if [[ ${#CURRENT_CONVERSATION_PROMPTS[@]} -eq 0 ]]; then
     log_message "Conversation $CONVERSATION_NUM: no queued prompt blocks to process."
-    return
+    return 0
   fi
 
-  local combined_prompt=""
-  log_message "Conversation $CONVERSATION_NUM: combining ${#CURRENT_CONVERSATION_PROMPTS[@]} block(s): ${CURRENT_BLOCK_IDS[*]}"
-  for idx in "${!CURRENT_CONVERSATION_PROMPTS[@]}"; do
-    local prompt_block="${CURRENT_CONVERSATION_PROMPTS[$idx]}"
-    local block_ref="${CURRENT_BLOCK_IDS[$idx]:-?}"
-    log_message " - Block ${block_ref} preview: $(preview_block "$prompt_block")"
-    if [[ -n "$combined_prompt" ]]; then
-      combined_prompt+=$'\n\n'
-    fi
-    combined_prompt+="$prompt_block"
-  done
-
-  combined_prompt+=$'\n\n'
-  combined_prompt+="$(generate_handoff_prompt)"
-  log_message "Conversation $CONVERSATION_NUM: auto handoff summary prompt appended."
-
-  if [[ $CONVERSATION_NUM -eq 1 ]]; then
-    run_prompt_with_handoff "$combined_prompt" "$CONVERSATION_NUM" false ""
-  else
-    run_prompt_with_handoff "$combined_prompt" "$CONVERSATION_NUM" true "$PREVIOUS_HANDOFF"
-  fi
-
-  local handoff_file="$HOST_HANDOFF_DIR/prompt_${CONVERSATION_NUM}_handoff.txt"
-  write_handoff_from_output "$LAST_CONVERSATION_OUTPUT_FILE" "$handoff_file"
-  if [[ -f "$handoff_file" ]]; then
-    PREVIOUS_HANDOFF="$(cat "$handoff_file")"
-    log_message "Handoff saved: $handoff_file"
-  else
-    PREVIOUS_HANDOFF=""
-    log_message "Warning: handoff file missing for conversation $CONVERSATION_NUM"
+  log_message "Conversation $CONVERSATION_NUM: processing ${#CURRENT_CONVERSATION_PROMPTS[@]} queued prompt(s)."
+  local conv_exit=0
+  run_conversation "$CONVERSATION_NUM" || conv_exit=$?
+  if [[ $conv_exit -ne 0 ]]; then
+    return $conv_exit
   fi
 
   CURRENT_CONVERSATION_PROMPTS=()
   CURRENT_BLOCK_IDS=()
   CONVERSATION_NUM=$((CONVERSATION_NUM + 1))
+  return 0
 }
 
 log_message "Prompt file: $PROMPTS_FILE"
@@ -372,7 +384,11 @@ for idx in "${!PROMPTS[@]}"; do
 
   if [[ $prompt_block == /compact* ]]; then
     log_message "Block #$block_num issued /compact. Processing current queue for conversation $CONVERSATION_NUM."
-    process_current_conversation
+    process_current_conversation || {
+      exit_code=$?
+      log_message "Conversation $CONVERSATION_NUM failed during processing (exit code: $exit_code)."
+      exit $exit_code
+    }
 
     rest="${prompt_block#/compact}"
     rest="${rest# }"
@@ -389,7 +405,11 @@ for idx in "${!PROMPTS[@]}"; do
   fi
 done
 
-process_current_conversation
+process_current_conversation || {
+  exit_code=$?
+  log_message "Conversation $CONVERSATION_NUM failed during processing (exit code: $exit_code)."
+  exit $exit_code
+}
 
 echo "COMPLETED: $(date)" >> "$WORKFLOW_STATUS_FILE"
 
