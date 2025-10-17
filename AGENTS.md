@@ -3,6 +3,7 @@
 ## Project Structure & Module Organization
 - `container/`: Codex CLI container. Primary entrypoint for sandboxed automation.
 - `codex_docs.md`: Local copy of Codex docs used by this repo.
+- No bundled `prompts/` directory; provide your own prompt files when using automation scripts.
 
 ## Build, Test, and Development Commands
 - Build Codex image (always fresh): `./container/build.sh`
