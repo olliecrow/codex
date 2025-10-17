@@ -14,7 +14,8 @@ Description:
   separated by a blank line is sent to Codex as an individual prompt. A line
   that begins with /compact finalizes the current conversation, captures a
   handoff summary, and starts a fresh Codex conversation seeded with that
-  summary plus prompts that follow.
+  summary plus prompts that follow. Supply an explicit prompts file path;
+  this repository no longer includes a bundled `prompts/` directory.
 EOF
 }
 
