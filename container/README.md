@@ -31,7 +31,7 @@ Get a shell in the container:
 Notes:
 - Ensure you have authenticated locally so that `~/.codex/auth.json` exists. The container mounts this directory for auth/config/history.
 - `.git` is mounted read‑only to prevent repository mutations from inside the container.
-- Codex is launched with `--dangerously-bypass-approvals-and-sandbox`, `--ask-for-approval=never`, `--sandbox=danger-full-access`, and `approval_policy=never` so it never prompts for approvals.
+- Codex is launched with `--dangerously-bypass-approvals-and-sandbox` plus config overrides (`approval_policy=never`, `sandbox_mode=danger-full-access`, `model=gpt-5.1-codex-max`) so it never prompts for approvals.
 
 ## Security model
 
