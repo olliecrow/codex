@@ -112,8 +112,11 @@ else
   # Launch Codex TUI in fully autonomous mode, using desired model settings
   docker exec -it "$CONTAINER_NAME" bash -lc \
     'codex --dangerously-bypass-approvals-and-sandbox \
+           --ask-for-approval=never \
+           --sandbox danger-full-access \
            --cd /workspace \
            --config approval_policy="never" \
+           --config sandbox_mode="danger-full-access" \
            --config model="gpt-5.1-codex-max" \
            --config model_reasoning_effort="high"'
 fi
