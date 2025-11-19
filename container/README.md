@@ -41,7 +41,7 @@ Notes:
 
 ## Defaults
 
-- Model: `gpt-5.1-codex`
+- Model: `gpt-5.1-codex-max`
 - Reasoning effort: `high`
 
 You can override defaults in your `~/.codex/config.toml` or using `--config` flags if you exec into the container and run Codex manually.
