@@ -31,7 +31,7 @@ Get a shell in the container:
 Notes:
 - Ensure you have authenticated locally so that `~/.codex/auth.json` exists. The container mounts this directory for auth/config/history.
 - `.git` is mounted read‑only to prevent repository mutations from inside the container.
-- Codex is launched with `--dangerously-bypass-approvals-and-sandbox` plus config overrides (`approval_policy=never`, `sandbox_mode=danger-full-access`, `model=gpt-5.2-codex-max`) so it never prompts for approvals.
+- Codex is launched with `--dangerously-bypass-approvals-and-sandbox` plus config overrides (`approval_policy=never`, `sandbox_mode=danger-full-access`, `model=gpt-5.2-codex`) so it never prompts for approvals.
 
 ## Security model
 
@@ -41,7 +41,7 @@ Notes:
 
 ## Defaults
 
-- Model: `gpt-5.2-codex-max`
+- Model: `gpt-5.2-codex`
 - Reasoning effort: `high`
 
 You can override defaults in your `~/.codex/config.toml` or using `--config` flags if you exec into the container and run Codex manually.
