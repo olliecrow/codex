@@ -436,7 +436,7 @@ wire_api = "chat"
 model = "o3"
 model_provider = "openai"
 approval_policy = "never"
-model_reasoning_effort = "high"
+model_reasoning_effort = "xhigh"
 model_reasoning_summary = "detailed"
 
 [profiles.gpt3]
@@ -464,6 +464,7 @@ If the selected model is known to support reasoning (for example: `o3`, `o4-mini
 - `"low"`
 - `"medium"` (default)
 - `"high"`
+- `"xhigh"`
 
 Note: to minimize reasoning, choose `"minimal"`.
 
@@ -875,7 +876,7 @@ notifications = [ "agent-turn-complete", "approval-requested" ]
 | `tui.notifications` | boolean \| array<string> | Enable desktop notifications in the tui (default: false). |
 | `hide_agent_reasoning` | boolean | Hide model reasoning events. |
 | `show_raw_agent_reasoning` | boolean | Show raw reasoning (when available). |
-| `model_reasoning_effort` | `minimal` \| `low` \| `medium` \| `high` | Responses API reasoning effort. |
+| `model_reasoning_effort` | `minimal` \| `low` \| `medium` \| `high` \| `xhigh` | Responses API reasoning effort. |
 | `model_reasoning_summary` | `auto` \| `concise` \| `detailed` \| `none` | Reasoning summaries. |
 | `model_verbosity` | `low` \| `medium` \| `high` | GPT‑5 text verbosity (Responses API). |
 | `model_supports_reasoning_summaries` | boolean | Force‑enable reasoning summaries. |
@@ -1344,4 +1345,3 @@ Note that when running Linux in a containerized environment such as Docker, sand
 ## Zero data retention (ZDR) usage
 
 Codex CLI natively supports OpenAI organizations with [Zero Data Retention (ZDR)](https://platform.openai.com/docs/guides/your-data#zero-data-retention) enabled.
-

@@ -116,8 +116,8 @@ else
            --cd /workspace \
            --config approval_policy="never" \
            --config sandbox_mode="danger-full-access" \
-            --config model="gpt-5.2-codex" \
-           --config model_reasoning_effort="high"'
+           --config model="gpt-5.2-codex" \
+           --config model_reasoning_effort="xhigh"'
 fi
 
 echo "Container session ended."
