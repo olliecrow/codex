@@ -34,7 +34,7 @@ Sanity checks after run:
 - Host isolation: only mount the project directory and `~/.codex`.
 - Git is blocked: not installed, apt‑pinned, and wrapped (`/usr/local/bin/git`). `.git/` is mounted read‑only.
 - Codex autonomy: launched with `--dangerously-bypass-approvals-and-sandbox` and `approval_policy=never`.
-- Defaults: model `gpt-5.1-codex-max`, reasoning effort `high`.
+- Defaults: model `gpt-5.2-codex-max`, reasoning effort `high`.
 - Do not mount extra host secrets (e.g., SSH keys). Avoid expanding writable mounts.
 
 ## Agent‑Specific Instructions

@@ -408,7 +408,7 @@ $context"
   # Run the stage with retry mechanism
   log_with_timestamp "⚡ Codex is processing stage $stage_name..."
   local codex_start_time=$(date +%s)
-  retry_codex_operation "Codex stage execution for $stage_name" "docker exec '$CONTAINER_NAME' bash -lc 'cd /workspace && cat /tmp/stage_prompt.txt | codex exec --dangerously-bypass-approvals-and-sandbox --sandbox danger-full-access --skip-git-repo-check --config approval_policy=\"never\" --config sandbox_mode=\"danger-full-access\" --config model=\"gpt-5.1-codex-max\" --config model_reasoning_effort=\"high\"'"
+  retry_codex_operation "Codex stage execution for $stage_name" "docker exec '$CONTAINER_NAME' bash -lc 'cd /workspace && cat /tmp/stage_prompt.txt | codex exec --dangerously-bypass-approvals-and-sandbox --sandbox danger-full-access --skip-git-repo-check --config approval_policy=\"never\" --config sandbox_mode=\"danger-full-access\" --config model=\"gpt-5.2-codex-max\" --config model_reasoning_effort=\"high\"'"
   local stage_exit_code=$?
   local codex_end_time=$(date +%s)
   local codex_duration=$((codex_end_time - codex_start_time))
@@ -438,7 +438,7 @@ $context"
   local handoff_start_time=$(date +%s)
   log_with_timestamp "🔄 Requesting handoff summary from Codex..."
 
-  retry_codex_operation "Codex handoff generation for $stage_name" "docker exec '$CONTAINER_NAME' bash -lc 'cd /workspace && cat /tmp/handoff_prompt.txt | codex exec --dangerously-bypass-approvals-and-sandbox --sandbox danger-full-access --skip-git-repo-check --config approval_policy=\"never\" --config sandbox_mode=\"danger-full-access\" --config model=\"gpt-5.1-codex-max\" --config model_reasoning_effort=\"high\"' > '$handoff_file'"
+  retry_codex_operation "Codex handoff generation for $stage_name" "docker exec '$CONTAINER_NAME' bash -lc 'cd /workspace && cat /tmp/handoff_prompt.txt | codex exec --dangerously-bypass-approvals-and-sandbox --sandbox danger-full-access --skip-git-repo-check --config approval_policy=\"never\" --config sandbox_mode=\"danger-full-access\" --config model=\"gpt-5.2-codex-max\" --config model_reasoning_effort=\"high\"' > '$handoff_file'"
   local handoff_end_time=$(date +%s)
   local handoff_duration=$((handoff_end_time - handoff_start_time))
 
@@ -451,7 +451,7 @@ $context"
     log_with_timestamp "⚠️  Handoff missing required headers; attempting corrective regeneration..."
     local correction_prompt="The previously generated handoff summary did not include the exact required section headers. Regenerate it now.\n\nREQUIREMENTS (must match exactly):\n## Consolidated Workflow Summary: $stage_name (Stage $stage_num)\n## Complete Task Context\n## Current Workflow State\n## For Next Stage\n## Instructions\n\nRules:\n- No code fences.\n- Use plain text with exactly the headers above and detailed content under each.\n- Before writing, re-examine /workspace/plan/handoffs/ to include ALL prior context and the current stage's results."
     copy_into_container_file "$correction_prompt" "/tmp/handoff_prompt_strict.txt"
-    retry_codex_operation "Codex handoff correction for $stage_name" "docker exec '$CONTAINER_NAME' bash -lc 'cd /workspace && cat /tmp/handoff_prompt_strict.txt | codex exec --dangerously-bypass-approvals-and-sandbox --sandbox danger-full-access --skip-git-repo-check --config approval_policy=\"never\" --config sandbox_mode=\"danger-full-access\" --config model=\"gpt-5.1-codex-max\" --config model_reasoning_effort=\"high\"' > '$handoff_file'"
+    retry_codex_operation "Codex handoff correction for $stage_name" "docker exec '$CONTAINER_NAME' bash -lc 'cd /workspace && cat /tmp/handoff_prompt_strict.txt | codex exec --dangerously-bypass-approvals-and-sandbox --sandbox danger-full-access --skip-git-repo-check --config approval_policy=\"never\" --config sandbox_mode=\"danger-full-access\" --config model=\"gpt-5.2-codex-max\" --config model_reasoning_effort=\"high\"' > '$handoff_file'"
     if validate_handoff_file "$handoff_file"; then
       log_with_timestamp "✅ Corrective regeneration succeeded; required headers present."
     else
