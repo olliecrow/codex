@@ -495,7 +495,8 @@ When set, Codex includes a `text` object in the request payload with the configu
 Example:
 
 ```toml
-model = "gpt-5"
+model = "gpt-5.2-codex"
+model_reasoning_effort = "xhigh"
 model_verbosity = "low"
 ```
 

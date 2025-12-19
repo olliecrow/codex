@@ -23,6 +23,7 @@ Notes:
   - Requires that you have already logged into Codex on the host so that
     ~/.codex/auth.json exists. The container mounts ~/.codex for auth.
   - The .git directory (if present) is mounted read-only to prevent repo mutations.
+  - Model defaults: gpt-5.2-codex with model_reasoning_effort=xhigh.
   - Codex runs with --dangerously-bypass-approvals-and-sandbox and approval_policy=never.
 EOF
 }

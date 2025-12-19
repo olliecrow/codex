@@ -31,8 +31,8 @@ Get a shell in the container:
 Notes:
 - Ensure you have authenticated locally so that `~/.codex/auth.json` exists. The container mounts this directory for auth/config/history.
 - `.git` is mounted read‑only to prevent repository mutations from inside the container.
-- Codex CLI is pinned in the image to `@openai/codex@0.75.0`.
-- Codex is launched with `--dangerously-bypass-approvals-and-sandbox` plus config overrides (`approval_policy=never`, `sandbox_mode=danger-full-access`, `model=gpt-5.2-codex`, `model_reasoning_effort=xhigh`) so it never prompts for approvals.
+- Codex CLI is pinned in the image to `@openai/codex@0.75.0` (latest GPT-5.2-Codex release).
+- Codex is launched with `--dangerously-bypass-approvals-and-sandbox` plus config overrides (`approval_policy=never`, `sandbox_mode=danger-full-access`, `model=gpt-5.2-codex`, `model_reasoning_effort=xhigh`) so it never prompts for approvals and always uses the latest Codex model with extra-high reasoning.
 
 ## Security model
 
