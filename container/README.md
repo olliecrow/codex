@@ -32,7 +32,8 @@ Notes:
 - Ensure you have authenticated locally so that `~/.codex/auth.json` exists. The container mounts this directory for auth/config/history.
 - `.git` is mounted read‑only to prevent repository mutations from inside the container.
 - Codex CLI is installed from npm at build time using `@openai/codex@latest`, so each build pulls the newest published version.
-- Codex is launched with `--dangerously-bypass-approvals-and-sandbox` plus config overrides (`approval_policy=never`, `sandbox_mode=danger-full-access`, `model=gpt-5.2-codex`, `model_reasoning_effort=xhigh`) so it never prompts for approvals and always uses the latest Codex model with extra-high reasoning.
+- Codex is launched with `--dangerously-bypass-approvals-and-sandbox`; the container config sets `approval_policy=never`, `sandbox_mode=danger-full-access`, `model=gpt-5.2-codex`, and `model_reasoning_effort=xhigh` so it never prompts for approvals and always uses the latest Codex model with extra-high reasoning.
+- Container sessions set `CODEX_HOME=/home/dev/.codex-container` and write a fresh `config.toml` there (mirroring the defaults above) so host Codex config is ignored while still copying `auth.json` from your host for login.
 
 ## Security model
 
@@ -43,9 +44,12 @@ Notes:
 ## Defaults
 
 - Model: `gpt-5.2-codex`
-- Reasoning effort: `xhigh`
+- Reasoning effort: `high`
+- Tool output token limit: `25000`
+- Auto-compaction token threshold: `233000`
+- Features: `web_search_request`, `unified_exec`, `apply_patch_freeform`, `skills`, `shell_snapshot` enabled; `ghost_commit` disabled
 
-You can override defaults in your `~/.codex/config.toml` or using `--config` flags if you exec into the container and run Codex manually.
+You can override defaults by editing the generated `/home/dev/.codex-container/config.toml` inside the container. Host-side `~/.codex/config.toml` is ignored.
 
 ## Environment setup (Python/Rust)
 
