@@ -29,7 +29,7 @@ Notes:
   - The .git directory (if present) is mounted read-only to prevent repo mutations.
   - Uses a container-scoped CODEX_HOME at $CONTAINER_CODEX_HOME with an explicit
     config.toml so host settings are ignored.
-  - Model defaults: gpt-5.2-codex with model_reasoning_effort=high.
+  - Model defaults: gpt-5.2-codex with model_reasoning_effort=xhigh.
   - Codex runs with --dangerously-bypass-approvals-and-sandbox and approval_policy=never.
 EOF
 }
@@ -114,10 +114,11 @@ cleanup() {
 trap cleanup EXIT
 
 echo "Preparing container Codex config at $CONTAINER_CONFIG_FILE"
-docker exec "$CONTAINER_NAME" bash -lc "set -euo pipefail
-mkdir -p '$CONTAINER_CODEX_HOME'
-cp /home/dev/.codex/auth.json '$CONTAINER_CODEX_HOME/auth.json'
-cat >'$CONTAINER_CONFIG_FILE' <<'EOF'
+docker exec "$CONTAINER_NAME" bash -lc '
+set -euo pipefail
+mkdir -p "'"$CONTAINER_CODEX_HOME"'"
+cp /home/dev/.codex/auth.json "'"$CONTAINER_CODEX_HOME"'/auth.json"
+cat >"'"$CONTAINER_CONFIG_FILE"'" <<EOF
 model = "gpt-5.2-codex"
 model_reasoning_effort = "xhigh"
 tool_output_token_limit = 25000
@@ -135,7 +136,7 @@ apply_patch_freeform = true
 skills = true
 shell_snapshot = true
 EOF
-"
+'
 
 echo "Entering container..."
 if [[ "$MODE" == "--shell" ]]; then
