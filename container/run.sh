@@ -8,6 +8,8 @@ set -euo pipefail
 # - Git disabled via wrappers and no package install
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONTAINER_CODEX_HOME="/home/dev/.codex-container"
+CONTAINER_CONFIG_FILE="$CONTAINER_CODEX_HOME/config.toml"
 
 usage() {
   cat <<EOF
@@ -16,14 +18,18 @@ Usage:
 
 Description:
   Launches the codex_container with the project mounted at /workspace and the host
-  Codex config mounted at /home/dev/.codex. Starts Codex TUI by default, or a
-  login shell if --shell is provided.
+  Codex directory mounted at /home/dev/.codex for auth copy. Starts Codex TUI by
+  default, or a login shell if --shell is provided. A container-scoped CODEX_HOME
+  at $CONTAINER_CODEX_HOME is generated with pinned defaults so host config is
+  ignored.
 
 Notes:
   - Requires that you have already logged into Codex on the host so that
     ~/.codex/auth.json exists. The container mounts ~/.codex for auth.
   - The .git directory (if present) is mounted read-only to prevent repo mutations.
-  - Model defaults: gpt-5.2-codex with model_reasoning_effort=xhigh.
+  - Uses a container-scoped CODEX_HOME at $CONTAINER_CODEX_HOME with an explicit
+    config.toml so host settings are ignored.
+  - Model defaults: gpt-5.2-codex with model_reasoning_effort=high.
   - Codex runs with --dangerously-bypass-approvals-and-sandbox and approval_policy=never.
 EOF
 }
@@ -95,6 +101,7 @@ fi
 if [[ -n "$HOST_TZ" ]]; then
   RUN_ARGS+=(--env TZ="$HOST_TZ")
 fi
+RUN_ARGS+=(--env CODEX_HOME="$CONTAINER_CODEX_HOME")
 
 RUN_ARGS+=(codex_container tail -f /dev/null)
 
@@ -106,6 +113,30 @@ cleanup() {
 }
 trap cleanup EXIT
 
+echo "Preparing container Codex config at $CONTAINER_CONFIG_FILE"
+docker exec "$CONTAINER_NAME" bash -lc "set -euo pipefail
+mkdir -p '$CONTAINER_CODEX_HOME'
+cp /home/dev/.codex/auth.json '$CONTAINER_CODEX_HOME/auth.json'
+cat >'$CONTAINER_CONFIG_FILE' <<'EOF'
+model = "gpt-5.2-codex"
+model_reasoning_effort = "high"
+tool_output_token_limit = 25000
+# Leave room for native compaction near the ~273k context window:
+# 273000 - (tool_output_token_limit + 15000) = 233000
+model_auto_compact_token_limit = 233000
+sandbox_mode = "danger-full-access"
+approval_policy = "never"
+
+[features]
+web_search_request = true
+ghost_commit = false
+unified_exec = true
+apply_patch_freeform = true
+skills = true
+shell_snapshot = true
+EOF
+"
+
 echo "Entering container..."
 if [[ "$MODE" == "--shell" ]]; then
   docker exec -it "$CONTAINER_NAME" bash --login
@@ -113,12 +144,7 @@ else
   # Launch Codex TUI in fully autonomous mode, using desired model settings
   docker exec -it "$CONTAINER_NAME" bash -lc \
     'codex --dangerously-bypass-approvals-and-sandbox \
-           --sandbox danger-full-access \
-           --cd /workspace \
-           --config approval_policy="never" \
-           --config sandbox_mode="danger-full-access" \
-           --config model="gpt-5.2-codex" \
-           --config model_reasoning_effort="xhigh"'
+           --cd /workspace'
 fi
 
 echo "Container session ended."
