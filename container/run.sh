@@ -28,7 +28,8 @@ Notes:
     ~/.codex/auth.json exists. The container mounts ~/.codex for auth.
   - The .git directory (if present) is mounted read-only to prevent repo mutations.
   - Uses a container-scoped CODEX_HOME at $CONTAINER_CODEX_HOME with an explicit
-    config.toml so host settings are ignored.
+    config.toml so host settings are ignored. CODEX_HOME is exported for all
+    container execs to enforce this.
   - Model defaults: gpt-5.2-codex with model_reasoning_effort=xhigh.
   - Codex runs with --dangerously-bypass-approvals-and-sandbox and approval_policy=never.
 EOF
@@ -140,10 +141,10 @@ EOF
 
 echo "Entering container..."
 if [[ "$MODE" == "--shell" ]]; then
-  docker exec -it "$CONTAINER_NAME" bash --login
+  docker exec -it "$CONTAINER_NAME" env CODEX_HOME="$CONTAINER_CODEX_HOME" bash --login
 else
   # Launch Codex TUI in fully autonomous mode, using desired model settings
-  docker exec -it "$CONTAINER_NAME" bash -lc \
+  docker exec -it "$CONTAINER_NAME" env CODEX_HOME="$CONTAINER_CODEX_HOME" bash -lc \
     'codex --dangerously-bypass-approvals-and-sandbox \
            --cd /workspace'
 fi
