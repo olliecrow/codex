@@ -119,7 +119,7 @@ mkdir -p '$CONTAINER_CODEX_HOME'
 cp /home/dev/.codex/auth.json '$CONTAINER_CODEX_HOME/auth.json'
 cat >'$CONTAINER_CONFIG_FILE' <<'EOF'
 model = "gpt-5.2-codex"
-model_reasoning_effort = "high"
+model_reasoning_effort = "xhigh"
 tool_output_token_limit = 25000
 # Leave room for native compaction near the ~273k context window:
 # 273000 - (tool_output_token_limit + 15000) = 233000
