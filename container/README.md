@@ -44,7 +44,7 @@ Notes:
 ## Defaults
 
 - Model: `gpt-5.2-codex`
-- Reasoning effort: `high`
+- Reasoning effort: `xhigh`
 - Tool output token limit: `25000`
 - Auto-compaction token threshold: `233000`
 - Features: `web_search_request`, `unified_exec`, `apply_patch_freeform`, `skills`, `shell_snapshot` enabled; `ghost_commit` disabled
