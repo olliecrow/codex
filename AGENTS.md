@@ -3,7 +3,13 @@
 ## Project Structure & Module Organization
 - `container/`: Codex CLI container. Primary entrypoint for sandboxed automation.
 - `codex_docs.md`: Local copy of Codex docs used by this repo.
+- `skills/`: Version-controlled Codex skills. These are symlinked into `~/.codex/skills` so Codex loads them as user skills.
 - No bundled `prompts/` directory; provide your own prompt files when using automation scripts.
+
+## Skills
+- Current skills: `battletest`, `cleanup`, `commit`, `investigate`, `reviewbranch`, `techdebt`, `verify`.
+- System skills remain in `~/.codex/skills/.system` and are not versioned in this repo.
+- When adding/removing skills here, keep the `~/.codex/skills` symlinks in sync.
 
 ## Build, Test, and Development Commands
 - Build Codex image (always fresh): `./container/build.sh`
