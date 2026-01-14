@@ -1,0 +1,42 @@
+---
+name: battletest
+description: Proactively battle-test recent code changes across many configurations and perspectives. Use when asked to validate changes, run broad test coverage, or stress the codebase beyond the obvious checks.
+---
+
+# battletest
+
+## Overview
+
+Run many test perspectives and configurations, starting small and scaling up, then summarize outcomes, red flags, and next steps.
+
+## Workflow
+
+1. Establish baseline:
+   - Identify the change scope.
+   - Run fast, small checks first (lint, unit tests, targeted suites).
+   - Proactively create and run small, isolated experiments or standalone tests when useful.
+   - Stop early if basics fail; fix before scaling up.
+   - After any fixes or changes, rerun the fast checks to confirm no regressions.
+   - Remove ad-hoc experiments that are no longer needed; keep only those that revealed issues and should be preserved.
+   - Use a `plan/` directory as scratch space (create it if missing); keep it untracked and never commit it.
+
+2. Expand test coverage:
+   - Vary configs (feature flags, env vars, build modes).
+   - Vary environments (OS, versions, dependencies) when feasible.
+   - Vary perspectives (unit, integration, e2e, performance, security, UX, accessibility, API contract, data migration).
+   - Prefer smaller probes before long-running suites, but still run large tests when warranted.
+   - If any code changes are made during testing, rerun relevant probes and suites (small before large) to confirm no regressions.
+   - Maintain a lightweight test matrix of configs/environments/perspectives already covered to avoid repeats.
+
+3. Be proactive:
+   - Keep exploring reasonable new angles and edge cases.
+   - Create new investigations without extra prompting.
+   - If called repeatedly, you may follow prior suggested next steps or take a fresh angle; both are fine. Avoid repeating the same tests; add new variations and deeper angles.
+
+4. Summarize results:
+   - List tests/checks executed.
+   - Provide conclusions and confidence level.
+   - Call out critical red flags or issues.
+   - Confirm whether any changes during testing introduced regressions in functionality or performance.
+   - Track and append to the running list of known issues if re-invoked.
+   - Note obvious next steps or follow-up investigations.
