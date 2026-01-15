@@ -60,6 +60,8 @@ When a current plan is the subject, use **plan verification mode**: review, crit
 - List evidence (tests run, steps, outputs, artifacts).
 - Note follow-up items and any limitations.
 - If plan verification mode was used, include the refreshed plan as a full replacement copy.
+ - Write the summary in plain, concise, and intuitive language with brief context so a new reader can follow it.
+ - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
 
 ## Repeat invocations
 
