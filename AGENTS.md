@@ -7,7 +7,7 @@
 - No bundled `prompts/` directory; provide your own prompt files when using automation scripts.
 
 ## Skills
-- Current skills: `battletest`, `cleanup`, `commit`, `dangercheck`, `investigate`, `reviewbranch`, `techdebt`, `verify`.
+- Current skills: `battletest`, `cleanup`, `commit`, `dangercheck`, `familiarize`, `investigate`, `reviewbranch`, `techdebt`, `verify`.
 - System skills remain in `~/.codex/skills/.system` and are not versioned in this repo.
 - When adding/removing skills here, keep the `~/.codex/skills` symlinks in sync.
 
