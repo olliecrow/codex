@@ -39,3 +39,5 @@ Review the project holistically, investigate debt with tests or experiments as n
    - Call out any remaining risky areas or deferred debt.
    - Note possible next steps.
    - If called repeatedly, you may follow prior suggested next steps or take a fresh angle; both are fine. Continue hunting for new debt and append new findings rather than repeating prior summaries.
+   - Write the summary in plain, concise, and intuitive language with brief context so a new reader can follow it.
+   - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
