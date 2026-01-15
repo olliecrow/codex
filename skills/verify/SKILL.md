@@ -1,6 +1,6 @@
 ---
 name: verify
-description: Verify correctness of recent code changes, decisions, or outputs by running checks/tests and gathering evidence. Use when the user asks to confirm, validate, double-check, or prove that recent work is correct, complete, or meets requirements, especially after edits, bug fixes, refactors, or discussions.
+description: Verify correctness of recent code changes, decisions, plans, or outputs by running checks/tests and gathering evidence. Use when the user asks to confirm, validate, double-check, or prove that recent work (including plans) is correct, complete, or meets requirements, especially after edits, bug fixes, refactors, or discussions.
 ---
 
 # Verify
@@ -8,6 +8,8 @@ description: Verify correctness of recent code changes, decisions, or outputs by
 ## Overview
 
 Verify recent work by collecting evidence that it is correct, complete, and matches requirements, prioritizing targeted checks over broad stress testing unless risk demands it.
+
+When a current plan is the subject, use **plan verification mode**: review, critique, and refine the plan; run small investigations if needed; then return a fresh, improved plan.
 
 ## Workflow
 
@@ -17,6 +19,7 @@ Verify recent work by collecting evidence that it is correct, complete, and matc
 - Extract acceptance criteria, expected behavior, invariants, and risk areas.
 - Ask minimal clarifying questions only when requirements are ambiguous.
 - Note what would constitute proof of correctness vs. "good enough."
+- If verifying a plan: capture the current plan, its goals, constraints, and why it is being proposed now.
 
 ### 2) Plan verification probes
 
@@ -27,6 +30,14 @@ Verify recent work by collecting evidence that it is correct, complete, and matc
 - Track a minimal verification matrix of configs/perspectives already covered to avoid repeats.
 - Use `plan/` as scratch space for ad-hoc experiments; remove any that are no longer needed.
 - Keep `plan/` untracked and never commit it.
+
+### 2b) Plan verification mode (when the subject is a plan)
+
+- Review the plan for completeness, ordering, dependencies, and feasibility.
+- Challenge assumptions against prior conversation context and known constraints.
+- Identify missing steps, risky leaps, vague items, or unclear ownership/exit criteria.
+- Run small investigations or experiments when they materially reduce uncertainty.
+- Produce a refreshed plan with explicit steps, dependencies, and verification points.
 
 ### 3) Execute and gather evidence
 
@@ -48,6 +59,7 @@ Verify recent work by collecting evidence that it is correct, complete, and matc
 - Call out critical red flags and any regressions introduced during verification.
 - List evidence (tests run, steps, outputs, artifacts).
 - Note follow-up items and any limitations.
+- If plan verification mode was used, include the refreshed plan as a full replacement copy.
 
 ## Repeat invocations
 
