@@ -40,3 +40,5 @@ Run many test perspectives and configurations, starting small and scaling up, th
    - Confirm whether any changes during testing introduced regressions in functionality or performance.
    - Track and append to the running list of known issues if re-invoked.
    - Note obvious next steps or follow-up investigations.
+   - Write the summary in plain, concise, and intuitive language with brief context so a new reader can follow it.
+   - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
