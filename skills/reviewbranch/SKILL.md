@@ -36,3 +36,5 @@ Compare the current branch against main, analyze each change's intent and risk, 
    - Provide a merge readiness assessment and next steps.
    - Use a concise verdict template: Ready / Needs fixes / Blocked.
    - If called repeatedly, you may follow prior suggested next steps or take a fresh angle; both are fine. Continue deeper review and append new findings rather than repeating prior summaries.
+   - Write the summary in plain, concise, and intuitive language with brief context so a new reader can follow it.
+   - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
