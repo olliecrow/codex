@@ -102,6 +102,8 @@ Call out:
 - unscanned areas or large binaries
 - clear "safe to run?" recommendation
 - next steps (sandboxing, request user intent, or deeper analysis)
+ - a plain, concise, and intuitive summary with brief context so a new reader can follow it
+ - no analogies; use simple, direct explanations and define any necessary technical terms
 
 ## Static-only enforcement
 
