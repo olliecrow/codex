@@ -1,5 +1,7 @@
 # Dangercheck Report Template
 
+Style: Plain, concise, and intuitive language with brief context; avoid analogies; define necessary technical terms.
+
 ## Risk summary
 - Overall: <High | Medium | Low>
 - Safe to run locally? <Yes | Only in sandbox | No>
