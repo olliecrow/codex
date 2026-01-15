@@ -33,22 +33,26 @@ If committing is prohibited by project or system instructions, state that you ca
    - Prefer more, smaller commits over fewer large ones.
    - Keep each commit focused on a single purpose or area.
    - Treat unrelated untracked files as separate commits unless clearly part of the same change.
+   - Ensure commit order and packaging make sense (foundational changes first, dependent changes after).
    - It is fine (and encouraged) to spend time reasoning, investigating, and considering the change set before deciding what each commit should encapsulate and what the best commit messages should be.
 
 5. Stage and commit each unit:
-   - Use `git add -p` or targeted `git add <paths>` to keep commits small.
-   - Write concise, descriptive, and bespoke commit messages (imperative, present tense) tailored to the exact change.
+   - Primarily use/return/print explicit `git add <paths>` commands (avoid interactive staging by default).
+   - Primarily use/return/print `git commit -m "..."` commands with concise, descriptive, bespoke messages (imperative, present tense) tailored to the exact change.
    - Each commit should stand on its own as a logical, best-practice change that can be understood and reverted independently.
+   - Order commits so they read as a coherent sequence with minimal backtracking or cross-dependencies.
    - Do not push.
 
 6. Verify nothing remains unstaged that should be committed:
-   - Re-check `git status -sb`.
+   - Re-check `git status -sb` at the very end and explicitly confirm the working tree is clean.
+   - Ensure there are no unstaged or uncommitted files at the end of the commit sequence.
    - If any files that should have been committed remain unstaged or uncommitted, include them in a follow-up commit (or add the missing commands to the provided block).
 
 7. Fallback when you must not commit:
    - If committing is disallowed (e.g., project instructions forbid any git writing), explicitly state you cannot commit here.
    - Then output a single copy-pasteable block of git commands, without asking the user whether they want commands or a summary.
    - The block must contain only commands, one per line, in execution order, with no extra text between them.
+   - Prefer `git add <paths>` and `git commit -m "..."` commands in that block.
 
 8. If there are no changes to commit:
    - State that the working tree is clean and stop.
