@@ -43,3 +43,5 @@ Identify recent changes, then simplify, tidy, and de-over-engineer while preserv
    - Call out any risky areas avoided.
    - Note possible next cleanup steps.
    - If called repeatedly, you may follow prior suggested next steps or take a fresh angle; both are fine. Continue finding new cleanup opportunities and avoid repeating prior summaries unless there are no new changes.
+   - Write the summary in plain, concise, and intuitive language with brief context so a new reader can follow it.
+   - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
