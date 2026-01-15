@@ -52,6 +52,8 @@ Deep dive into a topic or issue by exploring hypotheses, validating them with ev
 - Call out critical red flags or regressions discovered during the investigation.
 - List evidence (tests run, steps, outputs, artifacts) and what they show.
 - Include next steps and open questions.
+ - Write the summary in plain, concise, and intuitive language with brief context so a new reader can follow it.
+ - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
 
 ## Repeat invocations
 
