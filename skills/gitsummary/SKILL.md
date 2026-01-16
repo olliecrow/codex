@@ -28,6 +28,7 @@ Produce a precise, lower-case PR summary by fully understanding how the current 
 4. Summarize for PR:
    - Output a very concise bullet list suitable for a PR summary.
    - Use lower-case text only.
+   - Return the summary as a copy-pasteable block of bullets with no extra commentary.
    - End every bullet with a full stop.
    - Never use semicolons; keep punctuation simple.
    - Include important nuances, gotchas, and details others should know.
