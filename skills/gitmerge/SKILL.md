@@ -30,6 +30,7 @@ Get the current branch to a merge-ready state with main by understanding differe
    - Develop a clear plan to address changes safely.
    - Think deeply and verify the plan is correct and low risk.
    - If there are critical open questions or unclear intent, stop and ask only the necessary clarifying questions.
+   - Use a `plan/` directory as scratch space if needed; keep it untracked and never commit it.
 
 5. Execute the merge:
    - Apply the plan step by step.
@@ -40,6 +41,8 @@ Get the current branch to a merge-ready state with main by understanding differe
    - Validate that the merge completed cleanly and the working tree is consistent.
    - Run relevant checks/tests, starting small and expanding to broader coverage.
    - Battle test to catch regressions, edge cases, or integration issues.
+   - After any fixes, re-run the smallest relevant checks to confirm no regressions.
+   - Remove ad-hoc experiments that are no longer needed; keep only those that revealed issues and should be preserved.
    - If failures appear, fix and re-test until green.
 
 7. Summarize:
