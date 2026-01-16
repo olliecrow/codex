@@ -24,6 +24,7 @@ Get the current branch to a merge-ready state with main by understanding differe
 
 3. Understand diffs before merging:
    - Compare current branch vs main (`git diff main...HEAD` and `git log main..HEAD`).
+   - If diffs are large, start with `git diff --stat main...HEAD` or `git diff --name-only main...HEAD` and then review per-file diffs to keep output manageable.
    - Read key files to understand intent, behavior, and risk.
    - Understand what main is doing and why before making any merge decisions.
 
