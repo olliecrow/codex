@@ -30,6 +30,7 @@ When a current plan is the subject, use **plan verification mode**: review, crit
 - Track a minimal verification matrix of configs/perspectives already covered to avoid repeats.
 - Use `plan/` as scratch space for ad-hoc experiments; remove any that are no longer needed.
 - Keep `plan/` untracked and never commit it.
+- For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
 ### 2b) Plan verification mode (when the subject is a plan)
 
