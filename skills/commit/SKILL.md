@@ -16,7 +16,7 @@ If committing is prohibited by project or system instructions, state that you ca
    - Check `git status -sb` for tracked and untracked files.
    - Review `git diff` and `git diff --staged` to understand changes.
    - Do this before any other steps.
-   - If git operations can be executed here, run them directly; otherwise, output explicit commands and wait for results before continuing.
+   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
 
 2. Run pre-commit checks first:
    - If the repo defines pre-commit checks (config or standard script), run them before committing.
