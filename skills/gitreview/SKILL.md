@@ -15,6 +15,7 @@ Compare the current branch against main, analyze each change's intent and risk, 
    - Compare current branch to main (or the branch it diverged from).
    - Enumerate all changed files and hunks.
    - Always conduct a full review of every changed file and hunk.
+   - If diffs are large, start with `git diff --stat` or `git diff --name-only` and then review per-file diffs to keep output manageable.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
