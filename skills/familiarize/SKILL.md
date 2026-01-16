@@ -37,11 +37,13 @@ Build a clear, accurate mental model of the codebase: layout, purpose, key flows
    - Check `git status -sb`.
    - Review `git diff` and `git diff --staged` for local changes.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
+   - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 6. Compare against main when relevant:
    - If the current branch is not main, review diffs vs main (e.g., `git diff main...HEAD` and relevant logs).
    - Summarize how the current branch diverges (scope and intent) and which areas are affected.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
+   - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 7. Optional deeper dives (as needed):
    - Read critical modules or hot paths to validate understanding.
