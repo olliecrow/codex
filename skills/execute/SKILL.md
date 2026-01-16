@@ -1,0 +1,41 @@
+---
+name: execute
+description: Execute the current plan end-to-end, verifying completion; use when asked to run or carry out an existing plan and report results.
+---
+
+# execute
+
+## Overview
+
+Execute an existing plan step by step until it is fully complete and verified.
+
+## Workflow
+
+1. Locate the plan:
+   - Use the current plan from conversation context when available.
+   - If a plan file exists in `plan/`, read the relevant one.
+   - If no plan exists, state that there is nothing to execute and stop.
+
+2. Validate readiness:
+   - Confirm prerequisites, constraints, and required inputs are present.
+   - If critical information is missing, ask only the necessary questions and pause execution.
+
+3. Execute relentlessly:
+   - Perform each step in order, without skipping.
+   - Track progress in `plan/execute.md` (untracked) with actions taken and outcomes.
+   - If a step fails, diagnose, fix, and retry before moving on.
+   - Do not stop until all steps are complete.
+
+4. Verify completion:
+   - Run the relevant checks/tests to confirm the plan is fully done.
+   - If verification fails, fix issues and re-verify until green.
+
+5. Report:
+   - State that execution is complete and verified, or explain what remains if blocked.
+   - Write in plain, concise, and intuitive language with brief context.
+   - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
+
+## Repeat invocations
+
+- If called multiple times, continue from the latest progress log and avoid redoing completed steps unless verification requires it.
+- Update `plan/execute.md` with new actions, fixes, and re-verification results.
