@@ -24,6 +24,7 @@ Review the project holistically, investigate debt with tests or experiments as n
    - Rank debt by impact (maintainability, risk, churn) and effort.
    - Track a lightweight debt log in `plan/techdebt.md` (untracked) with found items, fixes, and deferred items plus the reason.
    - For each planned change, state the intent as "no behavior change" (and note any exception that would require explicit user approval).
+   - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
 4. Investigate safely:
    - Proactively create and run targeted experiments or standalone tests to confirm behavior.
