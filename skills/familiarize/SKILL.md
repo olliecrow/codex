@@ -36,11 +36,15 @@ Build a clear, accurate mental model of the codebase: layout, purpose, key flows
 5. Inspect current working tree state:
    - Check `git status -sb`.
    - Review `git diff` and `git diff --staged` for local changes.
+   - If diffs are large, start with `git diff --stat` or `git diff --name-only` and then review per-file diffs to keep output manageable.
+   - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat`, `git diff --name-only`, or per-file diffs instead of unbounded commands.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 6. Compare against main when relevant:
    - If the current branch is not main, review diffs vs main (e.g., `git diff main...HEAD` and relevant logs).
+   - If diffs are large, start with `git diff --stat main...HEAD` or `git diff --name-only main...HEAD` and then review per-file diffs to keep output manageable.
+   - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat main...HEAD`, `git diff --name-only main...HEAD`, or per-file diffs instead of unbounded commands.
    - Summarize how the current branch diverges (scope and intent) and which areas are affected.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
