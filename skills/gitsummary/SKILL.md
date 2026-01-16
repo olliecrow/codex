@@ -19,6 +19,7 @@ Produce a precise, lower-case PR summary by fully understanding how the current 
    - Compare branch vs main (e.g., `git diff main...HEAD` and `git log main..HEAD`).
    - Review file-level changes and key hunks to understand intent.
    - Read related docs or comments if they explain why changes were made.
+   - If git operations can be executed here, run them directly; otherwise, output explicit commands and wait for results before continuing.
 
 3. Understand intent and impact:
    - Map changes to user-facing behavior, APIs, data, config, or ops.
