@@ -19,6 +19,7 @@ Get the current branch to a merge-ready state with main by understanding differe
    - Fetch latest refs.
    - Update main and the current branch from remote (pull or fast-forward) so both are up to date.
    - If remote update fails, stop and ask for guidance.
+   - If git operations can be executed here, run them directly; otherwise, output explicit commands for the user to run and wait for their results before continuing.
 
 3. Understand diffs before merging:
    - Compare current branch vs main (`git diff main...HEAD` and `git log main..HEAD`).
@@ -37,6 +38,7 @@ Get the current branch to a merge-ready state with main by understanding differe
    - Apply the plan step by step.
    - Resolve conflicts carefully with reasoning aligned to main’s intent and the branch’s intent.
    - Keep changes minimal and avoid introducing new behavior unless required by the plan.
+   - If git operations can be executed here, run them directly; otherwise, provide explicit commands and pause until the user reports back.
 
 6. Verify and battle test:
    - Validate that the merge completed cleanly and the working tree is consistent.
