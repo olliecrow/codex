@@ -36,10 +36,12 @@ Build a clear, accurate mental model of the codebase: layout, purpose, key flows
 5. Inspect current working tree state:
    - Check `git status -sb`.
    - Review `git diff` and `git diff --staged` for local changes.
+   - If git operations can be executed here, run them directly; otherwise, output explicit commands and wait for results before continuing.
 
 6. Compare against main when relevant:
    - If the current branch is not main, review diffs vs main (e.g., `git diff main...HEAD` and relevant logs).
    - Summarize how the current branch diverges (scope and intent) and which areas are affected.
+   - If git operations can be executed here, run them directly; otherwise, output explicit commands and wait for results before continuing.
 
 7. Optional deeper dives (as needed):
    - Read critical modules or hot paths to validate understanding.
