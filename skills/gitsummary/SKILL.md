@@ -20,6 +20,7 @@ Produce a precise, lower-case PR summary by fully understanding how the current 
    - Review file-level changes and key hunks to understand intent.
    - Read related docs or comments if they explain why changes were made.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
+   - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 3. Understand intent and impact:
    - Map changes to user-facing behavior, APIs, data, config, or ops.
