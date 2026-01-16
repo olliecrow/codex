@@ -15,6 +15,7 @@ Compare the current branch against main, analyze each change's intent and risk, 
    - Compare current branch to main (or the branch it diverged from).
    - Enumerate all changed files and hunks.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
+   - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 2. Understand intent:
    - For each change, identify the rationale, intent, and expected impact.
