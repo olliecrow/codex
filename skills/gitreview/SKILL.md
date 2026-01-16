@@ -14,6 +14,7 @@ Compare the current branch against main, analyze each change's intent and risk, 
 1. Establish diff scope:
    - Compare current branch to main (or the branch it diverged from).
    - Enumerate all changed files and hunks.
+   - If git operations can be executed here, run them directly; otherwise, output explicit commands and wait for results before continuing.
 
 2. Understand intent:
    - For each change, identify the rationale, intent, and expected impact.
