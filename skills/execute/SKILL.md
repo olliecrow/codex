@@ -19,6 +19,7 @@ Execute an existing plan step by step until it is fully complete and verified.
 2. Validate readiness:
    - Confirm prerequisites, constraints, and required inputs are present.
    - If critical information is missing, ask only the necessary questions and pause execution.
+   - Use `plan/` as scratch space when needed; keep it untracked and never commit it.
 
 3. Execute relentlessly:
    - Perform each step in order, without skipping.
@@ -27,7 +28,9 @@ Execute an existing plan step by step until it is fully complete and verified.
    - Do not stop until all steps are complete.
 
 4. Verify completion:
-   - Run the relevant checks/tests to confirm the plan is fully done.
+   - Run the relevant checks/tests, starting small and expanding to broader coverage as needed.
+   - After any fixes, re-run the smallest relevant checks to confirm no regressions.
+   - Remove ad-hoc experiments that are no longer needed; keep only those that revealed issues and should be preserved.
    - If verification fails, fix issues and re-verify until green.
 
 5. Report:
