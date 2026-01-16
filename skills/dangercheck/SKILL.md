@@ -51,6 +51,7 @@ If the repo is huge, note unscanned areas explicitly (for example: large `vendor
   - filesystem destruction
 - For each hit, open the file and evaluate context, intent, and reachability.
 - Track a lightweight investigation log in `plan/dangercheck.md` (untracked) with probes and outcomes.
+ - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
 ### 4) Dependency and supply-chain review
 
