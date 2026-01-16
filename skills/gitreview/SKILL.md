@@ -14,6 +14,7 @@ Compare the current branch against main, analyze each change's intent and risk, 
 1. Establish diff scope:
    - Compare current branch to main (or the branch it diverged from).
    - Enumerate all changed files and hunks.
+   - Always conduct a full review of every changed file and hunk.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
@@ -31,8 +32,15 @@ Compare the current branch against main, analyze each change's intent and risk, 
    - After any changes or fixes, rerun relevant checks to confirm no regressions.
    - Remove ad-hoc experiments that are no longer needed; keep only those that revealed issues and should be preserved.
    - Use a `plan/` directory as scratch space (create it if missing); keep it untracked and never commit it.
+   - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
-5. Summarize readiness:
+5. Handle huge diffs without skipping coverage:
+   - Still review all changes end-to-end; do not sample or skip files.
+   - Break the review into batches (by directory, feature, or risk area) and track progress in `plan/gitreview.md`.
+   - Use tooling to manage scale (e.g., `git diff --stat`, `git diff --numstat`, per-file diffs, and focused searches) but ensure every file and hunk is covered.
+   - If time or compute constraints make a full review impractical, ask the user for a time budget or additional constraints, but keep the full-review requirement explicit.
+
+6. Summarize readiness:
    - List critical issues or red flags.
    - Note required fixes before merge.
    - Provide a merge readiness assessment and next steps.
