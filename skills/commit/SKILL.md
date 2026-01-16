@@ -17,6 +17,7 @@ If committing is prohibited by project or system instructions, state that you ca
    - Review `git diff` and `git diff --staged` to understand changes.
    - Do this before any other steps.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
+   - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 2. Run pre-commit checks first:
    - If the repo defines pre-commit checks (config or standard script), run them before committing.
