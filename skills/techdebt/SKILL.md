@@ -17,24 +17,33 @@ Review the project holistically, investigate debt with tests or experiments as n
 
 2. Identify tech debt:
    - Look for over-engineering, duplication, confusing structure, unnecessary complexity.
+   - Scan for TODO/FIXME, deprecated APIs, and stale or misleading docs.
    - Prioritize debt that hurts maintenance or clarity.
 
-3. Investigate safely:
+3. Prioritize and log:
+   - Rank debt by impact (maintainability, risk, churn) and effort.
+   - Track a lightweight debt log in `plan/techdebt.md` (untracked) with found items, fixes, and deferred items plus the reason.
+   - For each planned change, state the intent as "no behavior change" (and note any exception that would require explicit user approval).
+
+4. Investigate safely:
    - Proactively create and run targeted experiments or standalone tests to confirm behavior.
    - Start with small, fast checks before larger runs; large tests are still expected when relevant.
    - Remove ad-hoc experiments that are no longer needed; keep only those that revealed issues and should be preserved.
    - Use a `plan/` directory as scratch space (create it if missing); keep it untracked and never commit it.
+   - If touching hot paths, capture a baseline or avoid micro-optimizations without evidence.
 
-4. Apply improvements:
+5. Apply improvements:
    - Make simplifying, low-risk changes.
    - Preserve functionality and performance.
+   - Keep "no behavior change" intent explicit; stop and ask if a change would alter behavior.
    - Avoid introducing new complexity while "cleaning."
 
-5. Verify after changes:
+6. Verify after changes:
    - Rerun relevant tests/experiments (small before large) to confirm no functional or performance regressions.
    - Clean up temporary test scripts unless they are needed to track a discovered issue.
+   - Do a scope check: confirm changes stayed within tech-debt cleanup and did not drift into feature work.
 
-6. Summarize results:
+7. Summarize results:
    - List debt addressed and key changes.
    - Call out any remaining risky areas or deferred debt.
    - Note possible next steps.
