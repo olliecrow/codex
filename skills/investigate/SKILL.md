@@ -25,6 +25,7 @@ Deep dive into a topic or issue by exploring hypotheses, validating them with ev
 - Track a lightweight investigation log in `plan/investigate.md` (untracked) with hypotheses, probes, and outcomes.
 - Use `plan/` as scratch space for ad-hoc experiments; remove any that are no longer needed.
 - Keep `plan/` untracked and never commit it.
+- For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
 ### 3) Gather evidence
 
