@@ -31,6 +31,7 @@ Get the current branch to a merge-ready state with main by understanding differe
    - Think deeply and verify the plan is correct and low risk.
    - If there are critical open questions or unclear intent, stop and ask only the necessary clarifying questions.
    - Use a `plan/` directory as scratch space if needed; keep it untracked and never commit it.
+   - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
 5. Execute the merge:
    - Apply the plan step by step.
