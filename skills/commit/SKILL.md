@@ -15,6 +15,8 @@ If committing is prohibited by project or system instructions, state that you ca
 1. Inspect the repo state first:
    - Check `git status -sb` for tracked and untracked files.
    - Review `git diff` and `git diff --staged` to understand changes.
+   - If diffs are large, start with `git diff --stat` or `git diff --name-only` and then review per-file diffs to keep output manageable.
+   - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat`, `git diff --name-only`, or per-file diffs instead of unbounded commands.
    - Do this before any other steps.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
