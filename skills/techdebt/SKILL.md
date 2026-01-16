@@ -17,6 +17,7 @@ Review the project holistically, investigate debt with tests or experiments as n
 
 2. Identify tech debt:
    - Look for over-engineering, duplication, confusing structure, unnecessary complexity.
+   - Look for explicitly redundant code that can be removed safely.
    - Scan for TODO/FIXME, deprecated APIs, and stale or misleading docs.
    - Prioritize debt that hurts maintenance or clarity.
 
@@ -32,9 +33,11 @@ Review the project holistically, investigate debt with tests or experiments as n
    - Remove ad-hoc experiments that are no longer needed; keep only those that revealed issues and should be preserved.
    - Use a `plan/` directory as scratch space (create it if missing); keep it untracked and never commit it.
    - If touching hot paths, capture a baseline or avoid micro-optimizations without evidence.
+   - Capture before/after evidence for any performance-sensitive edits.
 
 5. Apply improvements:
    - Make simplifying, low-risk changes.
+   - Prefer a few well-done changes over many low-quality ones.
    - Preserve functionality and performance.
    - Keep "no behavior change" intent explicit; stop and ask if a change would alter behavior.
    - Avoid introducing new complexity while "cleaning."
