@@ -16,6 +16,7 @@ If committing is prohibited by project or system instructions, state that you ca
    - Check `git status -sb` for tracked and untracked files.
    - Review `git diff` and `git diff --staged` to understand changes.
    - Do this before any other steps.
+   - If git operations can be executed here, run them directly; otherwise, output explicit commands and wait for results before continuing.
 
 2. Run pre-commit checks first:
    - If the repo defines pre-commit checks (config or standard script), run them before committing.
@@ -42,6 +43,7 @@ If committing is prohibited by project or system instructions, state that you ca
    - Each commit should stand on its own as a logical, best-practice change that can be understood and reverted independently.
    - Order commits so they read as a coherent sequence with minimal backtracking or cross-dependencies.
    - Do not push.
+   - If git operations can be executed here, run them directly; otherwise, provide explicit commands and pause until the user reports back.
 
 6. Verify nothing remains unstaged that should be committed:
    - Re-check `git status -sb` at the very end and explicitly confirm the working tree is clean.
