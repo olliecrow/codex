@@ -20,6 +20,7 @@ Execute an existing plan step by step until it is fully complete and verified.
    - Confirm prerequisites, constraints, and required inputs are present.
    - If critical information is missing, ask only the necessary questions and pause execution.
    - Use `plan/` as scratch space when needed; keep it untracked and never commit it.
+   - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
 3. Execute relentlessly:
    - Perform each step in order, without skipping.
