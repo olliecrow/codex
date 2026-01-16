@@ -19,6 +19,7 @@ Run many test perspectives and configurations, starting small and scaling up, th
    - After any fixes or changes, rerun the fast checks to confirm no regressions.
    - Remove ad-hoc experiments that are no longer needed; keep only those that revealed issues and should be preserved.
    - Use a `plan/` directory as scratch space (create it if missing); keep it untracked and never commit it.
+   - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
 2. Expand test coverage:
    - Vary configs (feature flags, env vars, build modes).
