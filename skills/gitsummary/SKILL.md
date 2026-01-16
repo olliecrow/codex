@@ -31,6 +31,7 @@ Produce a precise, lower-case PR summary by fully understanding how the current 
    - Return the summary as a copy-pasteable block of bullets with no extra commentary.
    - End every bullet with a full stop.
    - Never use semicolons; keep punctuation simple.
+   - Wrap relevant identifiers in backticks (paths, files, branches, commands, flags, test names, and config keys) so they render cleanly in pr comments.
    - Include important nuances, gotchas, and details others should know.
    - Write in plain, concise, and intuitive language with brief context so a new reader can follow it.
    - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
