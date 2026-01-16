@@ -25,6 +25,7 @@ Identify recent changes, then simplify, tidy, and de-over-engineer while preserv
    - Start with small, fast checks before larger runs; large tests are still expected when relevant.
    - Remove ad-hoc experiments that are no longer needed; keep only those that revealed issues and should be preserved.
    - Use a `plan/` directory as scratch space (create it if missing); keep it untracked and never commit it.
+   - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
 4. Apply cleanup changes:
    - Make small, safe simplifications.
