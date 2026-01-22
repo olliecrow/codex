@@ -7,13 +7,14 @@ description: Deep, meticulous investigation of a problem, issue, or topic by for
 
 ## Overview
 
-Deep dive into a topic or issue by exploring hypotheses, validating them with evidence, and iterating until confidence is high. Be relentless and keep going until you reach the bottom of the topic or problem, even if it takes a long time.
+Deep dive into a topic or issue by exploring hypotheses, validating them with evidence, and iterating until confidence is high. First build confidence in the current state, then confirm the proposed change is the right thing to change. Be relentless and keep going until you reach the bottom of the topic or problem, even if it takes a long time.
 
 ## Decision framing
 
 When a decision is required, always provide:
 - Background context sufficient to make the decision.
 - Pros and cons for each viable option.
+- Evidence that the proposed change is the correct lever (and why alternatives were rejected).
 - Your recommendation and the reasoning behind it.
 
 ## Rationale capture
@@ -25,7 +26,10 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 ### 1) Frame the investigation
 
 - Identify the central question, scope boundaries, and success criteria.
+- Establish the current-state baseline (observed behavior, metrics, reproducible steps).
 - Enumerate known facts, uncertainties, and potential risks.
+- State what is expected to change vs what must remain stable.
+- If the problem definition is weak or mismatched to evidence, re-scope early.
 - Ask minimal clarifying questions only when requirements are ambiguous.
 - Assume the investigation continues until the core questions are fully resolved or every reasonable avenue is exhausted.
 
@@ -41,6 +45,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 ### 3) Gather evidence
 
 - Read code, logs, configs, and docs relevant to each hypothesis.
+- Collect direct evidence of the current behavior (tests, logs, metrics, traces, repro steps).
 - Use external sources when needed (specs, papers, vendor docs, standards).
 - Prefer primary sources and record versions/dates in the investigation log.
 
@@ -48,6 +53,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 
 - Create independent, standalone probes and experiments where relevant.
 - Prefer small, isolated tests first; stop early and fix if basics fail.
+- Reproduce the baseline before testing changes; compare control vs treated when possible.
 - Record commands, configs, and outcomes; re-run minimal probes after any fixes.
 
 ### 5) Synthesize and iterate
@@ -57,15 +63,17 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 - Avoid repeating the same probes across invocations; add new angles instead.
 - If evidence is inconclusive or conflicting, state uncertainty and seek additional data.
 - Do not conclude early; keep iterating until the investigation is genuinely exhausted or the root cause is fully understood.
+- If evidence suggests the proposed change is not the right target, pivot and update the plan.
 
 ### 6) Report
 
 - Provide a concise summary of findings, confidence level, and remaining risks.
 - Call out critical red flags or regressions discovered during the investigation.
 - List evidence (tests run, steps, outputs, artifacts) and what they show.
+- Explicitly answer whether the proposed change is the right thing to change, backed by evidence.
 - Include next steps and open questions.
- - Write the summary in plain, concise, and intuitive language with brief context so a new reader can follow it.
- - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
+- Write the summary in plain, concise, and intuitive language with brief context so a new reader can follow it.
+- Avoid analogies; use simple, direct explanations and define any necessary technical terms.
 
 ## Repeat invocations
 
