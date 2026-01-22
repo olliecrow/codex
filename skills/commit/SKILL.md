@@ -10,6 +10,13 @@ description: Create small, well-described git commits and do not push. Use when 
 Create local commits only and do not push, preferring small, focused commits with clear messages.
 If committing is prohibited by project or system instructions, state that you cannot commit and always provide the exact git commands needed; do not ask the user whether they want commands or a summary.
 
+## Decision framing
+
+When a decision is required, always provide:
+- Background context sufficient to make the decision.
+- Pros and cons for each viable option.
+- Your recommendation and the reasoning behind it.
+
 ## Workflow
 
 1. Inspect the repo state first:

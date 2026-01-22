@@ -9,6 +9,13 @@ description: Deep review of a branch vs main to find critical issues before merg
 
 Compare the current branch against main, analyze each change's intent and risk, and hunt for critical red flags before merge.
 
+## Decision framing
+
+When a decision is required, always provide:
+- Background context sufficient to make the decision.
+- Pros and cons for each viable option.
+- Your recommendation and the reasoning behind it.
+
 ## Workflow
 
 1. Establish diff scope:

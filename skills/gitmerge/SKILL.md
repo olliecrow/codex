@@ -9,6 +9,13 @@ description: Prepare the current branch to merge cleanly into main by ensuring a
 
 Get the current branch to a merge-ready state with main by understanding differences, planning safely, merging without conflicts, and validating thoroughly.
 
+## Decision framing
+
+When a decision is required, always provide:
+- Background context sufficient to make the decision.
+- Pros and cons for each viable option.
+- Your recommendation and the reasoning behind it.
+
 ## Workflow
 
 1. Require a clean working tree:

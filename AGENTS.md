@@ -33,7 +33,7 @@ Sanity checks after run:
   1) Codex TUI launches; 2) `.git` is read‑only; 3) internet works; 4) writes to `/workspace` persist on host; 5) timezone is detected when possible.
 
 ## Commit & Pull Request Guidelines
-- Commits: concise, imperative subject (“Add Codex git wrappers”), small scoped diffs.
+- Commits: concise, imperative subject (“Add Codex git wrappers”), small scoped diffs, and commit little and often.
 - PRs: include purpose, key changes, how to build/run, and validation steps. Link issues when applicable. Add screenshots/terminal excerpts for UX changes.
 
 ## Security & Configuration Tips
