@@ -9,6 +9,13 @@ description: Execute the current plan end-to-end, verifying completion; use when
 
 Execute an existing plan step by step until it is fully complete and verified.
 
+## Decision framing
+
+When a decision is required, always provide:
+- Background context sufficient to make the decision.
+- Pros and cons for each viable option.
+- Your recommendation and the reasoning behind it.
+
 ## Workflow
 
 1. Locate the plan:

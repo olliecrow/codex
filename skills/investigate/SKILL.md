@@ -9,6 +9,13 @@ description: Deep, meticulous investigation of a problem, issue, or topic by for
 
 Deep dive into a topic or issue by exploring hypotheses, validating them with evidence, and iterating until confidence is high. Be relentless and keep going until you reach the bottom of the topic or problem, even if it takes a long time.
 
+## Decision framing
+
+When a decision is required, always provide:
+- Background context sufficient to make the decision.
+- Pros and cons for each viable option.
+- Your recommendation and the reasoning behind it.
+
 ## Workflow
 
 ### 1) Frame the investigation
