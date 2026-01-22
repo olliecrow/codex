@@ -16,6 +16,10 @@ When a decision is required, always provide:
 - Pros and cons for each viable option.
 - Your recommendation and the reasoning behind it.
 
+## Rationale capture
+
+When you fix an issue, make a change that resolves an issue, or reach an important decision, capture the "why" in a durable place (code comments, docs, ADR, or tests). Do not rely only on `plan/` scratch notes. In your report, mention where the rationale was recorded.
+
 ## Workflow
 
 ### 1) Frame the investigation

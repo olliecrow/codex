@@ -16,6 +16,10 @@ When a decision is required, always provide:
 - Pros and cons for each viable option.
 - Your recommendation and the reasoning behind it.
 
+## Rationale capture
+
+When you resolve a conflict, fix an issue, or make an important merge decision, capture the "why" in a durable place (code comments, docs, ADR, or tests). Do not rely only on `plan/` scratch notes. In your summary, mention where the rationale was recorded.
+
 ## Workflow
 
 1. Require a clean working tree:

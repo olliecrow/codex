@@ -9,6 +9,10 @@ description: Analyze current branch vs main, understand all diffs and intent, an
 
 Produce a precise, lower-case PR summary by fully understanding how the current branch differs from main.
 
+## Rationale capture
+
+If changes include issue fixes or key decisions, confirm the rationale is captured in a durable place (code comments, docs, ADR, or tests). If it is missing, call that out as a gap in the PR summary.
+
 ## Workflow
 
 1. Establish baseline:
