@@ -9,6 +9,13 @@ description: Proactively battle-test recent code changes across many configurati
 
 Run many test perspectives and configurations, starting small and scaling up, then summarize outcomes, red flags, and next steps.
 
+## Decision framing
+
+When a decision is required, always provide:
+- Background context sufficient to make the decision.
+- Pros and cons for each viable option.
+- Your recommendation and the reasoning behind it.
+
 ## Workflow
 
 1. Establish baseline:

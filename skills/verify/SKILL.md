@@ -11,6 +11,13 @@ Verify recent work by collecting evidence that it is correct, complete, and matc
 
 When a current plan is the subject, use **plan verification mode**: review, critique, and refine the plan; run small investigations if needed; then return a fresh, improved plan.
 
+## Decision framing
+
+When a decision is required, always provide:
+- Background context sufficient to make the decision.
+- Pros and cons for each viable option.
+- Your recommendation and the reasoning behind it.
+
 ## Workflow
 
 ### 1) Establish scope and criteria

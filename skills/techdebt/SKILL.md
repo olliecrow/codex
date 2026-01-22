@@ -9,6 +9,13 @@ description: Review the codebase with fresh eyes to find and reduce technical de
 
 Review the project holistically, investigate debt with tests or experiments as needed, and apply safe simplifications.
 
+## Decision framing
+
+When a decision is required, always provide:
+- Background context sufficient to make the decision.
+- Pros and cons for each viable option.
+- Your recommendation and the reasoning behind it.
+
 ## Workflow
 
 1. Establish scope:

@@ -9,6 +9,13 @@ description: Assess a codebase for potentially dangerous or malicious behavior b
 
 Assess a repo for malicious or risky behavior without executing code. This skill is strictly static analysis: read files only, do not run code, do not install dependencies, and do not execute any scripts or binaries. Focus on entrypoints, scripts, dependency hooks, and suspicious patterns that could exfiltrate data, modify the system, or download and execute remote content.
 
+## Decision framing
+
+When a decision is required, always provide:
+- Background context sufficient to make the decision.
+- Pros and cons for each viable option.
+- Your recommendation and the reasoning behind it.
+
 ## Quick start
 
 - Identify repo root and languages; enforce a no-execution rule.
