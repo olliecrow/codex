@@ -17,6 +17,10 @@ When a decision is required, always provide:
 - Pros and cons for each viable option.
 - Your recommendation and the reasoning behind it.
 
+## Rationale capture
+
+Before committing, ensure that any issue fixes or key decisions are documented in a durable place (code comments, docs, ADR, or tests). Do not rely only on `plan/` scratch notes. If the rationale is not captured yet, add it before creating commits and mention where it was recorded.
+
 ## Workflow
 
 1. Inspect the repo state first:
