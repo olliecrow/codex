@@ -7,7 +7,7 @@ description: Prepare the current branch to merge cleanly into main by ensuring a
 
 ## Overview
 
-Get the current branch to a merge-ready state with main by understanding differences, planning safely, merging without conflicts, and validating thoroughly.
+Get the current branch to a merge-ready state with main by understanding differences, planning safely, merging without conflicts, and validating thoroughly. Conduct a deep, thorough review of all diffs and decisions, and ensure functionality from main still works after the merge.
 
 ## Decision framing
 
@@ -36,9 +36,10 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
 3. Understand diffs before merging:
    - Compare current branch vs main (`git diff main...HEAD` and `git log main..HEAD`).
    - If diffs are large, start with `git diff --stat main...HEAD` or `git diff --name-only main...HEAD` and then review per-file diffs to keep output manageable.
-   - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat main...HEAD`, `git diff --name-only main...HEAD`, or per-file diffs instead of unbounded commands.
-   - Read key files to understand intent, behavior, and risk.
-   - Understand what main is doing and why before making any merge decisions.
+- Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat main...HEAD`, `git diff --name-only main...HEAD`, or per-file diffs instead of unbounded commands.
+- Read key files to understand intent, behavior, and risk.
+- Understand what main is doing and why before making any merge decisions.
+- Review every changed file and hunk; ensure no main functionality is removed or degraded without explicit intent.
 
 4. Plan the merge approach:
    - Identify conflicts, risky areas, and order of operations.
@@ -56,9 +57,10 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 6. Verify and battle test:
-   - Validate that the merge completed cleanly and the working tree is consistent.
-   - Run relevant checks/tests, starting small and expanding to broader coverage.
-   - Battle test to catch regressions, edge cases, or integration issues.
+- Validate that the merge completed cleanly and the working tree is consistent.
+- Run relevant checks/tests, starting small and expanding to broader coverage.
+- Battle test to catch regressions, edge cases, or integration issues.
+- Explicitly confirm that functionality present on main still works; flag any regressions or removals.
    - After any fixes, re-run the smallest relevant checks to confirm no regressions.
    - Remove ad-hoc experiments that are no longer needed; keep only those that revealed issues and should be preserved.
    - If failures appear, fix and re-test until green.

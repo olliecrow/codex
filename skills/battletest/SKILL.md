@@ -7,7 +7,7 @@ description: Proactively battle-test recent code changes across many configurati
 
 ## Overview
 
-Run many test perspectives and configurations, starting small and scaling up, then summarize outcomes, red flags, and next steps.
+Run many test perspectives and configurations, starting small and scaling up, then summarize outcomes, red flags, and next steps. Conduct a deep, thorough validation that maps coverage to all relevant changes and decisions, and reason through the results.
 
 ## Decision framing
 
@@ -23,8 +23,9 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 ## Workflow
 
 1. Establish baseline:
-   - Identify the change scope.
-   - Run fast, small checks first (lint, unit tests, targeted suites).
+- Identify the change scope.
+- Ensure coverage maps to every relevant change, assumption, and risk area; do not leave gaps.
+- Run fast, small checks first (lint, unit tests, targeted suites).
    - Proactively create and run small, isolated experiments or standalone tests when useful.
    - Stop early if basics fail; fix before scaling up.
    - After any fixes or changes, rerun the fast checks to confirm no regressions.
