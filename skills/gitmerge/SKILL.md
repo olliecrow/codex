@@ -25,6 +25,13 @@ When a decision is required, always provide:
 
 When you resolve a conflict, fix an issue, or make an important merge decision, capture the "why" in a durable place (code comments, docs, ADR, or tests). Do not rely only on `plan/` scratch notes. In your summary, mention where the rationale was recorded.
 
+## Plan/docs/decisions robustness
+
+- Treat `plan/` as short-term scratch and never commit it.
+- If `plan/` is missing, create it (and any needed subdirs) only when edits are permitted; otherwise keep a lightweight in-memory log and state in the report that plan logging was not persisted.
+- Treat `docs/` as long-lived, evergreen guidance; prefer updating existing entries over adding new files.
+- If `docs/decisions.md` is missing, prefer using the `setup` skill to create it when allowed. If you cannot create docs, capture rationale in the smallest durable local place (code comments or tests) and call out the missing decision doc in the report.
+
 ## Workflow
 
 1. Require a clean working tree:
@@ -51,7 +58,7 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
    - Develop a clear plan to address changes safely.
    - Think deeply and verify the plan is correct and low risk.
    - If there are critical open questions or unclear intent, stop and ask only the necessary clarifying questions.
-   - Use a `plan/` directory as scratch space if needed; keep it untracked and never commit it.
+   - Use a `plan/` directory as scratch space if needed; create it only if permitted, keep it untracked, and never commit it. If you cannot create it, keep a lightweight in-memory log and call it out in the report.
    - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
 5. Execute the merge:
@@ -79,4 +86,4 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
 
 - If called multiple times, avoid repeating the same probes or tests unless verifying a fix.
 - Expand coverage gradually: re-check diffs after updates, deepen review of conflicted areas, or add broader tests if risk warrants it.
-- Keep a lightweight log in `plan/gitmerge.md` (untracked) of decisions, conflicts, and fixes to avoid rework.
+- Keep a lightweight log in `plan/gitmerge.md` (untracked) of decisions, conflicts, and fixes to avoid rework. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.

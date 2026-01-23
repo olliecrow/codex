@@ -21,6 +21,13 @@ When a decision is required, always provide:
 
 When you fix an issue, make a change that resolves an issue, or reach an important decision, capture the "why" in a durable place (code comments, docs, ADR, or tests). Do not rely only on `plan/` scratch notes. In your report, mention where the rationale was recorded.
 
+## Plan/docs/decisions robustness
+
+- Treat `plan/` as short-term scratch and never commit it.
+- If `plan/` is missing, create it (and any needed subdirs) only when edits are permitted; otherwise keep a lightweight in-memory log and state in the report that plan logging was not persisted.
+- Treat `docs/` as long-lived, evergreen guidance; prefer updating existing entries over adding new files.
+- If `docs/decisions.md` is missing, prefer using the `setup` skill to create it when allowed. If you cannot create docs, capture rationale in the smallest durable local place (code comments or tests) and call out the missing decision doc in the report.
+
 ## Workflow
 
 ### 1) Frame the investigation
@@ -37,8 +44,8 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 
 - List plausible explanations or models; rank by likelihood and impact.
 - Note what evidence would confirm or falsify each hypothesis.
-- Track a lightweight investigation log in `plan/investigate.md` (untracked) with hypotheses, probes, and outcomes.
-- Use `plan/` as scratch space for ad-hoc experiments; remove any that are no longer needed.
+- Track a lightweight investigation log in `plan/investigate.md` (untracked) with hypotheses, probes, and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
+- Use `plan/` as scratch space for ad-hoc experiments; create it only if permitted, remove any that are no longer needed, and never commit it. If you cannot create it, keep temporary notes in memory and call it out in the report.
 - Keep `plan/` untracked and never commit it.
 - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
