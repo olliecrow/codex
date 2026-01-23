@@ -3,11 +3,28 @@
 ## Project Structure & Module Organization
 - `container/`: Codex CLI container. Primary entrypoint for sandboxed automation.
 - `codex_docs.md`: Local copy of Codex docs used by this repo.
+- `docs/`: Long-term, agent-focused documentation. Not for humans. Committed to git.
+- `plan/`: Short-term, throwaway scratch space for agents. Not for humans. Do not commit.
 - `skills/`: Version-controlled Codex skills. These are symlinked into `~/.codex/skills` so Codex loads them as user skills.
 - No bundled `prompts/` directory; provide your own prompt files when using automation scripts.
 
+## Docs, Plans, and Decisions (agent usage)
+- `docs/` is long-lived and should stay aligned with the codebase. Keep it lean, evergreen, and high-signal.
+- Avoid time- or date-dependent language in `docs/`. Prefer updating existing entries over adding new ones unless clearly distinct.
+- `plan/` is short-lived and disposable. Keep it tidy, consolidate notes, and clean up artifacts as you go.
+- Decision capture policy lives in `docs/decisions.md`. Record important fixes and decisions in the smallest local place (code, tests, or docs) per that policy.
+
+## Plan Directory Structure (agent usage)
+If `/plan/` does not exist, create it with the following subdirectories:
+- `/plan/current/`: active planning notes, decisions, and live status for ongoing tasks.
+- `/plan/backlog/`: future-task plans waiting to be promoted.
+- `/plan/complete/`: archived finished plans.
+- `/plan/experiments/`: temporary scripts, proofs of concept, debugging harnesses.
+- `/plan/artifacts/`: short-lived outputs (logs, reports, coverage summaries).
+- `/plan/scratch/`: quick throwaway notes/files; keep it empty when possible.
+
 ## Skills
-- Current skills: `battletest`, `cleanup`, `commit`, `dangercheck`, `execute`, `familiarize`, `gitsummary`, `gitmerge`, `gitreview`, `investigate`, `techdebt`, `verify`.
+- Current skills: `battletest`, `cleanup`, `commit`, `dangercheck`, `execute`, `familiarize`, `gitsummary`, `gitmerge`, `gitreview`, `investigate`, `setup`, `techdebt`, `verify`.
 - System skills remain in `~/.codex/skills/.system` and are not versioned in this repo.
 - When adding/removing skills here, keep the `~/.codex/skills` symlinks in sync.
 
