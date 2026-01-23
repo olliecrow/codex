@@ -20,6 +20,13 @@ When a decision is required, always provide:
 
 When you fix an issue, make a change that resolves an issue, or reach an important decision, capture the "why" in a durable place (code comments, docs, ADR, or tests). Do not rely only on `plan/` scratch notes. In your summary, mention where the rationale was recorded.
 
+## Plan/docs/decisions robustness
+
+- Treat `plan/` as short-term scratch and never commit it.
+- If `plan/` is missing, create it (and any needed subdirs) only when edits are permitted; otherwise keep a lightweight in-memory log and state in the report that plan logging was not persisted.
+- Treat `docs/` as long-lived, evergreen guidance; prefer updating existing entries over adding new files.
+- If `docs/decisions.md` is missing, prefer using the `setup` skill to create it when allowed. If you cannot create docs, capture rationale in the smallest durable local place (code comments or tests) and call out the missing decision doc in the report.
+
 ## Workflow
 
 1. Establish scope:
@@ -35,7 +42,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 
 3. Prioritize and log:
    - Rank debt by impact (maintainability, risk, churn) and effort.
-   - Track a lightweight debt log in `plan/techdebt.md` (untracked) with found items, fixes, and deferred items plus the reason.
+   - Track a lightweight debt log in `plan/techdebt.md` (untracked) with found items, fixes, and deferred items plus the reason. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
    - For each planned change, state the intent as "no behavior change" (and note any exception that would require explicit user approval).
    - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
@@ -43,7 +50,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
    - Proactively create and run targeted experiments or standalone tests to confirm behavior.
    - Start with small, fast checks before larger runs; large tests are still expected when relevant.
    - Remove ad-hoc experiments that are no longer needed; keep only those that revealed issues and should be preserved.
-   - Use a `plan/` directory as scratch space (create it if missing); keep it untracked and never commit it.
+   - Use a `plan/` directory as scratch space (create it if missing and edits are permitted); keep it untracked and never commit it. If you cannot create it, keep a lightweight in-memory log and call it out in the report.
    - If touching hot paths, capture a baseline or avoid micro-optimizations without evidence.
    - Capture before/after evidence for any performance-sensitive edits.
 

@@ -26,6 +26,13 @@ When a decision is required, always provide:
 
 Before committing, ensure that any issue fixes or key decisions are documented in a durable place (code comments, docs, ADR, or tests). Do not rely only on `plan/` scratch notes. If the rationale is not captured yet, add it before creating commits and mention where it was recorded.
 
+## Plan/docs/decisions robustness
+
+- Treat `plan/` as short-term scratch and never commit it.
+- If `plan/` is missing, create it (and any needed subdirs) only when edits are permitted; otherwise keep a lightweight in-memory log and state in the report that plan logging was not persisted.
+- Treat `docs/` as long-lived, evergreen guidance; prefer updating existing entries over adding new files.
+- If `docs/decisions.md` is missing, prefer using the `setup` skill to create it when allowed. If you cannot create docs, capture rationale in the smallest durable local place (code comments or tests) and call out the missing decision doc in the report.
+
 ## Workflow
 
 1. Inspect the repo state first:

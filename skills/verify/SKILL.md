@@ -22,6 +22,13 @@ When a decision is required, always provide:
 
 When you fix an issue, make a change that resolves an issue, or reach an important decision, capture the "why" in a durable place (code comments, docs, ADR, or tests). Do not rely only on `plan/` scratch notes. In your report, mention where the rationale was recorded.
 
+## Plan/docs/decisions robustness
+
+- Treat `plan/` as short-term scratch and never commit it.
+- If `plan/` is missing, create it (and any needed subdirs) only when edits are permitted; otherwise keep a lightweight in-memory log and state in the report that plan logging was not persisted.
+- Treat `docs/` as long-lived, evergreen guidance; prefer updating existing entries over adding new files.
+- If `docs/decisions.md` is missing, prefer using the `setup` skill to create it when allowed. If you cannot create docs, capture rationale in the smallest durable local place (code comments or tests) and call out the missing decision doc in the report.
+
 ## Workflow
 
 ### 1) Establish scope and criteria
@@ -38,9 +45,9 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 - Map each criterion to a concrete check (tests, manual steps, logs, queries, static analysis).
 - Prefer fast, focused probes first; include regression checks around touched areas.
 - If basics fail, stop early and fix before scaling the verification effort.
-- Keep a lightweight verification log in `plan/verify.md` (untracked) with probes and outcomes.
+- Keep a lightweight verification log in `plan/verify.md` (untracked) with probes and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
 - Track a minimal verification matrix of configs/perspectives already covered to avoid repeats.
-- Use `plan/` as scratch space for ad-hoc experiments; remove any that are no longer needed.
+- Use `plan/` as scratch space for ad-hoc experiments; create it only if permitted, remove any that are no longer needed, and never commit it. If you cannot create it, keep temporary notes in memory and call it out in the report.
 - Keep `plan/` untracked and never commit it.
 - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
