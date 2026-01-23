@@ -309,6 +309,7 @@ plan/**
 **/plan/**
 
 .codex/
+skills/.system/
 *claude*/
 
 update_from_personal.sh
