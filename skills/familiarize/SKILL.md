@@ -11,7 +11,7 @@ Build a clear, accurate mental model of the codebase: layout, purpose, key flows
 
 ## Git safety and permissions
 
-- Follow the current repo's git policy and permissions for this workspace; if git writes or pushes are disallowed, do not perform them and provide commands instead.
+- Follow the current repo's git policy and the session's environment restrictions; if git writes or pushes are disallowed, do not perform them and provide commands instead.
 - Never rewrite git history or force push. Do not use `git rebase`, `git commit --amend`, `git reset --hard`, `git reset --soft`, `git reset --mixed`, `git push --force`, `git push --force-with-lease`, or `git filter-branch`, or `git clean -fdx`.
 
 ## Decision framing

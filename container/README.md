@@ -31,6 +31,7 @@ Get a shell in the container:
 Notes:
 - Ensure you have authenticated locally so that `~/.codex/auth.json` exists. The container mounts this directory for auth/config/history.
 - `.git` is mounted read‑only to prevent repository mutations from inside the container.
+- These git restrictions apply only inside the container; host-repo git policy (including allowed commits/pushes and bans on history rewrites/force pushes) is defined in `AGENTS.md`.
 - Codex CLI is installed from npm at build time using `@openai/codex@latest`, so each build pulls the newest published version.
 - Codex is launched with `--dangerously-bypass-approvals-and-sandbox`; the container config sets `approval_policy=never`, `sandbox_mode=danger-full-access`, `model=gpt-5.2-codex`, and `model_reasoning_effort=xhigh` so it never prompts for approvals and always uses the latest Codex model with extra-high reasoning.
 - Container sessions set `CODEX_HOME=/home/dev/.codex-container` and write a fresh `config.toml` there (mirroring the defaults above) so host Codex config is ignored while still copying `auth.json` from your host for login.
