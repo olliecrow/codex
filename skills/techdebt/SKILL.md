@@ -7,7 +7,7 @@ description: Review the codebase with fresh eyes to find and reduce technical de
 
 ## Overview
 
-Review the project holistically, investigate debt with tests or experiments as needed, and apply safe simplifications.
+Review the project holistically, investigate debt with tests or experiments as needed, and apply safe simplifications. Conduct a deep, thorough review of all relevant areas and reason through every change and decision.
 
 ## Decision framing
 
@@ -23,8 +23,9 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 ## Workflow
 
 1. Establish scope:
-   - Scan the whole project, with extra focus on recent changes.
-   - Minimize bias from earlier conversation; reevaluate assumptions.
+- Scan the whole project, with extra focus on recent changes.
+- Minimize bias from earlier conversation; reevaluate assumptions.
+- Ensure every relevant area is reviewed; do not skip parts that affect behavior.
 
 2. Identify tech debt:
    - Look for over-engineering, duplication, confusing structure, unnecessary complexity.

@@ -7,7 +7,7 @@ description: Verify correctness of recent code changes, decisions, plans, or out
 
 ## Overview
 
-Verify recent work by collecting evidence that it is correct, complete, and matches requirements, prioritizing targeted checks over broad stress testing unless risk demands it.
+Verify recent work by collecting evidence that it is correct, complete, and matches requirements, prioritizing targeted checks over broad stress testing unless risk demands it. Conduct a deep, thorough verification that reviews all relevant changes, decisions, and assumptions end-to-end and reasons through the evidence.
 
 When a current plan is the subject, use **plan verification mode**: review, critique, and refine the plan; run small investigations if needed; then return a fresh, improved plan.
 
@@ -28,6 +28,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 
 - Identify the recent changes or claims to verify.
 - Extract acceptance criteria, expected behavior, invariants, and risk areas.
+- Ensure every relevant change, decision, and assumption is explicitly reviewed; do not leave gaps.
 - Ask minimal clarifying questions only when requirements are ambiguous.
 - Note what would constitute proof of correctness vs. "good enough."
 - If verifying a plan: capture the current plan, its goals, constraints, and why it is being proposed now.
