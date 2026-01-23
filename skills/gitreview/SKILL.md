@@ -9,6 +9,11 @@ description: Deep review of a branch vs main to find critical issues before merg
 
 Compare the current branch against main, analyze each change's intent and risk, and hunt for critical red flags before merge. Conduct a deep, thorough review that covers every change and decision end-to-end.
 
+## Git safety and permissions
+
+- Follow the current repo's git policy and the session's environment restrictions; if git writes or pushes are disallowed, do not perform them and provide commands instead.
+- Never rewrite git history or force push. Do not use `git rebase`, `git commit --amend`, `git reset --hard`, `git reset --soft`, `git reset --mixed`, `git push --force`, `git push --force-with-lease`, or `git filter-branch`, or `git clean -fdx`.
+
 ## Decision framing
 
 When a decision is required, always provide:

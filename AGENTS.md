@@ -18,7 +18,7 @@
 
 Sanity checks after run:
 - Write works: `echo ok > /workspace/_codex_test.txt`
-- Git disabled: `git status` → prints error
+- Git disabled inside the container: `git status` → prints error
 - Network available: `curl -I https://example.com`
 
 ## Coding Style & Naming Conventions
@@ -34,11 +34,15 @@ Sanity checks after run:
 
 ## Commit & Pull Request Guidelines
 - Commits: concise, imperative subject (“Add Codex git wrappers”), small scoped diffs, and commit little and often.
+- Repo policy: commits and pushes are permitted when working directly in this repo on the host (outside the container).
+- Rewriting git history is not allowed (e.g., `git rebase`, `git commit --amend`, `git reset` on commits, `git filter-branch`).
+- Force pushes and other destructive git actions (e.g., `git push --force`, `git push --force-with-lease`, `git reset --hard`, `git clean -fdx`) are prohibited.
 - PRs: include purpose, key changes, how to build/run, and validation steps. Link issues when applicable. Add screenshots/terminal excerpts for UX changes.
 
 ## Security & Configuration Tips
 - Host isolation: only mount the project directory and `~/.codex`.
-- Git is blocked: not installed, apt-pinned, and wrapped (`/usr/local/bin/git`). `.git/` is mounted read-only.
+- Container git is blocked: not installed, apt-pinned, and wrapped (`/usr/local/bin/git`). `.git/` is mounted read-only.
+- This container restriction does not apply to the host repo; normal git use in this repo is allowed.
 - Codex autonomy: launched with `--dangerously-bypass-approvals-and-sandbox` and `approval_policy=never`.
 - Defaults: model `gpt-5.2-codex`, reasoning effort `xhigh`.
 - Do not mount extra host secrets (e.g., SSH keys). Avoid expanding writable mounts.
