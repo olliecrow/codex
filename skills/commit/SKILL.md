@@ -10,6 +10,11 @@ description: Create small, well-described git commits and do not push. Use when 
 Create local commits only and do not push, preferring small, focused commits with clear messages.
 If committing is prohibited by project or system instructions, state that you cannot commit and always provide the exact git commands needed; do not ask the user whether they want commands or a summary.
 
+## Git safety and permissions
+
+- Follow the current repo's git policy and permissions for this workspace; if git writes or pushes are disallowed, do not perform them and provide commands instead.
+- Never rewrite git history or force push. Do not use `git rebase`, `git commit --amend`, `git reset --hard`, `git reset --soft`, `git reset --mixed`, `git push --force`, `git push --force-with-lease`, or `git filter-branch`, or `git clean -fdx`.
+
 ## Decision framing
 
 When a decision is required, always provide:
