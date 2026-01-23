@@ -18,6 +18,13 @@ Produce a precise, lower-case PR summary by fully understanding how the current 
 
 If changes include issue fixes or key decisions, confirm the rationale is captured in a durable place (code comments, docs, ADR, or tests). If it is missing, call that out as a gap in the PR summary.
 
+## Plan/docs/decisions robustness
+
+- Treat `plan/` as short-term scratch and never commit it.
+- If `plan/` is missing, create it (and any needed subdirs) only when edits are permitted; otherwise keep a lightweight in-memory log and state in the report that plan logging was not persisted.
+- Treat `docs/` as long-lived, evergreen guidance; prefer updating existing entries over adding new files.
+- If `docs/decisions.md` is missing, prefer using the `setup` skill to create it when allowed. If you cannot create docs, capture rationale in the smallest durable local place (code comments or tests) and call out the missing decision doc in the report.
+
 ## Workflow
 
 1. Establish baseline:

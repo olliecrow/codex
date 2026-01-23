@@ -20,6 +20,13 @@ When a decision is required, always provide:
 
 When you make a remediation recommendation or reach an important decision, capture the "why" in a durable place (code comments, docs, ADR, or tests) if changes are made. Do not rely only on `plan/` scratch notes. In your report, mention where the rationale was recorded.
 
+## Plan/docs/decisions robustness
+
+- Treat `plan/` as short-term scratch and never commit it.
+- If `plan/` is missing, create it (and any needed subdirs) only when edits are permitted; otherwise keep a lightweight in-memory log and state in the report that plan logging was not persisted.
+- Treat `docs/` as long-lived, evergreen guidance; prefer updating existing entries over adding new files.
+- If `docs/decisions.md` is missing, prefer using the `setup` skill to create it when allowed. If you cannot create docs, capture rationale in the smallest durable local place (code comments or tests) and call out the missing decision doc in the report.
+
 ## Quick start
 
 - Identify repo root and languages; enforce a no-execution rule.
@@ -62,7 +69,7 @@ If the repo is huge, note unscanned areas explicitly (for example: large `vendor
   - obfuscation and encoded payloads
   - filesystem destruction
 - For each hit, open the file and evaluate context, intent, and reachability.
-- Track a lightweight investigation log in `plan/dangercheck.md` (untracked) with probes and outcomes.
+- Track a lightweight investigation log in `plan/dangercheck.md` (untracked) with probes and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
  - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
 ### 4) Dependency and supply-chain review

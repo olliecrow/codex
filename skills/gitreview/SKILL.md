@@ -25,6 +25,13 @@ When a decision is required, always provide:
 
 When you recommend or make a fix, or reach an important decision, ensure the "why" is captured in a durable place (code comments, docs, ADR, or tests). Do not rely only on `plan/` scratch notes. In your summary, mention where the rationale was recorded or call out gaps.
 
+## Plan/docs/decisions robustness
+
+- Treat `plan/` as short-term scratch and never commit it.
+- If `plan/` is missing, create it (and any needed subdirs) only when edits are permitted; otherwise keep a lightweight in-memory log and state in the report that plan logging was not persisted.
+- Treat `docs/` as long-lived, evergreen guidance; prefer updating existing entries over adding new files.
+- If `docs/decisions.md` is missing, prefer using the `setup` skill to create it when allowed. If you cannot create docs, capture rationale in the smallest durable local place (code comments or tests) and call out the missing decision doc in the report.
+
 ## Workflow
 
 1. Establish diff scope:
@@ -50,12 +57,12 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - Start with small, fast checks before larger runs; large tests are still expected when relevant.
    - After any changes or fixes, rerun relevant checks to confirm no regressions.
    - Remove ad-hoc experiments that are no longer needed; keep only those that revealed issues and should be preserved.
-   - Use a `plan/` directory as scratch space (create it if missing); keep it untracked and never commit it.
+   - Use a `plan/` directory as scratch space (create it if missing and edits are permitted); keep it untracked and never commit it. If you cannot create it, keep a lightweight in-memory log and call it out in the report.
    - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
 5. Handle huge diffs without skipping coverage:
    - Still review all changes end-to-end; do not sample or skip files.
-   - Break the review into batches (by directory, feature, or risk area) and track progress in `plan/gitreview.md`.
+   - Break the review into batches (by directory, feature, or risk area) and track progress in `plan/gitreview.md`. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
    - Use tooling to manage scale (e.g., `git diff --stat`, `git diff --numstat`, per-file diffs, and focused searches) but ensure every file and hunk is covered.
    - If time or compute constraints make a full review impractical, ask the user for a time budget or additional constraints, but keep the full-review requirement explicit.
 

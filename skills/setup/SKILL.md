@@ -14,6 +14,10 @@ Set up a consistent, agent-focused documentation and planning structure in any r
 - Apply changes in the current working directory (repo root), unless explicitly directed otherwise.
 - Proceed with file/dir edits by default. If the user explicitly forbids edits or creation, do not modify the repo and report that setup was skipped.
 
+## Restricted environments
+
+If edits are not permitted (policy, permissions, or explicit user instruction), do not attempt setup. Report which required elements are missing and note that other skills must fall back to in-memory plan notes and local rationale capture (code comments or tests) until setup is allowed.
+
 ## Definition of "already set up"
 
 Consider the repo set up only if all of the following are true:
