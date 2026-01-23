@@ -7,7 +7,7 @@ description: Review recent code changes and simplify/clean them without breaking
 
 ## Overview
 
-Identify recent changes, then simplify, tidy, and de-over-engineer while preserving behavior and performance.
+Identify recent changes, then simplify, tidy, and de-over-engineer while preserving behavior and performance. Conduct a deep, thorough review of all relevant changes and reason through every cleanup decision.
 
 ## Decision framing
 
@@ -23,8 +23,9 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 ## Workflow
 
 1. Identify scope of changes:
-   - Compare current branch to its base (or main/master) to find what changed.
-   - Include changes made during the current conversation.
+- Compare current branch to its base (or main/master) to find what changed.
+- Include changes made during the current conversation.
+- Review every changed file and hunk; do not skip any relevant area.
 
 2. Find cleanup opportunities:
    - Remove redundancy, simplify logic, reduce over-engineering.

@@ -7,7 +7,7 @@ description: Deep review of a branch vs main to find critical issues before merg
 
 ## Overview
 
-Compare the current branch against main, analyze each change's intent and risk, and hunt for critical red flags before merge.
+Compare the current branch against main, analyze each change's intent and risk, and hunt for critical red flags before merge. Conduct a deep, thorough review that covers every change and decision end-to-end.
 
 ## Decision framing
 
@@ -38,6 +38,7 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
 3. Deep risk review:
    - Look for critical red flags, regressions, security risks, data loss, perf issues, or correctness bugs.
    - Consider long-term maintainability and hidden coupling.
+   - Ensure anything that worked on main still works here; flag removed or degraded functionality and verify intended parity.
 
 4. Investigate thoroughly:
    - Proactively create and run experiments, trial runs, or tests as needed.

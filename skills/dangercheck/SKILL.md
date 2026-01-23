@@ -7,7 +7,7 @@ description: Assess a codebase for potentially dangerous or malicious behavior b
 
 ## Overview
 
-Assess a repo for malicious or risky behavior without executing code. This skill is strictly static analysis: read files only, do not run code, do not install dependencies, and do not execute any scripts or binaries. Focus on entrypoints, scripts, dependency hooks, and suspicious patterns that could exfiltrate data, modify the system, or download and execute remote content.
+Assess a repo for malicious or risky behavior without executing code. This skill is strictly static analysis: read files only, do not run code, do not install dependencies, and do not execute any scripts or binaries. Conduct a deep, thorough review of all relevant files, entrypoints, and dependencies, and reason through every finding. Focus on entrypoints, scripts, dependency hooks, and suspicious patterns that could exfiltrate data, modify the system, or download and execute remote content.
 
 ## Decision framing
 
@@ -36,6 +36,7 @@ When you make a remediation recommendation or reach an important decision, captu
 - Never trigger build/test/format/lint commands; only read/scan files.
 - Identify repo root, primary languages, and build tooling.
 - Inventory files and size so you know what you are scanning.
+- Ensure every relevant area is reviewed; explicitly call out any unscanned scope.
 - If the user is re-running dangercheck, review prior findings and avoid duplicating the same probes.
 
 Suggested commands (adapt):

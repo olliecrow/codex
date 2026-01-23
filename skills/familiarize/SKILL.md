@@ -7,7 +7,7 @@ description: Meticulously familiarize with a codebase to understand structure, p
 
 ## Overview
 
-Build a clear, accurate mental model of the codebase: layout, purpose, key flows, and current change state.
+Build a clear, accurate mental model of the codebase: layout, purpose, key flows, and current change state. When reviewing changes, conduct a deep, thorough review so every relevant change and decision is understood.
 
 ## Decision framing
 
@@ -54,9 +54,10 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 
 6. Compare against main when relevant:
    - If the current branch is not main, review diffs vs main (e.g., `git diff main...HEAD` and relevant logs).
-   - If diffs are large, start with `git diff --stat main...HEAD` or `git diff --name-only main...HEAD` and then review per-file diffs to keep output manageable.
-   - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat main...HEAD`, `git diff --name-only main...HEAD`, or per-file diffs instead of unbounded commands.
-   - Summarize how the current branch diverges (scope and intent) and which areas are affected.
+- If diffs are large, start with `git diff --stat main...HEAD` or `git diff --name-only main...HEAD` and then review per-file diffs to keep output manageable.
+- Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat main...HEAD`, `git diff --name-only main...HEAD`, or per-file diffs instead of unbounded commands.
+- Summarize how the current branch diverges (scope and intent) and which areas are affected.
+- Review every changed file and hunk when comparing against main; do not skip relevant areas.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
