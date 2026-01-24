@@ -307,6 +307,8 @@ plan/
 **/plan/
 plan/**
 **/plan/**
+!skills/plan/
+!skills/plan/**
 
 .codex/
 skills/.system/
