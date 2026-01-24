@@ -1,13 +1,13 @@
 ---
 name: plan
-description: Create a comprehensive, high-conviction change plan that improves the codebase using all available context and decisions.
+description: Create a comprehensive, high-conviction change plan that improves the codebase using all available context and decisions. Only include plan items you are highly confident in; if anything is unclear or low conviction, pause to request clarification or schedule targeted investigation before adding it.
 ---
 
 # plan
 
 ## Overview
 
-Create a single, consolidated, highly detailed plan that moves the codebase from its current state to a better state. Incorporate all available information (conversation, prior decisions, AGENTS.md, docs/, code, recent changes, tech debt notes, and any evidence gathered). The plan must be high confidence: only include steps you strongly believe are correct and beneficial. If anything material is uncertain, pause and ask a clarifying question or schedule a targeted investigation before including it in the plan.
+Create a single, consolidated, highly detailed plan that moves the codebase from its current state to a better state. Incorporate all available information (conversation, prior decisions, AGENTS.md, docs/, code, recent changes, tech debt notes, and any evidence gathered). The plan must be high confidence: only include steps you strongly believe are correct and beneficial. If anything material is uncertain or low-conviction, pause and ask a clarifying question (or schedule a targeted investigation) before including it in the plan.
 
 ## Shared principles (must follow)
 
@@ -65,7 +65,7 @@ If the plan introduces or recommends a decision that should be durable, capture 
 
 - List possible improvements and map them to goals.
 - Filter aggressively: keep only high-confidence, high-conviction items.
-- For any candidate with uncertainty, schedule investigation before committing it to the plan.
+- For any candidate with uncertainty or low conviction, schedule investigation or ask for clarification before committing it to the plan.
 
 ### 5) Make required decisions
 
