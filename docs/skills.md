@@ -68,6 +68,7 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 - gitreview: Deep review of a branch for merge readiness.
 - gitsummary: Concise PR-ready summary of diffs vs main.
 - investigate: Deep-dive investigation with evidence and tests.
+- plan: Create comprehensive, high-conviction change plans.
 - setup: Initialize docs/plan/decisions conventions.
 - summarize: Concise, decision-ready summaries with evidence.
 - techdebt: Identify and reduce technical debt safely.
