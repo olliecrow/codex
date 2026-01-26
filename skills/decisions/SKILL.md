@@ -7,7 +7,7 @@ description: Deep, thorough decision support. Use when the conversation presents
 
 ## Overview
 
-This skill is for decision points in a conversation. Conduct deep and thorough background research for each decision, including investigations and considerations, then deliver a single, consolidated decision report. If the research shows there is no longer a decision to be made, say so explicitly in the report.
+This skill is for decision points in a conversation. Conduct deep and thorough background research for each decision, including investigations and considerations, then deliver a single, consolidated decision report. If the research shows there is no longer a decision to be made, omit that decision from the decision list and explain why a decision is no longer needed.
 
 ## Shared principles (must follow)
 
@@ -63,7 +63,7 @@ When a decision is made or a recommendation is adopted, record the "why" in a du
    - State confidence and the assumptions behind the recommendation.
 6) Consolidate the report.
    - Deliver one consolidated report that covers all decisions.
-   - If any decisions are resolved by the research itself, say so and explain why.
+   - If any decisions are resolved by the research itself, remove them from the decision list and explain why a decision is no longer needed.
 
 ## Output expectations
 
@@ -75,7 +75,7 @@ When a decision is made or a recommendation is adopted, record the "why" in a du
 - Include examples for each decision.
 - Include pros and cons for each viable option.
 - Always include a recommendation with reasoning.
-- If no decision remains, say so explicitly.
+- If no decision remains, say so explicitly and explain why a decision is no longer needed.
 
 ## Repeat invocations
 
