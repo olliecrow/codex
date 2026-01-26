@@ -62,6 +62,7 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 - cleanup: Simplify recent changes without altering behavior.
 - commit: Create small, well-described git commits (no pushing).
 - dangercheck: Safety audit before running untrusted code.
+- decisions: Deep, thorough decision support with research and consolidated recommendations.
 - execute: Run an existing plan end-to-end and report results.
 - familiarize: Orient to the repo, structure, and workflows.
 - gitmerge: Prepare a branch to merge cleanly into main.
