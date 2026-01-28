@@ -11,6 +11,13 @@ Run many test perspectives and configurations, starting small and scaling up, th
 
 Prefer empirical testing with real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces.
 
+## Behavioral guardrails (must follow)
+
+- State assumptions about scope and coverage; if multiple interpretations exist, surface them.
+- Prefer the simplest tests that meaningfully increase confidence before scaling up.
+- Avoid unrelated code changes; keep any fixes or test additions strictly in scope.
+- Define success criteria and map each to a test or check.
+
 ## Decision framing
 
 When a decision is required, always provide:

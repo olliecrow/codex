@@ -9,6 +9,12 @@ description: Initialize docs/plan/decisions conventions in a repo; create struct
 
 Set up a consistent, agent-focused documentation and planning structure in any repo. The setup is idempotent: if everything is already in place, do nothing.
 
+## Behavioral guardrails (must follow)
+
+- State assumptions explicitly; if repository intent or constraints are unclear, ask.
+- Prefer the minimal change set that satisfies the setup definition; avoid extra structure or features.
+- Keep changes surgical and scoped to setup requirements only.
+
 ## Scope and permissions
 
 - Apply changes in the current working directory (repo root), unless explicitly directed otherwise.

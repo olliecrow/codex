@@ -9,6 +9,13 @@ description: Review recent code changes and simplify/clean them without breaking
 
 Identify recent changes, then simplify, tidy, and de-over-engineer while preserving behavior and performance. Conduct a deep, thorough review of all relevant changes and reason through every cleanup decision.
 
+## Behavioral guardrails (must follow)
+
+- State assumptions explicitly; if cleanup scope is unclear, stop and ask.
+- Prefer the simplest change that solves the problem; avoid speculative refactors.
+- Keep changes surgical: do not touch adjacent code, comments, or formatting unless required.
+- Define success criteria and verify after cleanup; do not assume no regressions.
+
 ## Decision framing
 
 When a decision is required, always provide:

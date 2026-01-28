@@ -22,6 +22,10 @@ The spec is the primary artifact and should be saved in `plan/current/` as one o
 - Keep context tight and reduce noise; ask questions only when requirements are ambiguous or blocking.
 - Write summaries in plain, concise language with brief context; avoid analogies and define technical terms when needed.
 - When a plan can answer a question via investigation or reasonable assumptions, do so and make assumptions explicit; only ask questions that are truly blocking.
+- State assumptions explicitly and surface alternate interpretations; do not pick one silently.
+- Prefer the simplest viable approach and call out overcomplication or speculative scope.
+- Keep the plan surgical: only include work that directly serves the request; mention unrelated opportunities without adding them.
+- Define success criteria and verification for each step; avoid vague goals.
 
 ## Decision framing
 
@@ -93,6 +97,7 @@ If the plan introduces or recommends a decision that should be durable, capture 
 - Include empirical battle tests where relevant, with concrete commands, datasets, and expected signals.
 - Avoid end-only testing; embed verification after each meaningful phase.
 - Include contingencies and mitigation steps tied to likely failure modes.
+- For multi-step work, present step -> verify checks explicitly.
 - Keep the plan extremely detailed and explicit; no hand-wavy steps.
 
 ### 7) Quality gate

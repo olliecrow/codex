@@ -9,6 +9,13 @@ description: Execute the current plan end-to-end, verifying completion; use when
 
 Execute an existing plan step by step until it is fully complete and verified. Follow the plan spec's validation checkpoints and contingencies, using real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces.
 
+## Behavioral guardrails (must follow)
+
+- State assumptions explicitly; if anything is unclear or has multiple interpretations, stop and ask.
+- Prefer the simplest implementation that satisfies the plan; avoid speculative features or extra flexibility.
+- Keep changes surgical and within plan scope; do not refactor or "improve" adjacent code unless required.
+- Define success criteria per step and verify before moving on.
+
 ## Decision framing
 
 When a decision is required, always provide:
@@ -45,6 +52,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
    - Track progress in `plan/execute.md` (untracked) with actions taken and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
    - If a step fails, diagnose, fix, and retry before moving on.
    - Run the step-specific validation checks from the plan as you go; do not defer all testing to the end.
+   - If the plan is ambiguous or would require scope expansion, stop and ask before proceeding.
    - Do not stop until all steps are complete.
 
 4. Verify completion:

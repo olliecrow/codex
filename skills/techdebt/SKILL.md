@@ -9,6 +9,13 @@ description: Review the codebase with fresh eyes to find and reduce technical de
 
 Review the project holistically, investigate debt with tests or experiments as needed, and apply safe simplifications. Conduct a deep, thorough review of all relevant areas and reason through every change and decision.
 
+## Behavioral guardrails (must follow)
+
+- State assumptions explicitly; if scope or intent is unclear, stop and ask.
+- Prefer the simplest debt reduction that preserves behavior; avoid speculative improvements.
+- Keep changes surgical and limited to the debt being addressed; mention unrelated issues without changing them.
+- Define success criteria and verify after changes.
+
 ## Decision framing
 
 When a decision is required, always provide:

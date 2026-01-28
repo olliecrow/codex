@@ -11,6 +11,13 @@ Verify recent work by collecting evidence that it is correct, complete, and matc
 
 Prefer empirical verification with real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces.
 
+## Behavioral guardrails (must follow)
+
+- State assumptions explicitly; if requirements are unclear or have multiple interpretations, ask before verifying.
+- Prefer the simplest verification that proves the claim; do not add speculative tests or scope.
+- Keep changes surgical if you must modify code or tests; avoid refactors unrelated to verification.
+- Define explicit success criteria and map each to a concrete check.
+
 When a current plan is the subject, use **plan verification mode**: review, critique, and refine the plan; run small investigations if needed; then return a fresh, improved plan.
 
 ## Decision framing

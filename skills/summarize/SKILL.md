@@ -9,6 +9,12 @@ description: Summarize complex information from any source into concise, decisio
 
 Produce a clear, concise, direct summary that fully equips the reader to understand what happened, why it happened, and what decisions or actions are needed next.
 
+## Behavioral guardrails (must follow)
+
+- State assumptions explicitly; if the source is ambiguous, call it out instead of guessing.
+- Prefer the simplest summary that meets the need; avoid speculative or extra detail.
+- Keep scope surgical: include only what is supported by the source material.
+
 ## Decision framing
 
 When a decision is required, always provide:
