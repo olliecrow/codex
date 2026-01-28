@@ -9,6 +9,8 @@ description: Verify correctness of recent code changes, decisions, plans, or out
 
 Verify recent work by collecting evidence that it is correct, complete, and matches requirements, prioritizing targeted checks over broad stress testing unless risk demands it. Conduct a deep, thorough verification that reviews all relevant changes, decisions, and assumptions end-to-end and reasons through the evidence.
 
+Prefer empirical verification with real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces.
+
 When a current plan is the subject, use **plan verification mode**: review, critique, and refine the plan; run small investigations if needed; then return a fresh, improved plan.
 
 ## Decision framing
@@ -45,6 +47,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 - Map each criterion to a concrete check (tests, manual steps, logs, queries, static analysis).
 - Prefer fast, focused probes first; include regression checks around touched areas.
 - If basics fail, stop early and fix before scaling the verification effort.
+- Prefer production-like configurations and real datasets when feasible; document data sources and constraints.
 - Keep a lightweight verification log in `plan/verify.md` (untracked) with probes and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
 - Track a minimal verification matrix of configs/perspectives already covered to avoid repeats.
 - Use `plan/` as scratch space for ad-hoc experiments; create it only if permitted, remove any that are no longer needed, and never commit it. If you cannot create it, keep temporary notes in memory and call it out in the report.

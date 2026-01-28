@@ -9,6 +9,8 @@ description: Proactively battle-test recent code changes across many configurati
 
 Run many test perspectives and configurations, starting small and scaling up, then summarize outcomes, red flags, and next steps. Conduct a deep, thorough validation that maps coverage to all relevant changes and decisions, and reason through the results.
 
+Prefer empirical testing with real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces.
+
 ## Decision framing
 
 When a decision is required, always provide:
@@ -44,6 +46,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
    - Vary configs (feature flags, env vars, build modes).
    - Vary environments (OS, versions, dependencies) when feasible.
    - Vary perspectives (unit, integration, e2e, performance, security, UX, accessibility, API contract, data migration).
+   - Prefer production-like configurations and real datasets when feasible; document data sources and constraints.
    - Prefer smaller probes before long-running suites, but still run large tests when warranted.
    - If any code changes are made during testing, rerun relevant probes and suites (small before large) to confirm no regressions.
    - Maintain a lightweight test matrix of configs/environments/perspectives already covered to avoid repeats.
