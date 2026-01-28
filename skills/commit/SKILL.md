@@ -57,8 +57,8 @@ Before committing, ensure that any issue fixes or key decisions are documented i
    - If tests cannot be run here, say so and request the user to run them and confirm results before you provide any git commands.
 
 4. Split changes into logical units:
-   - Prefer more, smaller commits over fewer large ones.
-   - Keep each commit focused on a single purpose or area.
+   - Prefer more, smaller commits over fewer large ones; uncommitted changes can (and often should) be split into multiple commits when it makes sense.
+   - Keep each commit focused on a single purpose or area with a clear rationale.
    - Treat unrelated untracked files as separate commits unless clearly part of the same change.
    - Ensure commit order and packaging make sense (foundational changes first, dependent changes after).
    - It is fine (and encouraged) to spend time reasoning, investigating, and considering the change set before deciding what each commit should encapsulate and what the best commit messages should be.

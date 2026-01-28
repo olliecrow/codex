@@ -9,6 +9,8 @@ description: Deep, meticulous investigation of a problem, issue, or topic by for
 
 Deep dive into a topic or issue by exploring hypotheses, validating them with evidence, and iterating until confidence is high. First build confidence in the current state, then confirm the proposed change is the right thing to change. Be relentless and keep going until you reach the bottom of the topic or problem, even if it takes a long time. Conduct a deep, thorough investigation that reviews all relevant changes, decisions, and assumptions and reasons through them explicitly.
 
+Prefer empirical investigation with real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces.
+
 ## Decision framing
 
 When a decision is required, always provide:

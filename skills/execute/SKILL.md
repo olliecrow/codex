@@ -7,7 +7,7 @@ description: Execute the current plan end-to-end, verifying completion; use when
 
 ## Overview
 
-Execute an existing plan step by step until it is fully complete and verified.
+Execute an existing plan step by step until it is fully complete and verified. Follow the plan spec's validation checkpoints and contingencies, using real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces.
 
 ## Decision framing
 
@@ -44,10 +44,12 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
    - Perform each step in order, without skipping.
    - Track progress in `plan/execute.md` (untracked) with actions taken and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
    - If a step fails, diagnose, fix, and retry before moving on.
+   - Run the step-specific validation checks from the plan as you go; do not defer all testing to the end.
    - Do not stop until all steps are complete.
 
 4. Verify completion:
    - Run the relevant checks/tests, starting small and expanding to broader coverage as needed.
+   - Prefer production-like configurations and real datasets when feasible; document data sources and constraints.
    - After any fixes, re-run the smallest relevant checks to confirm no regressions.
    - Remove ad-hoc experiments that are no longer needed; keep only those that revealed issues and should be preserved.
    - If verification fails, fix issues and re-verify until green.
