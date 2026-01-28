@@ -1,0 +1,89 @@
+---
+name: gitcommit
+description: Commit all current uncommitted changes into small, logical commits with clear messages. Do not push. Use when asked to commit everything in the working tree.
+---
+
+# Gitcommit
+
+## Overview
+
+Commit all appropriate uncommitted changes (including relevant untracked files) into many small, logical commits with descriptive messages. Do not push. End with no changes that should be committed left uncommitted.
+
+## Behavioral guardrails (must follow)
+
+- State assumptions explicitly; if grouping or intent is unclear, ask before committing.
+- Prefer the simplest commit structure that preserves logical separation; avoid bundling unrelated changes.
+- Keep changes surgical: do not add unrelated edits just to "clean up."
+- Define success criteria (clean working tree) and verify before finishing.
+- If multiple interpretations of how to split commits exist, surface the options and tradeoffs instead of picking silently.
+- Do not add new features, refactors, or formatting changes solely to "make the commit nicer."
+- If you must adjust code to capture rationale or fix small issues discovered during review, keep it minimal and directly tied to the request.
+
+## Git safety and permissions
+
+- Follow the current repo's git policy and the session's environment restrictions; if git writes or commits are disallowed, do not perform them and provide commands instead.
+- Never rewrite git history or force push. Do not use `git rebase`, `git commit --amend`, `git reset --hard`, `git reset --soft`, `git reset --mixed`, `git push --force`, `git push --force-with-lease`, or `git filter-branch`, or `git clean -fdx`.
+
+## Decision framing
+
+When a decision is required, always provide:
+- Background context sufficient to make the decision.
+- Pros and cons for each viable option.
+- Your recommendation and the reasoning behind it.
+
+## Rationale capture
+
+Before committing, ensure that any issue fixes or key decisions are documented in a durable place (code comments, docs, ADR, or tests). Do not rely only on `plan/` scratch notes. If rationale is missing, add it before committing and mention where it was captured.
+
+## Plan/docs/decisions robustness
+
+- Treat `plan/` as short-term scratch and never commit it.
+- If `plan/` is missing, create it (and any needed subdirs) only when edits are permitted; otherwise keep a lightweight in-memory log and state in the report that plan logging was not persisted.
+- Treat `docs/` as long-lived, evergreen guidance; prefer updating existing entries over adding new files.
+- If `docs/decisions.md` is missing, prefer using the `setup` skill to create it when allowed. If you cannot create docs, capture rationale in the smallest durable local place (code comments or tests) and call out the missing decision doc in the report.
+
+## Workflow
+
+1. Inspect repo state first:
+   - Check `git status -sb`.
+   - Review `git diff`, `git diff --staged`, and `git diff --name-only` to understand all changes (tracked and untracked).
+   - If diffs are large, start with `git diff --stat` and then review per-file diffs.
+   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
+   - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
+
+2. Run pre-commit checks first:
+   - If the repo defines pre-commit checks (config or standard script), run them before committing.
+   - If no pre-commit checks are defined, skip this step.
+   - Ensure pre-commit checks pass before committing.
+   - If failures are small and reasonable to fix, fix them before committing.
+
+3. Run tests (or the most relevant subset) before committing:
+   - Prefer the smallest relevant test target(s) when full test suites are too heavy.
+   - Ensure tests pass before committing.
+   - If tests cannot be run here, say so and request the user to run them and confirm results before proceeding.
+
+4. Split changes into logical units:
+   - Prefer many small commits over fewer large ones.
+   - Keep each commit focused on a single purpose or area.
+   - Treat unrelated untracked files as separate commits unless clearly part of the same change.
+   - Ensure commit order and packaging make sense (foundational changes first, dependent changes after).
+   - If a simpler split achieves the same clarity, choose the simpler split.
+
+5. Stage and commit each unit:
+   - Use explicit `git add <paths>` commands (avoid interactive staging by default).
+   - Use `git commit -m "..."` with concise, descriptive, imperative messages tailored to each change.
+   - If git operations can be executed here, run them directly; otherwise, provide explicit commands and pause until the user reports back.
+   - Do not push.
+
+6. Ensure nothing appropriate is left uncommitted:
+   - Re-check `git status -sb` and confirm the working tree is clean.
+   - If any files that should be committed remain, create additional commits until the tree is clean.
+
+7. If committing is disallowed:
+   - State that you cannot commit here.
+   - Provide a single copy-pasteable block of git commands that will stage and commit all changes in logical units.
+
+## Repeat invocations
+
+- If called multiple times, only commit newly added changes.
+- Avoid recombining prior commits; do not rewrite history.
