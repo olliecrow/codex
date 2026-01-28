@@ -15,6 +15,7 @@ Compare the current branch against main, analyze each change's intent and risk, 
 - Prefer the simplest explanation for a change and verify it against evidence.
 - Keep review scope surgical: every comment should trace to a specific change.
 - Define explicit readiness criteria and verify them before concluding.
+- If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 
 ## Git safety and permissions
 

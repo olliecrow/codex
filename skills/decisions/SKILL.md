@@ -15,6 +15,7 @@ This skill is for decision points in a conversation. Conduct deep and thorough b
 - Prefer the simplest viable option when it satisfies requirements; push back on unnecessary complexity.
 - Keep scope surgical: only include decisions that are actually required.
 - Define clear success criteria for decisions and how they will be validated.
+- If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 
 ## Shared principles (must follow)
 

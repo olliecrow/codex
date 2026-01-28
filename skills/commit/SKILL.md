@@ -16,6 +16,7 @@ If committing is prohibited by project or system instructions, state that you ca
 - Keep commits minimal and directly tied to the request; do not include unrelated changes.
 - Prefer the simplest commit structure that preserves logical separation.
 - Do not create any commit until all applicable pre-commit checks and tests have been run and passed.
+- If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 
 ## Git safety and permissions
 

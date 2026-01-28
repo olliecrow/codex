@@ -14,6 +14,7 @@ Build a clear, accurate mental model of the codebase: layout, purpose, key flows
 - State assumptions explicitly; if something is unclear or has multiple interpretations, ask.
 - Prefer the simplest explanation supported by evidence; avoid speculative conclusions.
 - Keep scope surgical and read-only unless explicitly asked to edit.
+- If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 
 ## Git safety and permissions
 

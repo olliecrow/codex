@@ -17,6 +17,7 @@ Prefer empirical testing with real data and real runs when relevant. Avoid mock 
 - Prefer the simplest tests that meaningfully increase confidence before scaling up.
 - Avoid unrelated code changes; keep any fixes or test additions strictly in scope.
 - Define success criteria and map each to a test or check.
+- If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 
 ## Decision framing
 

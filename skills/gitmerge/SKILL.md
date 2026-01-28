@@ -15,6 +15,7 @@ Get the current branch to a merge-ready state with main by understanding differe
 - Prefer the simplest merge resolution that preserves intent on both sides; avoid extra refactors.
 - Keep changes surgical and limited to merge needs; do not "improve" unrelated code.
 - Define success criteria and verify after each meaningful step.
+- If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 
 ## Git safety and permissions
 
