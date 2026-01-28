@@ -9,7 +9,7 @@ description: Create a comprehensive, high-conviction change plan that improves t
 
 Create a single, consolidated, highly detailed plan spec that moves the codebase from its current state to a better state. This skill is intended for long, end-to-end work: produce a comprehensive spec so execution can proceed for an extended period without additional questions. Do not produce short or partial plans. Incorporate all available information (conversation, prior decisions, AGENTS.md, docs/, code, recent changes, tech debt notes, and any evidence gathered). Pack the questions, assumptions, investigation results, reasoning, and decisions up front. The plan must be high confidence: only include steps you strongly believe are correct and beneficial. If anything material is uncertain or low-conviction, pause and ask a clarifying question (or schedule a targeted investigation) before including it in the plan.
 
-The spec must include empirical validation and battle testing, using real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces. Do not make the plan monolithic: build in step-by-step verification and testing throughout the phases, not only at the end.
+The spec must include empirical validation and battle testing, using real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces. Do not make the plan monolithic: build in step-by-step verification and testing throughout the phases, not only at the end. Always include a dedicated verification/validation plan immediately following the implementation plan; omission should be extremely rare and must be explicitly justified.
 
 The spec is the primary artifact and should be saved in `plan/current/` as one or more Markdown files. It should be comprehensive and execution-ready, with investigation results, assumptions, decisions, and validation plans captured in the spec itself.
 
@@ -100,6 +100,7 @@ If the plan introduces or recommends a decision that should be durable, capture 
 - Confirm every item is high confidence and improves the codebase.
 - Remove or defer anything ambiguous; ask questions only when necessary.
 - Ensure the plan is consistent with repo guidelines and constraints.
+- Confirm the verification/validation plan is present and follows the implementation plan; only allow omission with explicit justification.
 
 ### 8) Output
 
@@ -111,7 +112,7 @@ If the plan introduces or recommends a decision that should be durable, capture 
   - Evidence and investigations (what was tested, learned, and assumed)
   - Decisions (with pros/cons and recommendations)
   - Phased plan with detailed steps
-  - Validation strategy
+  - Verification/validation plan (required; follows implementation plan and is omitted only with explicit justification)
   - Risks and mitigations
   - Contingencies and mitigation playbook
   - Open questions (only if truly blocking)
