@@ -9,6 +9,13 @@ description: Deep review of a branch vs main to find critical issues before merg
 
 Compare the current branch against main, analyze each change's intent and risk, and hunt for critical red flags before merge. Conduct a deep, thorough review that covers every change and decision end-to-end.
 
+## Behavioral guardrails (must follow)
+
+- Do not assume intent; if multiple interpretations exist, state them explicitly.
+- Prefer the simplest explanation for a change and verify it against evidence.
+- Keep review scope surgical: every comment should trace to a specific change.
+- Define explicit readiness criteria and verify them before concluding.
+
 ## Git safety and permissions
 
 - Follow the current repo's git policy and the session's environment restrictions; if git writes or pushes are disallowed, do not perform them and provide commands instead.

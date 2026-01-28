@@ -9,6 +9,12 @@ description: Analyze current branch vs main, understand all diffs and intent, an
 
 Produce a precise, lower-case PR summary by fully understanding how the current branch differs from main. Conduct a deep, thorough review of all diffs so every change and decision is understood and reasoned through before summarizing.
 
+## Behavioral guardrails (must follow)
+
+- Do not assume intent or fill gaps; call out uncertainty if needed.
+- Prefer the simplest summary that covers the actual changes; avoid speculative detail.
+- Keep scope surgical: every bullet must map to a specific change.
+
 ## Git safety and permissions
 
 - Follow the current repo's git policy and the session's environment restrictions; if git writes or pushes are disallowed, do not perform them and provide commands instead.

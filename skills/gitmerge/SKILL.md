@@ -9,6 +9,13 @@ description: Prepare the current branch to merge cleanly into main by ensuring a
 
 Get the current branch to a merge-ready state with main by understanding differences, planning safely, merging without conflicts, and validating thoroughly. Conduct a deep, thorough review of all diffs and decisions, and ensure functionality from main still works after the merge.
 
+## Behavioral guardrails (must follow)
+
+- State assumptions explicitly; if intent or requirements are unclear, stop and ask.
+- Prefer the simplest merge resolution that preserves intent on both sides; avoid extra refactors.
+- Keep changes surgical and limited to merge needs; do not "improve" unrelated code.
+- Define success criteria and verify after each meaningful step.
+
 ## Git safety and permissions
 
 - Follow the current repo's git policy and the session's environment restrictions; if git writes or pushes are disallowed, do not perform them and provide commands instead.

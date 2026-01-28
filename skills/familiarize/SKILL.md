@@ -9,6 +9,12 @@ description: Meticulously familiarize with a codebase to understand structure, p
 
 Build a clear, accurate mental model of the codebase: layout, purpose, key flows, and current change state. When reviewing changes, conduct a deep, thorough review so every relevant change and decision is understood.
 
+## Behavioral guardrails (must follow)
+
+- State assumptions explicitly; if something is unclear or has multiple interpretations, ask.
+- Prefer the simplest explanation supported by evidence; avoid speculative conclusions.
+- Keep scope surgical and read-only unless explicitly asked to edit.
+
 ## Git safety and permissions
 
 - Follow the current repo's git policy and the session's environment restrictions; if git writes or pushes are disallowed, do not perform them and provide commands instead.

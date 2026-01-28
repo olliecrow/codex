@@ -9,6 +9,12 @@ description: Assess a codebase for potentially dangerous or malicious behavior b
 
 Assess a repo for malicious or risky behavior without executing code. This skill is strictly static analysis: read files only, do not run code, do not install dependencies, and do not execute any scripts or binaries. Conduct a deep, thorough review of all relevant files, entrypoints, and dependencies, and reason through every finding. Focus on entrypoints, scripts, dependency hooks, and suspicious patterns that could exfiltrate data, modify the system, or download and execute remote content.
 
+## Behavioral guardrails (must follow)
+
+- State assumptions explicitly; if a finding has multiple interpretations, list them and note uncertainty.
+- Prefer the simplest explanation supported by evidence; do not assume safety or malice without proof.
+- Keep scope surgical and static-only; do not expand into unrelated audits or execution.
+
 ## Decision framing
 
 When a decision is required, always provide:

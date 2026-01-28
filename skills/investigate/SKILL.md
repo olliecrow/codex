@@ -11,6 +11,13 @@ Deep dive into a topic or issue by exploring hypotheses, validating them with ev
 
 Prefer empirical investigation with real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces.
 
+## Behavioral guardrails (must follow)
+
+- State assumptions explicitly; if multiple interpretations exist, list them instead of picking one silently.
+- Prefer the simplest explanation and test it first; avoid speculative detours.
+- Keep any code changes or experiments minimal and scoped to the investigation.
+- Define clear success criteria for what would confirm or falsify a hypothesis.
+
 ## Decision framing
 
 When a decision is required, always provide:

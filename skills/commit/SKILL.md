@@ -10,6 +10,12 @@ description: Create small, well-described git commits and do not push. Use when 
 Create local commits only and do not push, preferring small, focused commits with clear messages.
 If committing is prohibited by project or system instructions, state that you cannot commit and always provide the exact git commands needed; do not ask the user whether they want commands or a summary.
 
+## Behavioral guardrails (must follow)
+
+- State assumptions explicitly; if commit grouping or intent is unclear, ask.
+- Keep commits minimal and directly tied to the request; do not include unrelated changes.
+- Prefer the simplest commit structure that preserves logical separation.
+
 ## Git safety and permissions
 
 - Follow the current repo's git policy and the session's environment restrictions; if git writes or pushes are disallowed, do not perform them and provide commands instead.

@@ -9,6 +9,13 @@ description: Deep, thorough decision support. Use when the conversation presents
 
 This skill is for decision points in a conversation. Conduct deep and thorough background research for each decision, including investigations and considerations, then deliver a single, consolidated decision report. If the research shows there is no longer a decision to be made, omit that decision from the decision list and explain why a decision is no longer needed.
 
+## Behavioral guardrails (must follow)
+
+- State assumptions explicitly; if multiple interpretations exist, surface them before deciding.
+- Prefer the simplest viable option when it satisfies requirements; push back on unnecessary complexity.
+- Keep scope surgical: only include decisions that are actually required.
+- Define clear success criteria for decisions and how they will be validated.
+
 ## Shared principles (must follow)
 
 - Use the smallest set of skills that fully covers the request; if multiple skills apply, state the order.
