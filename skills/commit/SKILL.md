@@ -15,6 +15,7 @@ If committing is prohibited by project or system instructions, state that you ca
 - State assumptions explicitly; if commit grouping or intent is unclear, ask.
 - Keep commits minimal and directly tied to the request; do not include unrelated changes.
 - Prefer the simplest commit structure that preserves logical separation.
+- Do not create any commit until all applicable pre-commit checks and tests have been run and passed.
 
 ## Git safety and permissions
 

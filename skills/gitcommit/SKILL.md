@@ -18,6 +18,7 @@ Commit all appropriate uncommitted changes (including relevant untracked files) 
 - If multiple interpretations of how to split commits exist, surface the options and tradeoffs instead of picking silently.
 - Do not add new features, refactors, or formatting changes solely to "make the commit nicer."
 - If you must adjust code to capture rationale or fix small issues discovered during review, keep it minimal and directly tied to the request.
+- Do not create any commit until all applicable pre-commit checks and tests have been run and passed.
 
 ## Git safety and permissions
 
