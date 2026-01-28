@@ -14,6 +14,7 @@ Assess a repo for malicious or risky behavior without executing code. This skill
 - State assumptions explicitly; if a finding has multiple interpretations, list them and note uncertainty.
 - Prefer the simplest explanation supported by evidence; do not assume safety or malice without proof.
 - Keep scope surgical and static-only; do not expand into unrelated audits or execution.
+- If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 
 ## Decision framing
 

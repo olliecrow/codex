@@ -22,6 +22,7 @@ The spec is the primary artifact and should be saved in `plan/current/` as one o
 - Keep context tight and reduce noise; ask questions only when requirements are ambiguous or blocking.
 - Write summaries in plain, concise language with brief context; avoid analogies and define technical terms when needed.
 - When a plan can answer a question via investigation or reasonable assumptions, do so and make assumptions explicit; only ask questions that are truly blocking.
+- If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - State assumptions explicitly and surface alternate interpretations; do not pick one silently.
 - Prefer the simplest viable approach and call out overcomplication or speculative scope.
 - Keep the plan surgical: only include work that directly serves the request; mention unrelated opportunities without adding them.
@@ -100,14 +101,23 @@ If the plan introduces or recommends a decision that should be durable, capture 
 - For multi-step work, present step -> verify checks explicitly.
 - Keep the plan extremely detailed and explicit; no hand-wavy steps.
 
-### 7) Quality gate
+### 7) Validation and experimentation phase (required)
+
+- Always include an extensive validation/experimentation phase after implementation.
+- Specify real runs, empirical checks, and experiments with concrete commands and expected signals.
+- Use real data and production-like conditions when relevant and possible; if not, justify why and note risks.
+- Include a coverage matrix (configs, environments, perspectives) and a plan to expand it if issues appear.
+- Define exit criteria for the validation phase and escalation steps for failures.
+
+### 8) Quality gate
 
 - Confirm every item is high confidence and improves the codebase.
 - Remove or defer anything ambiguous; ask questions only when necessary.
 - Ensure the plan is consistent with repo guidelines and constraints.
 - Confirm the verification/validation plan is present and follows the implementation plan; only allow omission with explicit justification.
+- Confirm the validation/experimentation phase is present, extensive, and uses real data when feasible.
 
-### 8) Output
+### 9) Output
 
 - Write the spec into `plan/current/` as one or more Markdown files (for example: `plan/current/spec.md` and `plan/current/spec-*.md`).
 - Deliver a single, verbose, consolidated plan with sections:
@@ -118,6 +128,7 @@ If the plan introduces or recommends a decision that should be durable, capture 
   - Decisions (with pros/cons and recommendations)
   - Phased plan with detailed steps
   - Verification/validation plan (required; follows implementation plan and is omitted only with explicit justification)
+  - Validation/experimentation phase (required; extensive, empirical, and uses real data when feasible)
   - Risks and mitigations
   - Contingencies and mitigation playbook
   - Open questions (only if truly blocking)
@@ -126,6 +137,7 @@ If the plan introduces or recommends a decision that should be durable, capture 
 
 - Reuse prior notes and decisions; avoid rehashing unchanged sections.
 - If invoked multiple times in a row, perform further investigation on any items that still need clarification or evidence before finalizing updates.
+- Treat repeat calls as a signal to keep fleshing out the current plan: dig deeper, clarify assumptions, and add missing detail rather than restart from scratch.
 - Incorporate new information and reissue a fully consolidated plan and updated spec files.
 - Always return the full, final consolidated plan of change (not a delta).
 - State what changed since the last plan and why.

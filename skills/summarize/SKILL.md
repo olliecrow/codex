@@ -14,6 +14,7 @@ Produce a clear, concise, direct summary that fully equips the reader to underst
 - State assumptions explicitly; if the source is ambiguous, call it out instead of guessing.
 - Prefer the simplest summary that meets the need; avoid speculative or extra detail.
 - Keep scope surgical: include only what is supported by the source material.
+- If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 
 ## Decision framing
 

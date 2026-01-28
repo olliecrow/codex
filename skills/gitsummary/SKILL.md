@@ -14,6 +14,7 @@ Produce a precise, lower-case PR summary by fully understanding how the current 
 - Do not assume intent or fill gaps; call out uncertainty if needed.
 - Prefer the simplest summary that covers the actual changes; avoid speculative detail.
 - Keep scope surgical: every bullet must map to a specific change.
+- If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 
 ## Git safety and permissions
 

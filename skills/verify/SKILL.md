@@ -17,6 +17,7 @@ Prefer empirical verification with real data and real runs when relevant. Avoid 
 - Prefer the simplest verification that proves the claim; do not add speculative tests or scope.
 - Keep changes surgical if you must modify code or tests; avoid refactors unrelated to verification.
 - Define explicit success criteria and map each to a concrete check.
+- If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 
 When a current plan is the subject, use **plan verification mode**: review, critique, and refine the plan; run small investigations if needed; then return a fresh, improved plan.
 

@@ -15,6 +15,7 @@ Review the project holistically, investigate debt with tests or experiments as n
 - Prefer the simplest debt reduction that preserves behavior; avoid speculative improvements.
 - Keep changes surgical and limited to the debt being addressed; mention unrelated issues without changing them.
 - Define success criteria and verify after changes.
+- If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 
 ## Decision framing
 

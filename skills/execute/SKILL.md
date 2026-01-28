@@ -15,6 +15,7 @@ Execute an existing plan step by step until it is fully complete and verified. F
 - Prefer the simplest implementation that satisfies the plan; avoid speculative features or extra flexibility.
 - Keep changes surgical and within plan scope; do not refactor or "improve" adjacent code unless required.
 - Define success criteria per step and verify before moving on.
+- If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 
 ## Decision framing
 

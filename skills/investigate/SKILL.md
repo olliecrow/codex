@@ -17,6 +17,7 @@ Prefer empirical investigation with real data and real runs when relevant. Avoid
 - Prefer the simplest explanation and test it first; avoid speculative detours.
 - Keep any code changes or experiments minimal and scoped to the investigation.
 - Define clear success criteria for what would confirm or falsify a hypothesis.
+- If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 
 ## Decision framing
 

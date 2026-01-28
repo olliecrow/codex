@@ -15,6 +15,7 @@ Identify recent changes, then simplify, tidy, and de-over-engineer while preserv
 - Prefer the simplest change that solves the problem; avoid speculative refactors.
 - Keep changes surgical: do not touch adjacent code, comments, or formatting unless required.
 - Define success criteria and verify after cleanup; do not assume no regressions.
+- If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 
 ## Decision framing
 
