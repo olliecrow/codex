@@ -43,7 +43,9 @@ When summarizing fixes, changes, or key decisions, confirm the "why" is captured
    - Explain the starting point, why it matters, and constraints.
 3. Surface critical issues first.
    - Lead with red flags, blockers, or urgent risks that require immediate attention.
+   - Label any critical red flags, serious concerns, and immediate next steps explicitly and explain them clearly.
 4. Summarize key findings.
+   - Summarize all findings, even if brief.
    - Focus on outcomes, evidence, and implications; avoid low-value detail.
 5. Capture decisions and rationale.
    - For each decision made or needed, include:
@@ -59,12 +61,14 @@ When summarizing fixes, changes, or key decisions, confirm the "why" is captured
 - Include enough background context so a reader can understand the situation without prior knowledge.
 - Tailor depth and emphasis to the stated audience (executive, technical, operational) when specified.
 - Write in plain, concise, and intuitive language with brief context.
+- Clearly highlight and explain any critical red flags, serious concerns/issues, or immediate next steps.
 - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
 - Use absolute dates when referencing timelines.
 - Distinguish facts, inferences, and uncertainties.
 - When applicable, include key evidence (tests, logs, artifacts) and a confidence level.
 - Call out remaining risks or unknowns.
 - If no critical red flags exist, say so explicitly.
+- Ensure all findings are summarized, even if brief.
 
 ## Repeat invocations
 
