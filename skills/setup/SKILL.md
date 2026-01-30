@@ -15,6 +15,7 @@ Set up a consistent, agent-focused documentation and planning structure in any r
 - Prefer the minimal change set that satisfies the setup definition; avoid extra structure or features.
 - Keep changes surgical and scoped to setup requirements only.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
+- If there is nothing left to do, say so explicitly and stop.
 
 ## Scope and permissions
 

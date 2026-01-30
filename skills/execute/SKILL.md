@@ -16,6 +16,7 @@ Execute an existing plan step by step until it is fully complete and verified. F
 - Keep changes surgical and within plan scope; do not refactor or "improve" adjacent code unless required.
 - Define success criteria per step and verify before moving on.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
+- If there is nothing left to do, say so explicitly and stop.
 
 ## Decision framing
 
@@ -23,6 +24,7 @@ When a decision is required, always provide:
 - Background context sufficient to make the decision.
 - Pros and cons for each viable option.
 - Your recommendation and the reasoning behind it.
+If no decision is required, say so explicitly and continue.
 
 ## Rationale capture
 
@@ -50,7 +52,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 
 3. Execute relentlessly:
    - Perform each step in order, without skipping.
-   - Track progress in `plan/execute.md` (untracked) with actions taken and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
+   - Track progress in `plan/current/execute.md` (untracked) with actions taken and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
    - If a step fails, diagnose, fix, and retry before moving on.
    - Run the step-specific validation checks from the plan as you go; do not defer all testing to the end.
    - If the plan is ambiguous or would require scope expansion, stop and ask before proceeding.
@@ -71,4 +73,4 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 ## Repeat invocations
 
 - If called multiple times, continue from the latest progress log and avoid redoing completed steps unless verification requires it.
-- Update `plan/execute.md` with new actions, fixes, and re-verification results. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
+- Update `plan/current/execute.md` with new actions, fixes, and re-verification results. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.

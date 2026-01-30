@@ -18,6 +18,7 @@ Prefer empirical investigation with real data and real runs when relevant. Avoid
 - Keep any code changes or experiments minimal and scoped to the investigation.
 - Define clear success criteria for what would confirm or falsify a hypothesis.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
+- If there is nothing left to do, say so explicitly and stop.
 
 ## Decision framing
 
@@ -54,7 +55,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 
 - List plausible explanations or models; rank by likelihood and impact.
 - Note what evidence would confirm or falsify each hypothesis.
-- Track a lightweight investigation log in `plan/investigate.md` (untracked) with hypotheses, probes, and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
+- Track a lightweight investigation log in `plan/current/investigate.md` (untracked) with hypotheses, probes, and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
 - Use `plan/` as scratch space for ad-hoc experiments; create it only if permitted, remove any that are no longer needed, and never commit it. If you cannot create it, keep temporary notes in memory and call it out in the report.
 - Keep `plan/` untracked and never commit it.
 - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.

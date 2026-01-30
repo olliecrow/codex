@@ -15,6 +15,7 @@ Assess a repo for malicious or risky behavior without executing code. This skill
 - Prefer the simplest explanation supported by evidence; do not assume safety or malice without proof.
 - Keep scope surgical and static-only; do not expand into unrelated audits or execution.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
+- If there is nothing left to do, say so explicitly and stop.
 
 ## Decision framing
 
@@ -22,6 +23,7 @@ When a decision is required, always provide:
 - Background context sufficient to make the decision.
 - Pros and cons for each viable option.
 - Your recommendation and the reasoning behind it.
+If no decision is required, say so explicitly and continue.
 
 ## Rationale capture
 
@@ -76,8 +78,8 @@ If the repo is huge, note unscanned areas explicitly (for example: large `vendor
   - obfuscation and encoded payloads
   - filesystem destruction
 - For each hit, open the file and evaluate context, intent, and reachability.
-- Track a lightweight investigation log in `plan/dangercheck.md` (untracked) with probes and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
- - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
+- Track a lightweight investigation log in `plan/current/dangercheck.md` (untracked) with probes and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
+- For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
 ### 4) Dependency and supply-chain review
 
@@ -111,7 +113,7 @@ If the repo is huge, note unscanned areas explicitly (for example: large `vendor
 
 When dangercheck is called multiple times on the same repo, expand coverage rather than repeat the same scans.
 
-- Review the prior `plan/dangercheck.md` log and avoid duplicate probes unless validating a fix.
+- Review the prior `plan/current/dangercheck.md` log and avoid duplicate probes unless validating a fix.
 - Add new perspectives: different entrypoints, less common ecosystems, or deeper analysis of suspicious files.
 - Increase depth in stages:
   1) New entrypoints and hooks not previously scanned.
@@ -129,8 +131,8 @@ Call out:
 - unscanned areas or large binaries
 - clear "safe to run?" recommendation
 - next steps (sandboxing, request user intent, or deeper analysis)
- - a plain, concise, and intuitive summary with brief context so a new reader can follow it
- - no analogies; use simple, direct explanations and define any necessary technical terms
+- a plain, concise, and intuitive summary with brief context so a new reader can follow it
+- no analogies; use simple, direct explanations and define any necessary technical terms
 
 ## Static-only enforcement
 

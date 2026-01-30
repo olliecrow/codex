@@ -18,6 +18,7 @@ Prefer empirical testing with real data and real runs when relevant. Avoid mock 
 - Avoid unrelated code changes; keep any fixes or test additions strictly in scope.
 - Define success criteria and map each to a test or check.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
+- If there is nothing left to do, say so explicitly and stop.
 
 ## Decision framing
 
@@ -25,6 +26,7 @@ When a decision is required, always provide:
 - Background context sufficient to make the decision.
 - Pros and cons for each viable option.
 - Your recommendation and the reasoning behind it.
+If no decision is required, say so explicitly and continue.
 
 ## Rationale capture
 

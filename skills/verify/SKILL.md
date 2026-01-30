@@ -20,6 +20,7 @@ Prefer empirical verification with real data and real runs when relevant. Avoid 
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 
 When a current plan is the subject, use **plan verification mode**: review, critique, and refine the plan; run small investigations if needed; then return a fresh, improved plan.
+- If there is nothing left to do, say so explicitly and stop.
 
 ## Decision framing
 
@@ -27,6 +28,7 @@ When a decision is required, always provide:
 - Background context sufficient to make the decision.
 - Pros and cons for each viable option.
 - Your recommendation and the reasoning behind it.
+If no decision is required, say so explicitly and continue.
 
 ## Rationale capture
 
@@ -56,7 +58,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 - Prefer fast, focused probes first; include regression checks around touched areas.
 - If basics fail, stop early and fix before scaling the verification effort.
 - Prefer production-like configurations and real datasets when feasible; document data sources and constraints.
-- Keep a lightweight verification log in `plan/verify.md` (untracked) with probes and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
+- Keep a lightweight verification log in `plan/current/verify.md` (untracked) with probes and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
 - Track a minimal verification matrix of configs/perspectives already covered to avoid repeats.
 - Use `plan/` as scratch space for ad-hoc experiments; create it only if permitted, remove any that are no longer needed, and never commit it. If you cannot create it, keep temporary notes in memory and call it out in the report.
 - Keep `plan/` untracked and never commit it.
@@ -91,8 +93,8 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 - List evidence (tests run, steps, outputs, artifacts).
 - Note follow-up items and any limitations.
 - If plan verification mode was used, include the refreshed plan as a full replacement copy.
- - Write the summary in plain, concise, and intuitive language with brief context so a new reader can follow it.
- - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
+- Write the summary in plain, concise, and intuitive language with brief context so a new reader can follow it.
+- Avoid analogies; use simple, direct explanations and define any necessary technical terms.
 
 ## Repeat invocations
 
