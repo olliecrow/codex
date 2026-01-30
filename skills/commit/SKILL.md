@@ -45,35 +45,41 @@ Before committing, ensure that any issue fixes or key decisions are documented i
 
 ## Workflow
 
-1. Inspect the repo state first:
+1. Sync remote main before anything else:
+   - Pull the most recent `origin/main` before any other steps.
+   - If `origin/main` does not exist or the update cannot be applied safely, stop and ask for guidance.
+   - If git operations can be executed here, run them directly; otherwise, output explicit commands and wait for results before continuing.
+   - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
+
+2. Inspect the repo state:
    - Check `git status -sb` for tracked and untracked files.
    - Review `git diff` and `git diff --staged` to understand changes.
    - If diffs are large, start with `git diff --stat` or `git diff --name-only` and then review per-file diffs to keep output manageable.
    - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat`, `git diff --name-only`, or per-file diffs instead of unbounded commands.
-   - Do this before any other steps.
+   - Do this before any commit operations.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
-2. Run pre-commit checks first:
+3. Run pre-commit checks first:
    - If the repo defines pre-commit checks (config or standard script), run them before committing.
    - If no pre-commit checks are defined, skip this step.
    - Ensure pre-commit checks pass before committing.
    - If failures are small and reasonable to fix, fix them before committing.
    - This requirement applies even when you cannot commit and must output copy-pasteable git commands.
 
-3. Run tests (or the most relevant subset) before providing git commands:
+4. Run tests (or the most relevant subset) before providing git commands:
    - Prefer the smallest relevant test target(s) when full test suites are too heavy.
    - Ensure tests pass before committing.
    - If tests cannot be run here, say so and request the user to run them and confirm results before you provide any git commands.
 
-4. Split changes into logical units:
+5. Split changes into logical units:
    - Prefer more, smaller commits over fewer large ones; uncommitted changes can (and often should) be split into multiple commits when it makes sense.
    - Keep each commit focused on a single purpose or area with a clear rationale.
    - Treat unrelated untracked files as separate commits unless clearly part of the same change.
    - Ensure commit order and packaging make sense (foundational changes first, dependent changes after).
    - It is fine (and encouraged) to spend time reasoning, investigating, and considering the change set before deciding what each commit should encapsulate and what the best commit messages should be.
 
-5. Stage and commit each unit:
+6. Stage and commit each unit:
    - Primarily use/return/print explicit `git add <paths>` commands (avoid interactive staging by default).
    - Primarily use/return/print `git commit -m "..."` commands with concise, descriptive, bespoke messages (imperative, present tense) tailored to the exact change.
    - Each commit should stand on its own as a logical, best-practice change that can be understood and reverted independently.
@@ -81,17 +87,17 @@ Before committing, ensure that any issue fixes or key decisions are documented i
    - Do not push.
    - If git operations can be executed here, run them directly; otherwise, provide explicit commands and pause until the user reports back.
 
-6. Verify nothing remains unstaged that should be committed:
+7. Verify nothing remains unstaged that should be committed:
    - Re-check `git status -sb` at the very end and explicitly confirm the working tree is clean.
    - Ensure there are no unstaged or uncommitted files at the end of the commit sequence.
    - If any files that should have been committed remain unstaged or uncommitted, include them in a follow-up commit (or add the missing commands to the provided block).
 
-7. Fallback when you must not commit:
+8. Fallback when you must not commit:
    - If committing is disallowed (e.g., project instructions forbid any git writing), explicitly state you cannot commit here.
    - Then output a single copy-pasteable block of git commands, without asking the user whether they want commands or a summary.
    - The block must contain only commands, one per line, in execution order, with no extra text between them.
    - Prefer `git add <paths>` and `git commit -m "..."` commands in that block.
 
-8. If there are no changes to commit:
+9. If there are no changes to commit:
    - State that the working tree is clean and stop.
    - If called repeatedly, you may follow prior suggested next steps or start fresh; both are fine. Re-check the repo and continue only if new changes exist.
