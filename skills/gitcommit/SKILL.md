@@ -48,42 +48,48 @@ Before committing, ensure that any issue fixes or key decisions are documented i
 
 ## Workflow
 
-1. Inspect repo state first:
+1. Sync remote main before anything else:
+   - Pull the most recent `origin/main` before any other steps.
+   - If `origin/main` does not exist or the update cannot be applied safely, stop and ask for guidance.
+   - If git operations can be executed here, run them directly; otherwise, output explicit commands and wait for results before continuing.
+   - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
+
+2. Inspect repo state:
    - Check `git status -sb`.
    - Review `git diff`, `git diff --staged`, and `git diff --name-only` to understand all changes (tracked and untracked).
    - If diffs are large, start with `git diff --stat` and then review per-file diffs.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
-2. Run pre-commit checks first:
+3. Run pre-commit checks first:
    - If the repo defines pre-commit checks (config or standard script), run them before committing.
    - If no pre-commit checks are defined, skip this step.
    - Ensure pre-commit checks pass before committing.
    - If failures are small and reasonable to fix, fix them before committing.
 
-3. Run tests (or the most relevant subset) before committing:
+4. Run tests (or the most relevant subset) before committing:
    - Prefer the smallest relevant test target(s) when full test suites are too heavy.
    - Ensure tests pass before committing.
    - If tests cannot be run here, say so and request the user to run them and confirm results before proceeding.
 
-4. Split changes into logical units:
+5. Split changes into logical units:
    - Prefer many small commits over fewer large ones.
    - Keep each commit focused on a single purpose or area.
    - Treat unrelated untracked files as separate commits unless clearly part of the same change.
    - Ensure commit order and packaging make sense (foundational changes first, dependent changes after).
    - If a simpler split achieves the same clarity, choose the simpler split.
 
-5. Stage and commit each unit:
+6. Stage and commit each unit:
    - Use explicit `git add <paths>` commands (avoid interactive staging by default).
    - Use `git commit -m "..."` with concise, descriptive, imperative messages tailored to each change.
    - If git operations can be executed here, run them directly; otherwise, provide explicit commands and pause until the user reports back.
    - Do not push.
 
-6. Ensure nothing appropriate is left uncommitted:
+7. Ensure nothing appropriate is left uncommitted:
    - Re-check `git status -sb` and confirm the working tree is clean.
    - If any files that should be committed remain, create additional commits until the tree is clean.
 
-7. If committing is disallowed:
+8. If committing is disallowed:
    - State that you cannot commit here.
    - Provide a single copy-pasteable block of git commands that will stage and commit all changes in logical units.
 

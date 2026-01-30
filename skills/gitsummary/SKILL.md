@@ -35,11 +35,18 @@ If changes include issue fixes or key decisions, confirm the rationale is captur
 
 ## Workflow
 
-1. Establish baseline:
+1. Sync remote main before anything else:
+   - Pull the most recent `origin/main` before any other steps.
+   - If the repo uses a different mainline (for example, `master`), sync that instead.
+   - If the update cannot be applied safely, stop and ask for guidance.
+   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
+   - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
+
+2. Establish baseline:
    - Confirm repo root and current branch.
    - Determine the main branch name (main/master) and verify it exists locally.
 
-2. Gather diffs and context:
+3. Gather diffs and context:
    - Compare branch vs main (e.g., `git diff main...HEAD` and `git log main..HEAD`).
    - If diffs are large, start with `git diff --stat main...HEAD` or `git diff --name-only main...HEAD` and then review per-file diffs to keep output manageable.
    - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat main...HEAD`, `git diff --name-only main...HEAD`, or per-file diffs instead of unbounded commands.
@@ -49,13 +56,13 @@ If changes include issue fixes or key decisions, confirm the rationale is captur
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
-3. Understand intent and impact:
+4. Understand intent and impact:
    - Map changes to user-facing behavior, APIs, data, config, or ops.
    - Note any risk areas, edge cases, or migration considerations.
    - Identify tests added/updated and gaps if any are missing.
    - Call out removed or degraded functionality compared to main when relevant.
 
-4. Summarize for PR:
+5. Summarize for PR:
    - Output a very concise bullet list suitable for a PR summary.
    - Use lower-case text only.
    - Use very simple language; avoid complex words and jargon.

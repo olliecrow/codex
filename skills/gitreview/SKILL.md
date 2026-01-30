@@ -44,7 +44,14 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
 
 ## Workflow
 
-1. Establish diff scope:
+1. Sync remote main before anything else:
+   - Pull the most recent `origin/main` before any other steps.
+   - If the repo uses a different mainline (for example, `master`), sync that instead.
+   - If the update cannot be applied safely, stop and ask for guidance.
+   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
+   - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
+
+2. Establish diff scope:
    - Compare current branch to main (or the branch it diverged from).
    - Enumerate all changed files and hunks.
    - Always conduct a full review of every changed file and hunk.
@@ -53,16 +60,16 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
-2. Understand intent:
+3. Understand intent:
    - For each change, identify the rationale, intent, and expected impact.
    - Flag unclear or unjustified changes for deeper scrutiny.
 
-3. Deep risk review:
+4. Deep risk review:
    - Look for critical red flags, regressions, security risks, data loss, perf issues, or correctness bugs.
    - Consider long-term maintainability and hidden coupling.
    - Ensure anything that worked on main still works here; flag removed or degraded functionality and verify intended parity.
 
-4. Investigate thoroughly:
+5. Investigate thoroughly:
    - Proactively create and run experiments, trial runs, or tests as needed.
    - Start with small, fast checks before larger runs; large tests are still expected when relevant.
    - After any changes or fixes, rerun relevant checks to confirm no regressions.
@@ -70,13 +77,13 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - Use a `plan/` directory as scratch space (create it if missing and edits are permitted); keep it untracked and never commit it. If you cannot create it, keep a lightweight in-memory log and call it out in the report.
    - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
-5. Handle huge diffs without skipping coverage:
+6. Handle huge diffs without skipping coverage:
    - Still review all changes end-to-end; do not sample or skip files.
    - Break the review into batches (by directory, feature, or risk area) and track progress in `plan/current/gitreview.md`. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
    - Use tooling to manage scale (e.g., `git diff --stat`, `git diff --numstat`, per-file diffs, and focused searches) but ensure every file and hunk is covered.
    - If time or compute constraints make a full review impractical, ask the user for a time budget or additional constraints, but keep the full-review requirement explicit.
 
-6. Summarize readiness:
+7. Summarize readiness:
    - List critical issues or red flags.
    - Note required fixes before merge.
    - Provide a merge readiness assessment and next steps.
