@@ -15,6 +15,7 @@ Produce a clear, concise, direct summary that fully equips the reader to underst
 - Prefer the simplest summary that meets the need; avoid speculative or extra detail.
 - Keep scope surgical: include only what is supported by the source material.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
+- If there is nothing left to do, say so explicitly and stop.
 
 ## Decision framing
 
@@ -22,6 +23,7 @@ When a decision is required, always provide:
 - Background context sufficient to make the decision.
 - Pros and cons for each viable option.
 - Your recommendation and the reasoning behind it.
+If no decision is required, say so explicitly and continue.
 
 ## Rationale capture
 

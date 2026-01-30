@@ -16,6 +16,7 @@ Get the current branch to a merge-ready state with main by understanding differe
 - Keep changes surgical and limited to merge needs; do not "improve" unrelated code.
 - Define success criteria and verify after each meaningful step.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
+- If there is nothing left to do, say so explicitly and stop.
 
 ## Git safety and permissions
 
@@ -28,6 +29,7 @@ When a decision is required, always provide:
 - Background context sufficient to make the decision.
 - Pros and cons for each viable option.
 - Your recommendation and the reasoning behind it.
+If no decision is required, say so explicitly and continue.
 
 ## Rationale capture
 
@@ -56,10 +58,10 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
 3. Understand diffs before merging:
    - Compare current branch vs main (`git diff main...HEAD` and `git log main..HEAD`).
    - If diffs are large, start with `git diff --stat main...HEAD` or `git diff --name-only main...HEAD` and then review per-file diffs to keep output manageable.
-- Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat main...HEAD`, `git diff --name-only main...HEAD`, or per-file diffs instead of unbounded commands.
-- Read key files to understand intent, behavior, and risk.
-- Understand what main is doing and why before making any merge decisions.
-- Review every changed file and hunk; ensure no main functionality is removed or degraded without explicit intent.
+   - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat main...HEAD`, `git diff --name-only main...HEAD`, or per-file diffs instead of unbounded commands.
+   - Read key files to understand intent, behavior, and risk.
+   - Understand what main is doing and why before making any merge decisions.
+   - Review every changed file and hunk; ensure no main functionality is removed or degraded without explicit intent.
 
 4. Plan the merge approach:
    - Identify conflicts, risky areas, and order of operations.
@@ -77,10 +79,10 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 6. Verify and battle test:
-- Validate that the merge completed cleanly and the working tree is consistent.
-- Run relevant checks/tests, starting small and expanding to broader coverage.
-- Battle test to catch regressions, edge cases, or integration issues.
-- Explicitly confirm that functionality present on main still works; flag any regressions or removals.
+   - Validate that the merge completed cleanly and the working tree is consistent.
+   - Run relevant checks/tests, starting small and expanding to broader coverage.
+   - Battle test to catch regressions, edge cases, or integration issues.
+   - Explicitly confirm that functionality present on main still works; flag any regressions or removals.
    - After any fixes, re-run the smallest relevant checks to confirm no regressions.
    - Remove ad-hoc experiments that are no longer needed; keep only those that revealed issues and should be preserved.
    - If failures appear, fix and re-test until green.
@@ -94,4 +96,4 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
 
 - If called multiple times, avoid repeating the same probes or tests unless verifying a fix.
 - Expand coverage gradually: re-check diffs after updates, deepen review of conflicted areas, or add broader tests if risk warrants it.
-- Keep a lightweight log in `plan/gitmerge.md` (untracked) of decisions, conflicts, and fixes to avoid rework. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
+- Keep a lightweight log in `plan/current/gitmerge.md` (untracked) of decisions, conflicts, and fixes to avoid rework. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.

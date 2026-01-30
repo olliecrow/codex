@@ -15,6 +15,7 @@ Produce a precise, lower-case PR summary by fully understanding how the current 
 - Prefer the simplest summary that covers the actual changes; avoid speculative detail.
 - Keep scope surgical: every bullet must map to a specific change.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
+- If there is nothing left to do, say so explicitly and stop.
 
 ## Git safety and permissions
 
@@ -41,18 +42,18 @@ If changes include issue fixes or key decisions, confirm the rationale is captur
 2. Gather diffs and context:
    - Compare branch vs main (e.g., `git diff main...HEAD` and `git log main..HEAD`).
    - If diffs are large, start with `git diff --stat main...HEAD` or `git diff --name-only main...HEAD` and then review per-file diffs to keep output manageable.
-- Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat main...HEAD`, `git diff --name-only main...HEAD`, or per-file diffs instead of unbounded commands.
-- Review file-level changes and key hunks to understand intent.
-- Review every changed file and hunk; do not skip any relevant changes.
+   - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat main...HEAD`, `git diff --name-only main...HEAD`, or per-file diffs instead of unbounded commands.
+   - Review file-level changes and key hunks to understand intent.
+   - Review every changed file and hunk; do not skip any relevant changes.
    - Read related docs or comments if they explain why changes were made.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 3. Understand intent and impact:
-- Map changes to user-facing behavior, APIs, data, config, or ops.
-- Note any risk areas, edge cases, or migration considerations.
-- Identify tests added/updated and gaps if any are missing.
-- Call out removed or degraded functionality compared to main when relevant.
+   - Map changes to user-facing behavior, APIs, data, config, or ops.
+   - Note any risk areas, edge cases, or migration considerations.
+   - Identify tests added/updated and gaps if any are missing.
+   - Call out removed or degraded functionality compared to main when relevant.
 
 4. Summarize for PR:
    - Output a very concise bullet list suitable for a PR summary.

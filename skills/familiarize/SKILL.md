@@ -15,6 +15,7 @@ Build a clear, accurate mental model of the codebase: layout, purpose, key flows
 - Prefer the simplest explanation supported by evidence; avoid speculative conclusions.
 - Keep scope surgical and read-only unless explicitly asked to edit.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
+- If there is nothing left to do, say so explicitly and stop.
 
 ## Git safety and permissions
 
@@ -27,6 +28,7 @@ When a decision is required, always provide:
 - Background context sufficient to make the decision.
 - Pros and cons for each viable option.
 - Your recommendation and the reasoning behind it.
+If no decision is required, say so explicitly and continue.
 
 ## Rationale capture
 
@@ -73,10 +75,10 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 
 6. Compare against main when relevant:
    - If the current branch is not main, review diffs vs main (e.g., `git diff main...HEAD` and relevant logs).
-- If diffs are large, start with `git diff --stat main...HEAD` or `git diff --name-only main...HEAD` and then review per-file diffs to keep output manageable.
-- Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat main...HEAD`, `git diff --name-only main...HEAD`, or per-file diffs instead of unbounded commands.
-- Summarize how the current branch diverges (scope and intent) and which areas are affected.
-- Review every changed file and hunk when comparing against main; do not skip relevant areas.
+   - If diffs are large, start with `git diff --stat main...HEAD` or `git diff --name-only main...HEAD` and then review per-file diffs to keep output manageable.
+   - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat main...HEAD`, `git diff --name-only main...HEAD`, or per-file diffs instead of unbounded commands.
+   - Summarize how the current branch diverges (scope and intent) and which areas are affected.
+   - Review every changed file and hunk when comparing against main; do not skip relevant areas.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 

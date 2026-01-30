@@ -16,6 +16,7 @@ This skill is for decision points in a conversation. Conduct deep and thorough b
 - Keep scope surgical: only include decisions that are actually required.
 - Define clear success criteria for decisions and how they will be validated.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
+- If there is nothing left to do, say so explicitly and stop.
 
 ## Shared principles (must follow)
 
@@ -34,6 +35,7 @@ For every decision that still exists after research, include:
 - Options that are actually viable, with clear pros and cons for each.
 - Your recommendation, including the reasoning and logic behind it.
 - A confidence level and the key assumptions that drive the recommendation.
+If no decisions remain, say so explicitly and explain why.
 
 ## Rationale capture
 

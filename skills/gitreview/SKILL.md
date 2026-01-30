@@ -16,6 +16,7 @@ Compare the current branch against main, analyze each change's intent and risk, 
 - Keep review scope surgical: every comment should trace to a specific change.
 - Define explicit readiness criteria and verify them before concluding.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
+- If there is nothing left to do, say so explicitly and stop.
 
 ## Git safety and permissions
 
@@ -28,6 +29,7 @@ When a decision is required, always provide:
 - Background context sufficient to make the decision.
 - Pros and cons for each viable option.
 - Your recommendation and the reasoning behind it.
+If no decision is required, say so explicitly and continue.
 
 ## Rationale capture
 
@@ -70,7 +72,7 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
 
 5. Handle huge diffs without skipping coverage:
    - Still review all changes end-to-end; do not sample or skip files.
-   - Break the review into batches (by directory, feature, or risk area) and track progress in `plan/gitreview.md`. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
+   - Break the review into batches (by directory, feature, or risk area) and track progress in `plan/current/gitreview.md`. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
    - Use tooling to manage scale (e.g., `git diff --stat`, `git diff --numstat`, per-file diffs, and focused searches) but ensure every file and hunk is covered.
    - If time or compute constraints make a full review impractical, ask the user for a time budget or additional constraints, but keep the full-review requirement explicit.
 

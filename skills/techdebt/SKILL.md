@@ -16,6 +16,7 @@ Review the project holistically, investigate debt with tests or experiments as n
 - Keep changes surgical and limited to the debt being addressed; mention unrelated issues without changing them.
 - Define success criteria and verify after changes.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
+- If there is nothing left to do, say so explicitly and stop.
 
 ## Decision framing
 
@@ -23,6 +24,7 @@ When a decision is required, always provide:
 - Background context sufficient to make the decision.
 - Pros and cons for each viable option.
 - Your recommendation and the reasoning behind it.
+If no decision is required, say so explicitly and continue.
 
 ## Rationale capture
 
@@ -50,7 +52,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 
 3. Prioritize and log:
    - Rank debt by impact (maintainability, risk, churn) and effort.
-   - Track a lightweight debt log in `plan/techdebt.md` (untracked) with found items, fixes, and deferred items plus the reason. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
+   - Track a lightweight debt log in `plan/current/techdebt.md` (untracked) with found items, fixes, and deferred items plus the reason. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
    - For each planned change, state the intent as "no behavior change" (and note any exception that would require explicit user approval).
    - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 

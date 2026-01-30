@@ -11,7 +11,7 @@ Create a single, consolidated, highly detailed plan spec that moves the codebase
 
 The spec must include empirical validation and battle testing, using real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces. Do not make the plan monolithic: build in step-by-step verification and testing throughout the phases, not only at the end. Always include a dedicated verification/validation plan immediately following the implementation plan; omission should be extremely rare and must be explicitly justified.
 
-The spec is the primary artifact and should be saved in `plan/current/` as one or more Markdown files. It should be comprehensive and execution-ready, with investigation results, assumptions, decisions, and validation plans captured in the spec itself.
+The spec is the primary working artifact for the task and should be saved in `plan/current/` as one or more Markdown files. It is still scratch and should not be committed. It should be comprehensive and execution-ready, with investigation results, assumptions, decisions, and validation plans captured in the spec itself.
 
 ## Shared principles (must follow)
 
@@ -27,6 +27,7 @@ The spec is the primary artifact and should be saved in `plan/current/` as one o
 - Prefer the simplest viable approach and call out overcomplication or speculative scope.
 - Keep the plan surgical: only include work that directly serves the request; mention unrelated opportunities without adding them.
 - Define success criteria and verification for each step; avoid vague goals.
+- If there is nothing left to plan, say so explicitly and stop.
 
 ## Decision framing
 
@@ -35,6 +36,7 @@ When a decision is required, always provide:
 - Pros and cons for each viable option.
 - Your recommendation and the reasoning behind it.
 - Explicit confidence level and key assumptions.
+If no decision is required, say so explicitly and continue.
 
 ## Rationale capture
 
@@ -42,7 +44,7 @@ If the plan introduces or recommends a decision that should be durable, capture 
 
 ## Plan/docs/decisions robustness
 
-- Treat `plan/` as short-term scratch and never commit it, but store the plan spec there as the primary artifact.
+- Treat `plan/` as short-term scratch and never commit it. Store the plan spec in `plan/current/` as the working artifact for the task.
 - If `plan/` is missing, create it with the required subdirectories only when edits are permitted; otherwise keep a lightweight in-memory log and state in the report that plan logging was not persisted.
 - Treat `docs/` as long-lived, evergreen guidance; prefer updating existing entries over adding new files.
 - Avoid time- or date-dependent language in `docs/`; prefer timeless, evergreen wording.
