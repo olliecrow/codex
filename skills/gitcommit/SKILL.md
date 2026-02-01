@@ -49,8 +49,8 @@ Before committing, ensure that any issue fixes or key decisions are documented i
 ## Workflow
 
 1. Sync remote main before anything else:
-   - Pull the most recent `origin/main` before any other steps.
-   - If `origin/main` does not exist or the update cannot be applied safely, stop and ask for guidance.
+   - Fetch the most recent `origin/main` before any other steps (do not checkout, merge, or rebase).
+   - If `origin/main` does not exist, stop and ask for guidance.
    - If git operations can be executed here, run them directly; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 

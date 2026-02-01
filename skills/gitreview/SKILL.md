@@ -45,9 +45,9 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
 ## Workflow
 
 1. Sync remote main before anything else:
-   - Pull the most recent `origin/main` before any other steps.
-   - If the repo uses a different mainline (for example, `master`), sync that instead.
-   - If the update cannot be applied safely, stop and ask for guidance.
+   - Fetch the most recent `origin/main` before any other steps (do not checkout, merge, or rebase).
+   - If the repo uses a different mainline (for example, `master`), fetch that instead.
+   - If the update cannot be fetched, stop and ask for guidance.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
