@@ -7,7 +7,7 @@ description: Create a comprehensive, high-conviction change plan that improves t
 
 ## Overview
 
-Create a single, consolidated, highly detailed plan spec that moves the codebase from its current state to a better state. This skill is intended for long, end-to-end work: produce a comprehensive spec so execution can proceed for an extended period without additional questions. Do not produce short or partial plans. Incorporate all available information (conversation, prior decisions, AGENTS.md, docs/, code, recent changes, tech debt notes, and any evidence gathered). Pack the questions, assumptions, investigation results, reasoning, and decisions up front. The plan must be high confidence: only include steps you strongly believe are correct and beneficial. If anything material is uncertain or low-conviction, pause and ask a clarifying question (or schedule a targeted investigation) before including it in the plan.
+Create a single, consolidated, highly detailed plan spec that moves the codebase from its current state to a better state. This skill is intended for long, end-to-end work: produce a comprehensive spec so execution can proceed start-to-finish without additional questions, input, or decisions. Do not produce short or partial plans. Incorporate all available information (conversation, prior decisions, AGENTS.md, docs/, code, recent changes, tech debt notes, and any evidence gathered). Pack the questions, assumptions, investigation results, reasoning, and decisions up front. The plan must be high confidence: only include steps you strongly believe are correct and beneficial. If anything material is uncertain or low-conviction, resolve it via investigation or explicit assumptions before including it in the plan. If it cannot be resolved, state that planning is blocked and stop.
 
 The spec must include empirical validation and battle testing, using real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces. Do not make the plan monolithic: build in step-by-step verification and testing throughout the phases, not only at the end. Always include a dedicated verification/validation plan immediately following the implementation plan; omission should be extremely rare and must be explicitly justified.
 
@@ -22,6 +22,7 @@ The spec is the primary working artifact for the task and should be saved in `pl
 - Keep context tight and reduce noise; ask questions only when requirements are ambiguous or blocking.
 - Write summaries in plain, concise language with brief context; avoid analogies and define technical terms when needed.
 - When a plan can answer a question via investigation or reasonable assumptions, do so and make assumptions explicit; only ask questions that are truly blocking.
+- Ensure the plan is executable end-to-end without further input or decisions; resolve all decisions up front.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - State assumptions explicitly and surface alternate interpretations; do not pick one silently.
 - Prefer the simplest viable approach and call out overcomplication or speculative scope.
@@ -63,31 +64,37 @@ If the plan introduces or recommends a decision that should be durable, capture 
 - When feasible, run targeted empirical probes (real data, real runs) to validate key assumptions before finalizing the plan.
 - Capture notes in `plan/current/plan.md` if scratch space is needed.
 
-### 2) Establish current state
+### 2) Resolve immediate, low-risk items
+
+- If there are items that can be safely worked through now (small investigations, quick validations, low-risk fixes), do them immediately.
+- Capture results, evidence, and any changes made, then fold the outcomes into the plan.
+- Keep scope tight; do not begin large refactors or multi-step implementations during this phase.
+
+### 3) Establish current state
 
 - Summarize how the system works today (key flows, dependencies, boundaries).
 - Call out pain points, risks, and places where behavior must remain unchanged.
 - List any missing information and decide if it blocks planning.
 
-### 3) Define the target state
+### 4) Define the target state
 
 - Specify the desired end state in concrete terms (behavior, structure, quality).
 - List invariants that must not be violated.
 - Define acceptance criteria and success signals.
 
-### 4) Identify candidate changes
+### 5) Identify candidate changes
 
 - List possible improvements and map them to goals.
 - Filter aggressively: keep only high-confidence, high-conviction items.
 - For any candidate with uncertainty or low conviction, schedule investigation or ask for clarification before committing it to the plan.
 
-### 5) Make required decisions
+### 6) Make required decisions
 
 - For each decision, provide the required framing (context, options, pros/cons, recommendation).
 - Prefer decisions that reduce complexity and future maintenance burden.
 - Avoid introducing tech debt; if unavoidable, justify and record mitigation.
 
-### 6) Build the plan spec (single consolidated spec)
+### 7) Build the plan spec (single consolidated spec)
 
 - Organize into phases (for example: Preparation, Changes, Cleanup, Verification, Rollout).
 - For each step include:
@@ -103,7 +110,7 @@ If the plan introduces or recommends a decision that should be durable, capture 
 - For multi-step work, present step -> verify checks explicitly.
 - Keep the plan extremely detailed and explicit; no hand-wavy steps.
 
-### 7) Validation and experimentation phase (required)
+### 8) Validation and experimentation phase (required)
 
 - Always include an extensive validation/experimentation phase after implementation.
 - Specify real runs, empirical checks, and experiments with concrete commands and expected signals.
@@ -111,7 +118,7 @@ If the plan introduces or recommends a decision that should be durable, capture 
 - Include a coverage matrix (configs, environments, perspectives) and a plan to expand it if issues appear.
 - Define exit criteria for the validation phase and escalation steps for failures.
 
-### 8) Quality gate
+### 9) Quality gate
 
 - Confirm every item is high confidence and improves the codebase.
 - Remove or defer anything ambiguous; ask questions only when necessary.
@@ -119,7 +126,7 @@ If the plan introduces or recommends a decision that should be durable, capture 
 - Confirm the verification/validation plan is present and follows the implementation plan; only allow omission with explicit justification.
 - Confirm the validation/experimentation phase is present, extensive, and uses real data when feasible.
 
-### 9) Output
+### 10) Output
 
 - Write the spec into `plan/current/` as one or more Markdown files (for example: `plan/current/spec.md` and `plan/current/spec-*.md`).
 - Deliver a single, verbose, consolidated plan with sections:
@@ -133,7 +140,7 @@ If the plan introduces or recommends a decision that should be durable, capture 
   - Validation/experimentation phase (required; extensive, empirical, and uses real data when feasible)
   - Risks and mitigations
   - Contingencies and mitigation playbook
-  - Open questions (only if truly blocking)
+  - Open questions (only if truly blocking; if any exist, state that execution cannot proceed without input)
 
 ## Repeat invocations
 
