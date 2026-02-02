@@ -59,12 +59,13 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 
 ## Current Skills
 - battletest: Stress-test recent changes across configurations and perspectives.
-- cleanup: Simplify recent changes without altering behavior.
-- commit: Create small, well-described git commits (no pushing).
+- cleanup: Simplify recent changes or reduce technical debt without altering behavior.
+- consider: Evaluate new evidence or reviews and decide what to change (if anything).
 - dangercheck: Safety audit before running untrusted code.
 - decisions: Deep, thorough decision support with research and consolidated recommendations.
 - execute: Run an existing plan end-to-end and report results.
 - familiarize: Orient to the repo, structure, and workflows.
+- gitcommit: Commit all current uncommitted changes into logical commits (no pushing).
 - gitmerge: Prepare a branch to merge cleanly into main.
 - gitreview: Deep review of a branch for merge readiness.
 - gitsummary: Concise PR-ready summary of diffs vs main.
@@ -72,5 +73,4 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 - plan: Create comprehensive, high-conviction change plans.
 - setup: Initialize docs/plan/decisions conventions.
 - summarize: Concise, decision-ready summaries with evidence.
-- techdebt: Identify and reduce technical debt safely.
 - verify: Run checks to confirm recent work is correct.
