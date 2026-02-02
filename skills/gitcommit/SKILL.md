@@ -8,11 +8,13 @@ description: Commit all current uncommitted changes into small, logical commits 
 ## Overview
 
 Commit all appropriate uncommitted changes (including relevant untracked files) into many small, logical commits with descriptive messages. Do not push. End with no changes that should be committed left uncommitted.
+If committing is prohibited by project or system instructions, state that you cannot commit and always provide the exact git commands needed; do not ask the user whether they want commands or a summary.
 
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
 - State assumptions explicitly; choose a reasonable grouping without asking and note assumptions in the summary.
+- Keep commits minimal and directly tied to the request; do not include unrelated changes.
 - Prefer the simplest commit structure that preserves logical separation; avoid bundling unrelated changes.
 - Keep changes surgical: do not add unrelated edits just to "clean up."
 - Define success criteria (clean working tree) and verify before finishing.
@@ -59,6 +61,7 @@ Before committing, ensure that any issue fixes or key decisions are documented i
    - Check `git status -sb`.
    - Review `git diff`, `git diff --staged`, and `git diff --name-only` to understand all changes (tracked and untracked).
    - If diffs are large, start with `git diff --stat` and then review per-file diffs.
+   - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat`, `git diff --name-only`, or per-file diffs instead of unbounded commands.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
@@ -67,6 +70,7 @@ Before committing, ensure that any issue fixes or key decisions are documented i
    - If no pre-commit checks are defined, skip this step.
    - Ensure pre-commit checks pass before committing.
    - If failures are small and reasonable to fix, fix them before committing.
+   - This requirement applies even when you cannot commit and must output copy-pasteable git commands.
 
 4. Run tests (or the most relevant subset) before committing:
    - Prefer the smallest relevant test target(s) when full test suites are too heavy.
@@ -75,7 +79,7 @@ Before committing, ensure that any issue fixes or key decisions are documented i
 
 5. Split changes into logical units:
    - Prefer many small commits over fewer large ones.
-   - Keep each commit focused on a single purpose or area.
+   - Keep each commit focused on a single purpose or area with a clear rationale.
    - Treat unrelated untracked files as separate commits unless clearly part of the same change.
    - Ensure commit order and packaging make sense (foundational changes first, dependent changes after).
    - If a simpler split achieves the same clarity, choose the simpler split.
@@ -83,6 +87,8 @@ Before committing, ensure that any issue fixes or key decisions are documented i
 6. Stage and commit each unit:
    - Use explicit `git add <paths>` commands (avoid interactive staging by default).
    - Use `git commit -m "..."` with concise, descriptive, imperative messages tailored to each change.
+   - Each commit should stand on its own as a logical, best-practice change that can be understood and reverted independently.
+   - Order commits so they read as a coherent sequence with minimal backtracking or cross-dependencies.
    - If git operations can be executed here, run them directly; otherwise, provide explicit commands and pause until the user reports back.
    - Do not push.
 
@@ -93,6 +99,12 @@ Before committing, ensure that any issue fixes or key decisions are documented i
 8. If committing is disallowed:
    - State that you cannot commit here.
    - Provide a single copy-pasteable block of git commands that will stage and commit all changes in logical units.
+   - The block must contain only commands, one per line, in execution order, with no extra text between them.
+   - Do not ask the user whether they want commands or a summary.
+
+9. If there are no changes to commit:
+   - State that the working tree is clean and stop.
+   - If called repeatedly, you may follow prior suggested next steps or start fresh; both are fine. Re-check the repo and continue only if new changes exist.
 
 ## Repeat invocations
 

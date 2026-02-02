@@ -45,7 +45,7 @@ If `/plan/` does not exist, create it with the following subdirectories:
 - `/plan/scratch/`: quick throwaway notes/files; keep it empty when possible.
 
 ## Skills
-- Current skills: `battletest`, `cleanup`, `commit`, `consider`, `dangercheck`, `decisions`, `execute`, `familiarize`, `gitcommit`, `gitsummary`, `gitmerge`, `gitreview`, `investigate`, `plan`, `setup`, `summarize`, `techdebt`, `verify`.
+- Current skills: `battletest`, `cleanup`, `consider`, `dangercheck`, `decisions`, `execute`, `familiarize`, `gitcommit`, `gitsummary`, `gitmerge`, `gitreview`, `investigate`, `plan`, `setup`, `summarize`, `verify`.
 - System skills remain in `~/.codex/skills/.system` and are not versioned in this repo.
 - When adding/removing skills here, keep the `~/.codex/skills` symlinks in sync.
 
