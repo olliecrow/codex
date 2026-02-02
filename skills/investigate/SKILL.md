@@ -13,6 +13,7 @@ Prefer empirical investigation with real data and real runs when relevant. Avoid
 
 ## Behavioral guardrails (must follow)
 
+- Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
 - State assumptions explicitly; if multiple interpretations exist, list them instead of picking one silently.
 - Prefer the simplest explanation and test it first; avoid speculative detours.
 - Keep any code changes or experiments minimal and scoped to the investigation.

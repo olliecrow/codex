@@ -11,11 +11,12 @@ Commit all appropriate uncommitted changes (including relevant untracked files) 
 
 ## Behavioral guardrails (must follow)
 
-- State assumptions explicitly; if grouping or intent is unclear, ask before committing.
+- Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
+- State assumptions explicitly; choose a reasonable grouping without asking and note assumptions in the summary.
 - Prefer the simplest commit structure that preserves logical separation; avoid bundling unrelated changes.
 - Keep changes surgical: do not add unrelated edits just to "clean up."
 - Define success criteria (clean working tree) and verify before finishing.
-- If multiple interpretations of how to split commits exist, surface the options and tradeoffs instead of picking silently.
+- If multiple interpretations of how to split commits exist, pick the simplest split that preserves logical separation and state why.
 - Do not add new features, refactors, or formatting changes solely to "make the commit nicer."
 - If you must adjust code to capture rationale or fix small issues discovered during review, keep it minimal and directly tied to the request.
 - Do not create any commit until all applicable pre-commit checks and tests have been run and passed.

@@ -11,6 +11,7 @@ Review the project holistically, investigate debt with tests or experiments as n
 
 ## Behavioral guardrails (must follow)
 
+- Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
 - State assumptions explicitly; if scope or intent is unclear, stop and ask.
 - Prefer the simplest debt reduction that preserves behavior; avoid speculative improvements.
 - Keep changes surgical and limited to the debt being addressed; mention unrelated issues without changing them.

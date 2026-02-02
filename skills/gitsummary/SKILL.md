@@ -11,6 +11,7 @@ Produce a precise, lower-case PR summary by fully understanding how the current 
 
 ## Behavioral guardrails (must follow)
 
+- Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
 - Do not assume intent or fill gaps; call out uncertainty if needed.
 - Prefer the simplest summary that covers the actual changes; avoid speculative detail.
 - Keep scope surgical: every bullet must map to a specific change.

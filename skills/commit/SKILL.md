@@ -12,7 +12,8 @@ If committing is prohibited by project or system instructions, state that you ca
 
 ## Behavioral guardrails (must follow)
 
-- State assumptions explicitly; if commit grouping or intent is unclear, ask.
+- Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
+- State assumptions explicitly; choose a reasonable commit grouping without asking and note any assumptions in the summary.
 - Keep commits minimal and directly tied to the request; do not include unrelated changes.
 - Prefer the simplest commit structure that preserves logical separation.
 - Do not create any commit until all applicable pre-commit checks and tests have been run and passed.

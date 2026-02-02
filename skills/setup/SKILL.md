@@ -11,6 +11,7 @@ Set up a consistent, agent-focused documentation and planning structure in any r
 
 ## Behavioral guardrails (must follow)
 
+- Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
 - State assumptions explicitly; if repository intent or constraints are unclear, ask.
 - Prefer the minimal change set that satisfies the setup definition; avoid extra structure or features.
 - Keep changes surgical and scoped to setup requirements only.

@@ -21,6 +21,7 @@ Evaluate new evidence or reviews about current work (for example, an independent
 
 ## Behavioral guardrails (must follow)
 
+- Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
 - State assumptions explicitly; if evidence scope or intent is unclear, ask before proceeding.
 - Do not treat evidence as authoritative; validate with independent checks.
 - Prefer the smallest investigation that establishes confidence; avoid scope creep.
