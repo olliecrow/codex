@@ -16,6 +16,7 @@ Get the current branch to a merge-ready state with main by understanding differe
 - Keep changes surgical and limited to merge needs; do not "improve" unrelated code.
 - Define success criteria and verify after each meaningful step.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
+- Perform the merge when required without asking for permission; only stop to ask if there is ambiguity, missing information, or a risky decision that cannot be inferred.
 - If there is nothing left to do, say so explicitly and stop.
 
 ## Git safety and permissions
@@ -82,7 +83,8 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
    - Apply the plan step by step.
    - Resolve conflicts carefully with reasoning aligned to main’s intent and the branch’s intent.
    - Keep changes minimal and avoid introducing new behavior unless required by the plan.
-   - If git operations can be executed here, run them directly using the user's git identity; otherwise, provide explicit commands and pause until the user reports back.
+   - Perform the merge directly when git operations can be executed here; do not ask for permission.
+   - If git operations cannot be executed here, provide explicit commands and pause until the user reports back.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 7. Verify and battle test:
