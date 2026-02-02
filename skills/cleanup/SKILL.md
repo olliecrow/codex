@@ -11,6 +11,7 @@ Identify recent changes, then simplify, tidy, and de-over-engineer while preserv
 
 ## Behavioral guardrails (must follow)
 
+- Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
 - State assumptions explicitly; if cleanup scope is unclear, stop and ask.
 - Prefer the simplest change that solves the problem; avoid speculative refactors.
 - Keep changes surgical: do not touch adjacent code, comments, or formatting unless required.

@@ -11,6 +11,7 @@ Execute an existing plan step by step until it is fully complete and verified. F
 
 ## Behavioral guardrails (must follow)
 
+- Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
 - State assumptions explicitly; if anything is unclear or has multiple interpretations, stop and ask.
 - Prefer the simplest implementation that satisfies the plan; avoid speculative features or extra flexibility.
 - Keep changes surgical and within plan scope; do not refactor or "improve" adjacent code unless required.

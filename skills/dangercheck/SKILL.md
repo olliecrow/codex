@@ -11,6 +11,8 @@ Assess a repo for malicious or risky behavior without executing code. This skill
 
 ## Behavioral guardrails (must follow)
 
+- Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
+- Never execute code or install dependencies in dangercheck; there is no approval path for execution.
 - State assumptions explicitly; if a finding has multiple interpretations, list them and note uncertainty.
 - Prefer the simplest explanation supported by evidence; do not assume safety or malice without proof.
 - Keep scope surgical and static-only; do not expand into unrelated audits or execution.

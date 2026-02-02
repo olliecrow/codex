@@ -11,6 +11,7 @@ This skill is for decision points in a conversation. Conduct deep and thorough b
 
 ## Behavioral guardrails (must follow)
 
+- Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
 - State assumptions explicitly; if multiple interpretations exist, surface them before deciding.
 - Prefer the simplest viable option when it satisfies requirements; push back on unnecessary complexity.
 - Keep scope surgical: only include decisions that are actually required.

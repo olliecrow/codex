@@ -13,6 +13,7 @@ Prefer empirical testing with real data and real runs when relevant. Avoid mock 
 
 ## Behavioral guardrails (must follow)
 
+- Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
 - State assumptions about scope and coverage; if multiple interpretations exist, surface them.
 - Prefer the simplest tests that meaningfully increase confidence before scaling up.
 - Avoid unrelated code changes; keep any fixes or test additions strictly in scope.

@@ -11,6 +11,7 @@ Build a clear, accurate mental model of the codebase: layout, purpose, key flows
 
 ## Behavioral guardrails (must follow)
 
+- Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
 - State assumptions explicitly; if something is unclear or has multiple interpretations, ask.
 - Prefer the simplest explanation supported by evidence; avoid speculative conclusions.
 - Keep scope surgical and read-only unless explicitly asked to edit.
