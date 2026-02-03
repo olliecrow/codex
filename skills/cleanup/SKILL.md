@@ -7,7 +7,7 @@ description: Review recent changes and/or broader code to simplify or reduce tec
 
 ## Overview
 
-Identify recent changes or broader technical debt, then simplify, tidy, and de-over-engineer while preserving behavior and performance. Conduct a deep, thorough review of all relevant areas and reason through every cleanup decision.
+Relentlessly search for tech debt, bloat, redundancy, unused code, and unnecessary complexity across the project, then simplify, tidy, and de-over-engineer while preserving performance. Conduct a deep, thorough review of all relevant areas and reason through every cleanup decision.
 
 ## Behavioral guardrails (must follow)
 
@@ -15,7 +15,7 @@ Identify recent changes or broader technical debt, then simplify, tidy, and de-o
 - State assumptions explicitly; if cleanup scope is unclear, stop and ask.
 - Prefer the simplest change that solves the problem; avoid speculative refactors.
 - Keep changes surgical: do not touch adjacent code, comments, or formatting unless required.
-- Prefer the simplest debt reduction that preserves behavior; mention unrelated issues without changing them.
+- Prioritize clarity and maintainability over strict backward compatibility when it materially improves the codebase.
 - Define success criteria and verify after cleanup; do not assume no regressions.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - If there is nothing left to do, say so explicitly and stop.
@@ -48,6 +48,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 - Ensure every relevant area is reviewed; do not skip parts that affect behavior.
 
 2. Identify cleanup and tech-debt opportunities:
+   - Relentlessly search for tech debt, bloat, redundancy, unused code, dead paths, and unnecessary complexity.
    - Remove redundancy, simplify logic, reduce over-engineering.
    - Improve readability and maintainability.
    - Look for over-engineering, duplication, confusing structure, unnecessary complexity.
@@ -57,7 +58,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 3. Prioritize and log (when addressing tech debt):
    - Rank items by impact (maintainability, risk, churn) and effort.
    - Track a lightweight debt log in `plan/current/techdebt.md` (untracked) with found items, fixes, and deferred items plus the reason. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
-   - For each planned change, state the intent as "no behavior change" (and note any exception that would require explicit user approval).
+   - For each planned change, state the intent (behavior-preserving or behavior-changing) and why the change is worth it.
 
 4. Investigate and validate:
    - Proactively create and run isolated tests or experiments to understand behavior.
@@ -69,13 +70,13 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
    - Capture before/after evidence for any performance-sensitive edits.
 
 5. Apply cleanup changes:
-   - Make small, safe simplifications.
+   - Make small, safe simplifications when possible; allow behavior-changing cleanups if they materially improve maintainability.
    - Prefer clarity and minimalism.
    - Keep edits localized to changed areas unless a broader cleanup is clearly safe.
-   - Do not break existing features.
+   - Breaking changes are allowed; clearly call them out, justify them, and ensure the end state is cleaner and more maintainable.
    - Do not regress runtime or memory performance.
    - Avoid making code more complex.
-   - Keep "no behavior change" intent explicit; stop and ask if a change would alter behavior.
+   - Keep intent explicit; stop and ask only if a behavior change would be risky or unclear.
 
 6. Verify after changes:
    - Rerun relevant tests/experiments (small before large) to confirm no functional or performance regressions.
