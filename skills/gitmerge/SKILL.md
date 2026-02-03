@@ -7,7 +7,7 @@ description: Prepare the current branch to merge cleanly into main by ensuring a
 
 ## Overview
 
-Get the current branch to a merge-ready state with main by understanding differences, planning safely, merging without conflicts, and validating thoroughly. Conduct a deep, thorough review of all diffs and decisions, and ensure functionality from main still works after the merge.
+Get the current branch to a merge-ready state with main by meticulously reviewing differences from both sides, planning safely, merging without conflicts, and validating thoroughly. Conduct a deep, thorough review of all diffs and decisions, and ensure functionality from both branches is preserved after the merge.
 
 ## Behavioral guardrails (must follow)
 
@@ -18,6 +18,7 @@ Get the current branch to a merge-ready state with main by understanding differe
 - Define success criteria and verify after each meaningful step.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - Perform the merge when required without asking for permission; only stop to ask if there is ambiguity, missing information, or a risky decision that cannot be inferred.
+- Never blindly accept default merge resolutions; inspect every conflict and ensure functionality from both branches is preserved.
 - If there is nothing left to do, say so explicitly and stop.
 
 ## Git safety and permissions
@@ -65,12 +66,12 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 4. Understand diffs before merging:
-   - Compare current branch vs main (`git diff main...HEAD` and `git log main..HEAD`).
-   - If diffs are large, start with `git diff --stat main...HEAD` or `git diff --name-only main...HEAD` and then review per-file diffs to keep output manageable.
+   - Compare both directions: current branch changes (`git diff main...HEAD`, `git log main..HEAD`) and main’s changes since divergence (`git diff HEAD..main`, `git log HEAD..main`).
+   - If diffs are large, start with `git diff --stat main...HEAD` and `git diff --stat HEAD..main` (or `--name-only`) and then review per-file diffs to keep output manageable.
    - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat main...HEAD`, `git diff --name-only main...HEAD`, or per-file diffs instead of unbounded commands.
    - Read key files to understand intent, behavior, and risk.
    - Understand what main is doing and why before making any merge decisions.
-   - Review every changed file and hunk; ensure no main functionality is removed or degraded without explicit intent.
+   - Review every changed file and hunk; ensure no functionality from either branch is removed or degraded without explicit intent.
 
 5. Plan the merge approach:
    - Identify conflicts, risky areas, and order of operations.
@@ -82,7 +83,7 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
 
 6. Execute the merge:
    - Apply the plan step by step.
-   - Resolve conflicts carefully with reasoning aligned to main’s intent and the branch’s intent.
+   - Resolve conflicts carefully with reasoning aligned to main’s intent and the branch’s intent, preserving behavior from both.
    - Keep changes minimal and avoid introducing new behavior unless required by the plan.
    - Perform the merge directly when git operations can be executed here; do not ask for permission.
    - If git operations cannot be executed here, provide explicit commands and pause until the user reports back.
@@ -92,7 +93,7 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
    - Validate that the merge completed cleanly and the working tree is consistent.
    - Run relevant checks/tests, starting small and expanding to broader coverage.
    - Battle test to catch regressions, edge cases, or integration issues.
-   - Explicitly confirm that functionality present on main still works; flag any regressions or removals.
+   - Explicitly confirm that functionality present on both branches still works; flag any regressions or removals.
    - After any fixes, re-run the smallest relevant checks to confirm no regressions.
    - Remove ad-hoc experiments that are no longer needed; keep only those that revealed issues and should be preserved.
    - If failures appear, fix and re-test until green.
