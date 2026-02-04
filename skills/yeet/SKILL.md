@@ -12,7 +12,7 @@ description: "Use only when the user explicitly asks to stage, commit, push, and
 
 - Branch: `olliecrow/{description}` when starting from main/master/default.
 - Commit: `{description}` (terse).
-- PR title: `[codex] {description}` summarizing the full diff.
+- PR title: `{description}` summarizing the full diff.
 
 ## Workflow
 
