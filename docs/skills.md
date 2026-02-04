@@ -1,6 +1,6 @@
 # Skills
 
-This doc summarizes the version-controlled Codex skills that live in this repo and how agents should use them. It is agent-focused and meant to stay evergreen.
+This doc summarizes the version-controlled Codex skills that live in this repo and how agents should use them. It is agent-focused and meant to stay evergreen. The canonical skill list lives in `AGENTS.md` to avoid duplication; update both if a list must appear here.
 
 ## What a Skill Is
 - A skill is a reusable workflow, defined by a `SKILL.md` file inside `skills/<name>/`.
@@ -19,23 +19,17 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 ## Shared Requirements and Conventions
 
 ### Decision framing
-- Provide background context sufficient to make the decision.
-- Include pros and cons for each viable option.
-- Give a recommendation with reasoning; some skills also require explicit evidence for why the chosen lever is correct.
+- Provide context, options, and a recommendation with reasoning (see `AGENTS.md` for the full policy).
 
 ### Rationale capture
-- Record the "why" for fixes and important decisions in a durable place (code comments, docs, ADR, or tests).
-- Do not rely on `plan/` scratch notes; mention where the rationale was recorded in the summary/report.
+- Record the "why" for fixes and important decisions in a durable place and call it out in summaries.
 
 ### Plan/docs/decisions robustness
-- Treat `plan/` as short-term scratch and never commit it.
-- If `plan/` is missing, create it (and needed subdirs) only when edits are permitted; otherwise keep a lightweight in-memory log and call out that it was not persisted.
-- Treat `docs/` as long-lived, evergreen guidance; prefer updating existing entries over adding new files.
-- If `docs/decisions.md` is missing, prefer using the `setup` skill to create it when allowed; if not, capture rationale in the smallest durable local place and call out the missing decision doc.
+- Keep `plan/` untracked and disposable; prefer durable notes in `docs/` or code when needed.
+- Follow the decision capture policy in `docs/decisions.md`.
 
 ### Git safety and permissions (git-related skills)
-- Follow repo git policy and session restrictions; if git writes/pushes are disallowed, provide commands instead of executing them.
-- Never rewrite history or force push: avoid `git rebase`, `git commit --amend`, `git reset --hard/--soft/--mixed`, `git push --force/--force-with-lease`, `git filter-branch`, and `git clean -fdx`.
+- Follow repo git policy and session restrictions; never rewrite history or force push (see `AGENTS.md`).
 
 ### Reporting style
 - Write summaries in plain, concise language with brief context.
@@ -58,19 +52,4 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 - Keep the skill name, description, and file path accurate in any skill list that is updated.
 
 ## Current Skills
-- battletest: Stress-test recent changes across configurations and perspectives.
-- cleanup: Simplify recent changes or reduce technical debt without altering behavior.
-- consider: Evaluate new evidence or reviews and decide what to change (if anything).
-- dangercheck: Safety audit before running untrusted code.
-- decisions: Deep, thorough decision support with research and consolidated recommendations.
-- execute: Run an existing plan end-to-end and report results.
-- familiarize: Orient to the repo, structure, and workflows.
-- gitcommit: Commit all current uncommitted changes into logical commits (no pushing).
-- gitmerge: Prepare a branch to merge cleanly into main.
-- gitreview: Deep review of a branch for merge readiness.
-- gitsummary: Concise PR-ready summary of diffs vs main.
-- investigate: Deep-dive investigation with evidence and tests.
-- plan: Create comprehensive, high-conviction change plans.
-- setup: Initialize docs/plan/decisions conventions.
-- summarize: Concise, decision-ready summaries with evidence.
-- verify: Run checks to confirm recent work is correct.
+- See `AGENTS.md` for the canonical skill list; keep it in sync if you mirror it here.

@@ -1,3 +1,7 @@
+# Codex Docs Snapshot (Raw Capture)
+
+This file is a raw snapshot of upstream Codex-related docs. It may contain duplicate links, redirects, or 404 entries. Treat it as reference material and prefer refreshing it from upstream rather than hand-editing content below this header.
+
 # Table of Contents
 
 1. [Codex](https://developers.openai.com/codex/)
@@ -16664,4 +16668,3 @@ Catch up on insights for developers using OpenAI's products and models.
 See posts
 
 ---
-
