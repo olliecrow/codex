@@ -1,6 +1,6 @@
 # Skills
 
-This doc summarizes the version-controlled Codex skills that live in this repo and how agents should use them. It is agent-focused and meant to stay evergreen. The canonical skill list lives in `AGENTS.md` to avoid duplication; update both if a list must appear here.
+This doc summarizes the version-controlled Codex skills that live in this repo and how agents should use them. It is agent-focused and meant to stay evergreen. The canonical skill list lives in `AGENTS.md`.
 
 ## What a Skill Is
 - A skill is a reusable workflow, defined by a `SKILL.md` file inside `skills/<name>/`.
@@ -16,28 +16,9 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 - If a skill is missing or blocked, say so briefly and use the closest safe fallback.
 - If applicability is unclear, ask a brief clarifying question before proceeding.
 
-## Shared Requirements and Conventions
-
-### Decision framing
-- Provide context, options, and a recommendation with reasoning (see `AGENTS.md` for the full policy).
-
-### Rationale capture
-- Record the "why" for fixes and important decisions in a durable place and call it out in summaries.
-
-### Plan/docs/decisions robustness
-- Keep `plan/` untracked and disposable; prefer durable notes in `docs/` or code when needed.
-- Follow the decision capture policy in `docs/decisions.md`.
-
-### Git safety and permissions (git-related skills)
-- Follow repo git policy and session restrictions; never rewrite history or force push (see `AGENTS.md`).
-
-### Reporting style
-- Write summaries in plain, concise language with brief context.
-- Avoid analogies; define technical terms when needed.
-
-### Repeat invocations (where present)
-- Continue from prior logs and avoid repeating identical probes unless verifying a fix.
-- Expand coverage gradually and provide a cumulative summary of work completed so far.
+## Shared Policies (Canonical in `AGENTS.md`)
+- Decision framing, rationale capture, plan/docs hygiene, git safety, reporting style, and repeat-invocation rules are defined in `AGENTS.md`.
+- This doc focuses on skill-specific usage to avoid duplicating those policies.
 
 ## Usage Rules
 - Trigger: if the user explicitly names a skill, or the task clearly matches a skill description, use that skill.
