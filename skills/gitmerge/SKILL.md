@@ -19,6 +19,7 @@ Get the current branch to a merge-ready state with main by meticulously reviewin
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - Perform the merge when required without asking for permission; only stop to ask if there is ambiguity, missing information, or a risky decision that cannot be inferred.
 - Never blindly accept default merge resolutions; inspect every conflict and ensure functionality from both branches is preserved.
+- If the merge requires a commit, ensure pre-commit checks and relevant tests pass before committing.
 - If there is nothing left to do, say so explicitly and stop.
 
 ## Git safety and permissions
@@ -92,6 +93,7 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
 7. Verify and battle test:
    - Validate that the merge completed cleanly and the working tree is consistent.
    - Run relevant checks/tests, starting small and expanding to broader coverage.
+   - If the merge results in a commit, ensure pre-commit checks and tests pass before committing.
    - Battle test to catch regressions, edge cases, or integration issues.
    - Explicitly confirm that functionality present on both branches still works; flag any regressions or removals.
    - After any fixes, re-run the smallest relevant checks to confirm no regressions.
