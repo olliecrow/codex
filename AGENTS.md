@@ -78,7 +78,7 @@ Sanity checks after run:
 - PRs: include purpose, key changes, how to build/run, and validation steps. Link issues when applicable. Add screenshots/terminal excerpts for UX changes.
 
 ## Security & Configuration Tips
-- Host isolation: only mount the project directory and `~/.codex`.
+- Host isolation: only mount the project directory and `~/.codex` (with an extra read-only bind for `.git` when present to prevent repo mutations).
 - Container git is blocked: not installed, apt-pinned, and wrapped (`/usr/local/bin/git`). `.git/` is mounted read-only.
 - This container restriction does not apply to the host repo; normal git use in this repo is allowed.
 - Codex autonomy: launched with `--dangerously-bypass-approvals-and-sandbox` and `approval_policy=never`.
