@@ -7,7 +7,7 @@ description: Deep review of a branch vs main to find critical issues before merg
 
 ## Overview
 
-Compare the current branch against main, analyze each change's intent and risk, and hunt for critical red flags before merge. Conduct a deep, thorough review that covers every change and decision end-to-end.
+Compare the current branch against main, analyze each change's intent and risk, and hunt for critical red flags before merge. If the branch has an open PR, incorporate all PR comments and interactions into the review. Conduct a deep, thorough review that covers every change and decision end-to-end.
 
 ## Behavioral guardrails (must follow)
 
@@ -16,6 +16,7 @@ Compare the current branch against main, analyze each change's intent and risk, 
 - Prefer the simplest explanation for a change and verify it against evidence.
 - Keep review scope surgical: every comment should trace to a specific change.
 - Define explicit readiness criteria and verify them before concluding.
+- If a PR exists, treat review comments and discussion as required inputs (not gospel); investigate each item deeply and determine whether it is addressed, out of scope, or worth action.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - If there is nothing left to do, say so explicitly and stop.
 
@@ -52,7 +53,13 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
-2. Establish diff scope:
+2. Gather PR context when applicable:
+   - Determine whether the current branch has an open PR (prefer `gh pr view --json number,url,reviewThreads,comments,reviews`).
+   - If `gh` is unavailable or unauthenticated, ask the user for the PR URL/number or a comment dump; do not proceed without PR context if one exists.
+   - Collect all PR interactions: review comments, review summaries, issue comments, and relevant status-check notes.
+   - Treat PR feedback as inputs to investigate, not instructions to blindly apply.
+
+3. Establish diff scope:
    - Compare current branch to main (or the branch it diverged from).
    - Enumerate all changed files and hunks.
    - Always conduct a full review of every changed file and hunk.
@@ -61,16 +68,16 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
-3. Understand intent:
+4. Understand intent:
    - For each change, identify the rationale, intent, and expected impact.
    - Flag unclear or unjustified changes for deeper scrutiny.
 
-4. Deep risk review:
+5. Deep risk review:
    - Look for critical red flags, regressions, security risks, data loss, perf issues, or correctness bugs.
    - Consider long-term maintainability and hidden coupling.
    - Ensure anything that worked on main still works here; flag removed or degraded functionality and verify intended parity.
 
-5. Investigate thoroughly:
+6. Investigate thoroughly:
    - Proactively create and run experiments, trial runs, or tests as needed.
    - Start with small, fast checks before larger runs; large tests are still expected when relevant.
    - After any changes or fixes, rerun relevant checks to confirm no regressions.
@@ -78,17 +85,24 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - Use a `plan/` directory as scratch space (create it if missing and edits are permitted); keep it untracked and never commit it. If you cannot create it, keep a lightweight in-memory log and call it out in the report.
    - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
-6. Handle huge diffs without skipping coverage:
+7. Triage PR feedback:
+   - Enumerate every PR comment and interaction; for each, decide one of: addressed, not worth addressing (with rationale), or needs action.
+   - For each item that needs action, build a plan that preserves intent, minimizes risk, and links back to the specific feedback.
+   - Flesh out the plan with concrete steps, dependencies, and verification.
+
+8. Handle huge diffs without skipping coverage:
    - Still review all changes end-to-end; do not sample or skip files.
    - Break the review into batches (by directory, feature, or risk area) and track progress in `plan/current/gitreview.md`. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
    - Use tooling to manage scale (e.g., `git diff --stat`, `git diff --numstat`, per-file diffs, and focused searches) but ensure every file and hunk is covered.
    - If time or compute constraints make a full review impractical, ask the user for a time budget or additional constraints, but keep the full-review requirement explicit.
 
-7. Summarize readiness:
-   - List critical issues or red flags.
-   - Note required fixes before merge.
-   - Provide a merge readiness assessment and next steps.
+9. Produce a full change plan:
+   - Investigate each potential change one by one and state whether it is high‑confidence/conviction, optional, or not worth doing.
+   - Consolidate all items that should change into a final, ordered plan (even if the verdict is Ready).
+   - For each plan item, include scope, rationale, dependencies, and verification steps.
+   - Summarize PR comment triage with dispositions and link each planned item to the originating comment when applicable.
+   - Note required fixes before merge and provide a merge readiness assessment and next steps.
    - Use a concise verdict template: Ready / Needs fixes / Blocked.
    - If called repeatedly, you may follow prior suggested next steps or take a fresh angle; both are fine. Continue deeper review and append new findings rather than repeating prior summaries.
-   - Write the summary in plain, concise, and intuitive language with brief context so a new reader can follow it.
+   - Write the report in plain, concise, and intuitive language with brief context so a new reader can follow it.
    - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
