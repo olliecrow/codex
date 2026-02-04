@@ -3,7 +3,7 @@
 A minimal Docker setup to run Codex CLI fully autonomously with internet access and host isolation.
 
 - Autonomy: no approval prompts; no OS sandbox (uses Docker isolation)
-- Host mounts: project directory at `/workspace` and host Codex config at `/home/dev/.codex`
+- Host mounts: project directory at `/workspace` and host Codex config at `/home/dev/.codex` (plus an extra read-only bind for `.git` when present)
 - Git disabled: not installed, APT‑pinned, and wrapped to fail fast. `.git` mounted read‑only
 
 ## Build
@@ -38,7 +38,7 @@ Notes:
 
 ## Security model
 
-- Only two host mounts are exposed: the project directory and `~/.codex`.
+- Only two host mounts are exposed: the project directory and `~/.codex`, with an extra read-only `.git` bind when present.
 - No Git installed; apt installation is hard‑blocked; `git`, `git-lfs`, and `gh` commands are wrapped to fail with an explicit message.
 - Container runs as non‑root user `dev` with uid/gid 1000.
 
