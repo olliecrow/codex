@@ -6,6 +6,7 @@ This repository hosts the Codex CLI container, agent documentation, and reusable
 - Purpose: provide a reproducible Codex container, curated skills, and agent-focused docs for reliable automation.
 - Primary entrypoint: `container/` for building and running Codex against other projects.
 - Human + agent usage: humans can use this as the README; agents must follow the guidelines in later sections.
+- `README.md` and `CLAUDE.md` are symlinks to this file; edit `AGENTS.md` as the source of truth.
 
 ## Quick Start
 - Build the Codex image (fresh): `./container/build.sh`
