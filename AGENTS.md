@@ -19,6 +19,7 @@ This repository hosts the Codex CLI container, agent documentation, and reusable
 - Long-lived agent docs in `docs/`.
 - Short-lived scratch work in `plan/` (do not commit).
 - Versioned skills in `skills/` (symlinked into `~/.codex/skills`).
+- `README.md` and `CLAUDE.md` are symlinks to `AGENTS.md` to keep guidance in one place.
 
 # Repository Guidelines
 
@@ -46,7 +47,7 @@ If `/plan/` does not exist, create it with the following subdirectories:
 - `/plan/scratch/`: quick throwaway notes/files; keep it empty when possible.
 
 ## Skills
-- Current skills: `battletest`, `cleanup`, `consider`, `dangercheck`, `decisions`, `execute`, `familiarize`, `gitcommit`, `gitsummary`, `gitmerge`, `gitreview`, `investigate`, `plan`, `setup`, `summarize`, `verify`.
+- Current skills: `battletest`, `cleanup`, `consider`, `dangercheck`, `decisions`, `execute`, `familiarize`, `gh-address-comments`, `gh-fix-ci`, `gitcommit`, `gitmerge`, `gitreview`, `gitsummary`, `investigate`, `jupyter-notebook`, `openai-docs`, `plan`, `playwright`, `setup`, `summarize`, `verify`, `yeet`.
 - System skills remain in `~/.codex/skills/.system` and are not versioned in this repo.
 - When adding/removing skills here, keep the `~/.codex/skills` symlinks in sync.
 
