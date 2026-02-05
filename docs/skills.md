@@ -50,6 +50,3 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 - Add or remove skill directories under `skills/`.
 - Keep the `~/.codex/skills` symlinks in sync with this repo.
 - Keep the skill name, description, and file path accurate in any skill list that is updated.
-
-## Current Skills
-- See `AGENTS.md` for the canonical skill list; keep it in sync if you mirror it here.
