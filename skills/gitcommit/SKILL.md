@@ -21,7 +21,7 @@ If committing is prohibited by project or system instructions, state that you ca
 - If multiple interpretations of how to split commits exist, pick the simplest split that preserves logical separation and state why.
 - Do not add new features, refactors, or formatting changes solely to "make the commit nicer."
 - If you must adjust code to capture rationale or fix small issues discovered during review, keep it minimal and directly tied to the request.
-- Do not create any commit until all applicable pre-commit checks and tests have been run and passed.
+- Do not create any commit until all applicable pre-commit checks, tests, and CI checks have been run and passed.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - If there is nothing left to do, say so explicitly and stop.
 
@@ -77,14 +77,20 @@ Before committing, ensure that any issue fixes or key decisions are documented i
    - Ensure tests pass before committing.
    - If tests cannot be run here, say so and request the user to run them and confirm results before proceeding.
 
-5. Split changes into logical units:
+5. Run CI checks before committing:
+   - If CI scripts or workflow equivalents are available locally, run them.
+   - If CI can only run remotely, trigger it and wait for success before committing; if you cannot, ask the user to run CI and confirm results.
+   - Ensure CI checks pass before committing.
+   - This requirement applies even when you cannot commit and must output copy-pasteable git commands.
+
+6. Split changes into logical units:
    - Prefer many small commits over fewer large ones.
    - Keep each commit focused on a single purpose or area with a clear rationale.
    - Treat unrelated untracked files as separate commits unless clearly part of the same change.
    - Ensure commit order and packaging make sense (foundational changes first, dependent changes after).
    - If a simpler split achieves the same clarity, choose the simpler split.
 
-6. Stage and commit each unit:
+7. Stage and commit each unit:
    - Use explicit `git add <paths>` commands (avoid interactive staging by default).
    - Use `git commit -m "..."` with concise, descriptive, imperative messages tailored to each change.
    - Each commit should stand on its own as a logical, best-practice change that can be understood and reverted independently.
@@ -92,17 +98,17 @@ Before committing, ensure that any issue fixes or key decisions are documented i
    - If git operations can be executed here, run them directly; otherwise, provide explicit commands and pause until the user reports back.
    - Do not push.
 
-7. Ensure nothing appropriate is left uncommitted:
+8. Ensure nothing appropriate is left uncommitted:
    - Re-check `git status -sb` and confirm the working tree is clean.
    - If any files that should be committed remain, create additional commits until the tree is clean.
 
-8. If committing is disallowed:
+9. If committing is disallowed:
    - State that you cannot commit here.
    - Provide a single copy-pasteable block of git commands that will stage and commit all changes in logical units.
    - The block must contain only commands, one per line, in execution order, with no extra text between them.
    - Do not ask the user whether they want commands or a summary.
 
-9. If there are no changes to commit:
+10. If there are no changes to commit:
    - State that the working tree is clean and stop.
    - If called repeatedly, you may follow prior suggested next steps or start fresh; both are fine. Re-check the repo and continue only if new changes exist.
 
