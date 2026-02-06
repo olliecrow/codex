@@ -7,7 +7,7 @@ description: Prepare the current branch to merge cleanly into main by ensuring a
 
 ## Overview
 
-Get the current branch to a merge-ready state with main by first understanding both branches in depth, then planning a careful integration that preserves functionality from each side. Do not rush into a merge: fully map how main has progressed and how the current branch diverges before changing anything. Conduct a deep, thorough review of all diffs and decisions, and ensure functionality from both branches is preserved after the merge.
+Get the current branch to a merge-ready state with main by first understanding both branches in depth, then planning a careful integration that preserves functionality from each side. Do not rush into a merge: fully map how main has progressed and how the current branch diverges before changing anything. Treat integration as a potentially difficult, long‑thinking task; reason and plan deeply before executing any state‑changing git commands. Once the plan is validated, perform the required git operations to reach a fully merged state. Conduct a deep, thorough review of all diffs and decisions, and ensure functionality from both branches is preserved after the merge.
 
 ## Behavioral guardrails (must follow)
 
@@ -22,6 +22,7 @@ Get the current branch to a merge-ready state with main by first understanding b
 - If the merge requires a commit, ensure pre-commit checks and relevant tests pass before committing.
 - Default to preserving main’s functionality and changes; if there is a core functional conflict, prefer the current branch’s intent and document why.
 - Treat doc merges as subjective: reconcile structure and wording carefully to produce the clearest, most accurate docs, not just a mechanical merge.
+- Do not execute state‑changing git commands until a deep integration plan is complete and validated; once validated, execute the necessary commands to fully merge.
 - If there is nothing left to do, say so explicitly and stop.
 
 ## Git safety and permissions
@@ -76,7 +77,7 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
    - Produce an explicit mental (or `plan/`) map of overlapping areas, potential conflicts, and ownership.
    - Review every changed file and hunk; ensure no functionality from either branch is removed or degraded without explicit intent.
 
-5. Plan the merge approach:
+5. Plan the merge approach (before any state‑changing git commands):
    - Identify conflicts, risky areas, and order of operations.
    - Decide upfront how to preserve main’s changes and where branch intent must override due to core functional differences.
    - Call out doc-heavy areas and plan for editorial reconciliation rather than mechanical conflict resolution.
