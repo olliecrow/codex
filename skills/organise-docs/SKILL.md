@@ -9,6 +9,15 @@ description: Autonomously maintain repository documentation from the active conv
 
 Extract durable knowledge from the current conversation and convert it into high-signal repository documentation. Focus on decisions, principles, invariants, constraints, and rationale that remain useful over time.
 
+## Continual compounding mode (must follow)
+
+Run a compounding cycle after each substantial task.
+- Treat a task as substantial when it includes multi-step debugging/investigation, meaningful code edits, non-trivial design decisions, or repeated back-and-forth that produced reusable knowledge.
+- Capture ephemeral exploration notes in `plan/` while working.
+- Promote durable learnings into `docs/` before finishing the task.
+- Consolidate duplicated scratch notes and prune stale `plan/` artifacts after promotion.
+- Keep `docs/` evergreen and high-signal; keep `plan/` disposable and short-lived.
+
 ## Operating Mode
 
 Apply documentation edits autonomously when confidence is high.
@@ -22,11 +31,13 @@ Apply documentation edits autonomously when confidence is high.
 - Read the relevant conversation turns, edited files, and test outcomes before writing docs.
 - Use only evidence-backed statements.
 - Prefer concrete facts over interpretations.
+- Keep temporary extraction notes in `plan/current/` while building the evidence set.
 
 2. Filter for durable knowledge.
 - Keep: decisions, trade-offs, rules, invariants, failure modes, and stable process guidance.
 - Drop: one-off status, temporary debugging traces, timestamps, and short-lived implementation trivia.
 - Rewrite relative time phrasing into evergreen language.
+- Mark every retained item as either `promote to docs` or `keep ephemeral in plan`.
 
 3. Consolidate contradictions and ambiguity.
 - Detect conflicting statements and collapse them into a single canonical statement.
@@ -62,6 +73,8 @@ Apply documentation edits autonomously when confidence is high.
 - Call out removed or consolidated docs and where preserved content was moved.
 - Include a preservation map for destructive edits: `source_doc -> destination_doc/section`.
 - List remaining ambiguity only when confidence was not high enough to resolve it safely.
+- Include a `What got faster next time` section with concrete workflow improvements unlocked by the updated docs.
+- Include a `Plan consolidation and prune` section listing which `plan/` artifacts were retained, merged, or deleted.
 
 ## Quality Bar
 
