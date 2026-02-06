@@ -7,7 +7,7 @@ description: Prepare the current branch to merge cleanly into main by ensuring a
 
 ## Overview
 
-Get the current branch to a merge-ready state with main by meticulously reviewing differences from both sides, planning safely, merging without conflicts, and validating thoroughly. Conduct a deep, thorough review of all diffs and decisions, and ensure functionality from both branches is preserved after the merge.
+Get the current branch to a merge-ready state with main by first understanding both branches in depth, then planning a careful integration that preserves functionality from each side. Do not rush into a merge: fully map how main has progressed and how the current branch diverges before changing anything. Conduct a deep, thorough review of all diffs and decisions, and ensure functionality from both branches is preserved after the merge.
 
 ## Behavioral guardrails (must follow)
 
@@ -20,6 +20,8 @@ Get the current branch to a merge-ready state with main by meticulously reviewin
 - Perform the merge when required without asking for permission; only stop to ask if there is ambiguity, missing information, or a risky decision that cannot be inferred.
 - Never blindly accept default merge resolutions; inspect every conflict and ensure functionality from both branches is preserved.
 - If the merge requires a commit, ensure pre-commit checks and relevant tests pass before committing.
+- Default to preserving main’s functionality and changes; if there is a core functional conflict, prefer the current branch’s intent and document why.
+- Treat doc merges as subjective: reconcile structure and wording carefully to produce the clearest, most accurate docs, not just a mechanical merge.
 - If there is nothing left to do, say so explicitly and stop.
 
 ## Git safety and permissions
@@ -66,16 +68,18 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands for the user to run and wait for their results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
-4. Understand diffs before merging:
-   - Compare both directions: current branch changes (`git diff main...HEAD`, `git log main..HEAD`) and main’s changes since divergence (`git diff HEAD..main`, `git log HEAD..main`).
-   - If diffs are large, start with `git diff --stat main...HEAD` and `git diff --stat HEAD..main` (or `--name-only`) and then review per-file diffs to keep output manageable.
-   - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat main...HEAD`, `git diff --name-only main...HEAD`, or per-file diffs instead of unbounded commands.
-   - Read key files to understand intent, behavior, and risk.
-   - Understand what main is doing and why before making any merge decisions.
+4. Build a two‑sided understanding before merging:
+   - Map main’s progression: what changed, why, and which functionality it introduces or modifies (`git diff HEAD..main`, `git log HEAD..main`).
+   - Map the current branch: what changed, why, and which functionality it introduces or modifies (`git diff main...HEAD`, `git log main..HEAD`).
+   - If diffs are large, start with `git diff --stat`/`--name-only` for both directions, then review per-file diffs.
+   - Read key files to understand intent, behavior, and risk on both sides.
+   - Produce an explicit mental (or `plan/`) map of overlapping areas, potential conflicts, and ownership.
    - Review every changed file and hunk; ensure no functionality from either branch is removed or degraded without explicit intent.
 
 5. Plan the merge approach:
    - Identify conflicts, risky areas, and order of operations.
+   - Decide upfront how to preserve main’s changes and where branch intent must override due to core functional differences.
+   - Call out doc-heavy areas and plan for editorial reconciliation rather than mechanical conflict resolution.
    - Develop a clear plan to address changes safely.
    - Think deeply and verify the plan is correct and low risk.
    - If there are critical open questions or unclear intent, stop and ask only the necessary clarifying questions.
