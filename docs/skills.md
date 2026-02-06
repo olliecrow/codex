@@ -17,23 +17,7 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 - If applicability is unclear, ask a brief clarifying question before proceeding.
 
 ## Shared Requirements and Conventions
-
-### Decision framing
-- Provide context, options, and a recommendation with reasoning (see `AGENTS.md` for the full policy).
-
-### Rationale capture
-- Record the "why" for fixes and important decisions in a durable place and call it out in summaries.
-
-### Plan/docs/decisions robustness
-- Keep `plan/` untracked and disposable; prefer durable notes in `docs/` or code when needed.
-- Follow the decision capture policy in `docs/decisions.md`.
-
-### Git safety and permissions (git-related skills)
-- Follow repo git policy and session restrictions; never rewrite history or force push (see `AGENTS.md`).
-
-### Reporting style
-- Write summaries in plain, concise language with brief context.
-- Avoid analogies; define technical terms when needed.
+For decision framing, rationale capture, plan/docs robustness, git safety, and reporting style, follow the repo-wide policies in `AGENTS.md` and `docs/decisions.md`.
 
 ### Repeat invocations (where present)
 - Continue from prior logs and avoid repeating identical probes unless verifying a fix.
