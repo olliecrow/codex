@@ -35,6 +35,7 @@ Notes:
 - Codex CLI is installed from npm at build time using `@openai/codex@latest`, so each build pulls the newest published version.
 - Codex is launched with `--dangerously-bypass-approvals-and-sandbox`; the container config sets `approval_policy=never`, `sandbox_mode=danger-full-access`, `model=gpt-5.2-codex`, and `model_reasoning_effort=xhigh` so it never prompts for approvals and always uses the latest Codex model with extra-high reasoning.
 - Container sessions set `CODEX_HOME=/home/dev/.codex-container` and write a fresh `config.toml` there (mirroring the defaults above); host config is ignored while `auth.json` is copied from your host for login.
+- `container/run_sequence_*` scripts mount `~/.codex` at `/home/dev/.codex` (the prompts runner uses a temp copy; the handoff runner uses the host directory), so they inherit host config unless you override it there.
 
 ## Security model
 

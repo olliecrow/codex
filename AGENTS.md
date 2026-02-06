@@ -45,6 +45,7 @@ If `/plan/` does not exist, create it with the following subdirectories:
 - `/plan/experiments/`: temporary scripts, proofs of concept, debugging harnesses.
 - `/plan/artifacts/`: short-lived outputs (logs, reports, coverage summaries).
 - `/plan/scratch/`: quick throwaway notes/files; keep it empty when possible.
+- `/plan/handoffs/`: sequential workflow handoffs from `container/run_sequence_*` scripts.
 
 ## Skills
 - Current skills: `battletest`, `cleanup`, `consider`, `dangercheck`, `decisions`, `execute`, `familiarize`, `gh-address-comments`, `gh-fix-ci`, `gitcommit`, `gitmerge`, `gitreview`, `gitsummary`, `investigate`, `jupyter-notebook`, `openai-docs`, `plan`, `playwright`, `setup`, `summarize`, `verify`, `yeet`.
