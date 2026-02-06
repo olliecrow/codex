@@ -19,8 +19,12 @@ description: "Use only when the user explicitly asks to stage, commit, push, and
 - If on main/master/default, create a branch: `git checkout -b "olliecrow/{description}"`
 - Otherwise stay on the current branch.
 - Confirm status, then stage everything: `git status -sb` then `git add -A`.
+- Run pre-commit checks, tests, and CI checks before committing.
+  - If pre-commit config exists, run it.
+  - Run the smallest relevant test targets; all tests must pass.
+  - Run CI checks or local equivalents; if CI can only run remotely, trigger it and wait for success before proceeding.
+  - If checks fail due to missing deps/tools, install dependencies and rerun once.
 - Commit tersely with the description: `git commit -m "{description}"`
-- Run checks if not already. If checks fail due to missing deps/tools, install dependencies and rerun once.
 - Push with tracking: `git push -u origin $(git branch --show-current)`
 - If git push fails due to workflow auth errors, pull from master and retry the push.
 - Open a PR and edit title/body to reflect the description and the deltas: `GH_PROMPT_DISABLED=1 GIT_TERMINAL_PROMPT=0 gh pr create --draft --fill --head $(git branch --show-current)`
