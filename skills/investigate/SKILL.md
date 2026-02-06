@@ -11,6 +11,29 @@ Deep dive into a topic or issue by exploring hypotheses, validating them with ev
 
 Prefer empirical investigation with real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces.
 
+## Required output contract (must follow)
+
+Always deliver the final report with all sections below, in this order:
+
+1. Findings summary.
+2. Source ledger.
+3. Coverage gaps and explicit unknowns.
+4. Ship/no-ship recommendation with risks.
+5. Evidence runbook (commands/tests/artifacts).
+6. Next steps.
+
+Apply these requirements:
+- Do not make a material claim without a corresponding source-ledger entry.
+- Keep source-ledger entries concrete and auditable with fields:
+  - `where_found`: exact location (file path, system, channel, or artifact name).
+  - `link`: clickable URL or workspace path.
+  - `confidence`: `high`, `medium`, or `low` plus brief reason.
+  - `relevance`: why the source matters to the central question.
+- List unresolved questions explicitly under coverage gaps and unknowns.
+- End with a binary recommendation: `ship` or `no-ship`.
+- For `ship`, list residual risks and mitigation/monitoring actions.
+- For `no-ship`, list blocking risks and what evidence is required to flip to `ship`.
+
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
@@ -90,6 +113,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 - Call out critical red flags or regressions discovered during the investigation.
 - List evidence (tests run, steps, outputs, artifacts) and what they show.
 - Explicitly answer whether the proposed change is the right thing to change, backed by evidence.
+- Provide the report using the required output contract sections and order.
 - Include next steps and open questions.
 - Write the summary in plain, concise, and intuitive language with brief context so a new reader can follow it.
 - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
