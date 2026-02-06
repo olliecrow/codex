@@ -9,6 +9,25 @@ description: Execute the current plan end-to-end, verifying completion; use when
 
 Execute an existing plan step by step until it is fully complete and verified. Follow the plan spec's validation checkpoints and contingencies, using real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces.
 
+## Controller/worker orchestration mode (must follow for non-trivial plans)
+
+Use a controller role to coordinate focused workers.
+- Act as controller by default when the plan has parallelizable streams or mixed disciplines (research/code/data).
+- Decompose the plan into scoped work packets with objective, inputs, constraints, and acceptance checks.
+- Delegate focused packets to workers:
+  - `research-worker`: gather evidence, constraints, and references.
+  - `code-worker`: implement scoped code/config/doc changes.
+  - `data-worker`: run analysis, measurements, and validation datasets/checks.
+- Keep workers narrow; prevent cross-scope drift.
+- Merge worker outputs in the controller pass.
+- Run consistency checks before delivery:
+  - requirements coverage across all work packets,
+  - contradiction check across assumptions/findings,
+  - implementation-to-evidence alignment,
+  - validation completeness and pass/fail status.
+- If consistency checks fail, route issues back to the relevant worker packet, then re-merge and re-check.
+- Deliver only after controller consistency checks pass or blockers are explicitly documented.
+
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
@@ -53,6 +72,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 
 3. Execute relentlessly:
    - Perform each step in order, without skipping.
+   - Use controller/worker orchestration when plan streams can run independently.
    - Track progress in `plan/current/execute.md` (untracked) with actions taken and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
    - If a step fails, diagnose, fix, and retry before moving on.
    - Run the step-specific validation checks from the plan as you go; do not defer all testing to the end.
@@ -68,6 +88,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 
 5. Report:
    - State that execution is complete and verified, or explain what remains if blocked.
+   - Include controller summary, worker packet outcomes, and consistency-check results.
    - Write in plain, concise, and intuitive language with brief context.
    - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
 
