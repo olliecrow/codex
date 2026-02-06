@@ -1,6 +1,6 @@
 # Codex Docs Snapshot (Raw Capture)
 
-This file is a raw snapshot of upstream Codex-related docs. It may contain duplicate links, redirects, or 404 entries. Treat it as reference material and prefer refreshing it from upstream rather than hand-editing content below this header.
+This file is a raw snapshot of upstream Codex-related docs. It may contain duplicate links, redirects, or 404 entries. Treat it as reference material and prefer refreshing it from upstream rather than hand-editing content below this header. It is not repo policy and may conflict with `AGENTS.md`.
 
 # Table of Contents
 
