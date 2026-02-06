@@ -1,0 +1,4 @@
+interface:
+  display_name: "Organise Docs"
+  short_description: "Capture durable docs from conversation outcomes"
+  default_prompt: "Use $organise-docs to autonomously apply high-confidence doc updates from this conversation, consolidating contradictions while preserving valuable information."
