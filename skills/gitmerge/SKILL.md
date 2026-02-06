@@ -61,6 +61,7 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
 2. Require a clean working tree:
    - Check `git status -sb` next.
    - If there are unstaged or uncommitted changes, stop and ask the user to address them.
+   - If changes should be preserved, commit them before proceeding so there is a clear rollback point.
 
 3. Sync the current branch with remote:
    - Fetch latest refs for the current branch.
