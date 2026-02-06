@@ -1,0 +1,4 @@
+interface:
+  display_name: "Wait for Job"
+  short_description: "Wait for jobs to finish before continuing tasks"
+  default_prompt: "Wait for the long-running task to complete by polling every 120 seconds with a maximum timeout of 8 hours, then continue with the next requested steps."
