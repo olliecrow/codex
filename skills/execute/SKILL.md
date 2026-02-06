@@ -14,11 +14,15 @@ Execute an existing plan step by step until it is fully complete and verified. F
 Use a controller role to coordinate focused workers.
 - Act as controller by default when the plan has parallelizable streams or mixed disciplines (research/code/data).
 - Decompose the plan into scoped work packets with objective, inputs, constraints, and acceptance checks.
+- When a packet can run independently and policy permits, assign it to an isolated worktree or dedicated `cwd` to reduce interference.
 - Delegate focused packets to workers:
   - `research-worker`: gather evidence, constraints, and references.
   - `code-worker`: implement scoped code/config/doc changes.
   - `data-worker`: run analysis, measurements, and validation datasets/checks.
 - Keep workers narrow; prevent cross-scope drift.
+- Maintain a controller status board (`plan/current/orchestrator-status.md`, untracked) with packet, owner, `cwd`/worktree, status, blocker, and last update. If `plan/` cannot be created, keep an equivalent in-memory board and call it out in the report.
+- Require each worker handoff to include concise outputs: what changed, evidence pointers, and unresolved risks.
+- Keep a running notes file (`plan/current/notes.md`, untracked) with short updates after meaningful steps so findings can be reorganized and promoted later. If `plan/` cannot be created, keep in-memory notes and call it out in the report.
 - Merge worker outputs in the controller pass.
 - Run consistency checks before delivery:
   - requirements coverage across all work packets,
@@ -31,10 +35,12 @@ Use a controller role to coordinate focused workers.
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
+- Run a preflight before substantial work: confirm the expected `cwd`, verify required tools with `command -v`, and verify referenced files/directories exist before reading or searching them.
 - State assumptions explicitly; if anything is unclear or has multiple interpretations, stop and ask.
 - Prefer the simplest implementation that satisfies the plan; avoid speculative features or extra flexibility.
 - Keep changes surgical and within plan scope; do not refactor or "improve" adjacent code unless required.
 - Define success criteria per step and verify before moving on.
+- Prefer quoted paths and explicit path checks when running shell commands to reduce avoidable glob/path failures.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - If there is nothing left to do, say so explicitly and stop.
 
@@ -66,6 +72,10 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 
 2. Validate readiness:
    - Confirm prerequisites, constraints, and required inputs are present.
+   - Check for existing execution logs and completion ledgers in `plan/current/` and load them before taking new actions.
+   - If `docs/workflows.md` exists, align note routing and status tracking with it before execution starts.
+   - If workflow conventions are missing and edits are allowed, prefer running `setup` before long-running or parallel execution.
+   - For long or parallel execution, initialize note routing up front: scratch notes, status board, and the promotion path for durable learnings.
    - If critical information is missing, ask only the necessary questions and pause execution.
    - Use `plan/` as scratch space when needed; create it only if permitted, keep it untracked, and never commit it. If you cannot create it, keep a lightweight in-memory log and call it out in the report.
    - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
@@ -74,6 +84,8 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
    - Perform each step in order, without skipping.
    - Use controller/worker orchestration when plan streams can run independently.
    - Track progress in `plan/current/execute.md` (untracked) with actions taken and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
+   - Maintain `plan/current/execute-ledger.md` (untracked) with each plan step's status (`pending`, `in_progress`, `done`), evidence pointer, and last verification result. If `plan/` cannot be created, keep a lightweight in-memory ledger and call it out in the report.
+   - After each meaningful action, append a concise note with what was done, what changed, and what remains.
    - If a step fails, diagnose, fix, and retry before moving on.
    - Run the step-specific validation checks from the plan as you go; do not defer all testing to the end.
    - If the plan is ambiguous or would require scope expansion, stop and ask before proceeding.
@@ -88,6 +100,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 
 5. Report:
    - State that execution is complete and verified, or explain what remains if blocked.
+   - If no new inputs or code changes exist and the completion ledger is fully `done`, report that there is no remaining work and stop.
    - Include controller summary, worker packet outcomes, and consistency-check results.
    - Write in plain, concise, and intuitive language with brief context.
    - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
@@ -95,4 +108,5 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 ## Repeat invocations
 
 - If called multiple times, continue from the latest progress log and avoid redoing completed steps unless verification requires it.
-- Update `plan/current/execute.md` with new actions, fixes, and re-verification results. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
+- Update `plan/current/execute.md` and `plan/current/execute-ledger.md` with new actions, fixes, and re-verification results. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
+- If the completion ledger shows all steps `done` and no new evidence is introduced, do not rerun the same loop; return a concise completion confirmation instead.

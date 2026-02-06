@@ -14,10 +14,12 @@ Prefer empirical testing with real data and real runs when relevant. Avoid mock 
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
+- Run a preflight before substantial work: confirm the expected `cwd`, verify required tools with `command -v`, and verify referenced files/directories exist before reading or searching them.
 - State assumptions about scope and coverage; if multiple interpretations exist, surface them.
 - Prefer the simplest tests that meaningfully increase confidence before scaling up.
 - Avoid unrelated code changes; keep any fixes or test additions strictly in scope.
 - Define success criteria and map each to a test or check.
+- Prefer quoted paths and explicit path checks when running shell commands to reduce avoidable glob/path failures.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - If there is nothing left to do, say so explicitly and stop.
 
@@ -45,7 +47,11 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 1. Establish baseline:
 - Identify the change scope.
 - Ensure coverage maps to every relevant change, assumption, and risk area; do not leave gaps.
+- Run preflight checks first (`pwd`, required tools, path existence, and test entrypoints).
 - Run fast, small checks first (lint, unit tests, targeted suites).
+  - Prefer `uv run pytest` over bare `pytest` unless the repo explicitly uses another test runner flow.
+  - For long-running checks, use explicit timeouts and capture logs to a temporary artifact path for later review.
+  - Treat "no tests collected" as a coverage signal that requires adjustment, not as a pass.
    - Proactively create and run small, isolated experiments or standalone tests when useful.
    - Stop early if basics fail; fix before scaling up.
    - After any fixes or changes, rerun the fast checks to confirm no regressions.

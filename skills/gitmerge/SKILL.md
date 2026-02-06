@@ -12,11 +12,13 @@ Get the current branch to a merge-ready state with main by first understanding b
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
+- Run a preflight before substantial work: confirm you are at the repo root, verify `git`/required tools with `command -v`, and verify expected refs/remotes before state-changing commands.
 - State assumptions explicitly; if intent or requirements are unclear, stop and ask.
 - Prefer the simplest merge resolution that preserves intent on both sides; avoid extra refactors.
 - Keep changes surgical and limited to merge needs; do not "improve" unrelated code.
 - Define success criteria and verify after each meaningful step.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
+- Prefer quoted paths and explicit path checks when running shell commands to reduce avoidable glob/path failures.
 - Perform the merge when required without asking for permission; only stop to ask if there is ambiguity, missing information, or a risky decision that cannot be inferred.
 - Never blindly accept default merge resolutions; inspect every conflict and ensure functionality from both branches is preserved.
 - If the merge requires a commit, ensure pre-commit checks, relevant tests, and CI checks pass before committing.
@@ -52,6 +54,7 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
 ## Workflow
 
 1. Sync remote main before anything else:
+   - Run preflight checks first (`git rev-parse --show-toplevel`, `git remote -v`, and required tool availability).
    - Fetch the most recent `origin/main` before any other steps (do not checkout, merge, or rebase).
    - If the repo uses a different mainline (for example, `master`), fetch that instead.
    - If the update cannot be fetched, stop and ask for guidance.

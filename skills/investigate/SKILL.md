@@ -37,10 +37,12 @@ Apply these requirements:
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
+- Run a preflight before substantial work: confirm the expected `cwd`, verify required tools with `command -v`, and verify referenced files/directories exist before reading or searching them.
 - State assumptions explicitly; if multiple interpretations exist, list them instead of picking one silently.
 - Prefer the simplest explanation and test it first; avoid speculative detours.
 - Keep any code changes or experiments minimal and scoped to the investigation.
 - Define clear success criteria for what would confirm or falsify a hypothesis.
+- Prefer quoted paths and explicit path checks when running shell commands to reduce avoidable glob/path failures.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - If there is nothing left to do, say so explicitly and stop.
 
@@ -69,6 +71,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 
 - Identify the central question, scope boundaries, and success criteria.
 - Establish the current-state baseline (observed behavior, metrics, reproducible steps).
+- Run preflight checks first (`pwd`, required tools, and path existence for any targeted files/directories).
 - Enumerate known facts, uncertainties, and potential risks.
 - State what is expected to change vs what must remain stable.
 - If the problem definition is weak or mismatched to evidence, re-scope early.
@@ -80,6 +83,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 - List plausible explanations or models; rank by likelihood and impact.
 - Note what evidence would confirm or falsify each hypothesis.
 - Track a lightweight investigation log in `plan/current/investigate.md` (untracked) with hypotheses, probes, and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
+- For parallel investigations, maintain `plan/current/notes-index.md` and `plan/current/orchestrator-status.md` so hypotheses, owners, and evidence pointers stay synchronized.
 - Use `plan/` as scratch space for ad-hoc experiments; create it only if permitted, remove any that are no longer needed, and never commit it. If you cannot create it, keep temporary notes in memory and call it out in the report.
 - Keep `plan/` untracked and never commit it.
 - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
@@ -125,3 +129,4 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 - Always provide a summary of all investigations completed so far, including confirmations or reversals.
 - If re-invoked, follow prior suggested next steps or take a fresh angle; both are acceptable.
 - Treat repeat invocations as a mandate to push deeper until the topic is fully understood.
+- If a repeat pass has no new evidence, stop and report that further investigation would be low-yield until new inputs appear.

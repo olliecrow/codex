@@ -12,12 +12,14 @@ Compare the current branch against main, analyze each change's intent and risk, 
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
+- Run a preflight before substantial work: confirm you are at the repo root, verify `git`/required tools with `command -v`, and verify expected refs/remotes before diff/review commands.
 - Do not assume intent; if multiple interpretations exist, state them explicitly.
 - Prefer the simplest explanation for a change and verify it against evidence.
 - Keep review scope surgical: every comment should trace to a specific change.
 - Define explicit readiness criteria and verify them before concluding.
 - If a PR exists, treat review comments and discussion as required inputs (not gospel); investigate each item deeply and determine whether it is addressed, out of scope, or worth action.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
+- Prefer quoted paths and explicit path checks when running shell commands to reduce avoidable glob/path failures.
 - If there is nothing left to do, say so explicitly and stop.
 
 ## Git safety and permissions
@@ -47,6 +49,7 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
 ## Workflow
 
 1. Sync remote main before anything else:
+   - Run preflight checks first (`git rev-parse --show-toplevel`, `git remote -v`, and required tool availability).
    - Fetch the most recent `origin/main` before any other steps (do not checkout, merge, or rebase).
    - If the repo uses a different mainline (for example, `master`), fetch that instead.
    - If the update cannot be fetched, stop and ask for guidance.

@@ -14,10 +14,12 @@ Prefer empirical verification with real data and real runs when relevant. Avoid 
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
+- Run a preflight before substantial work: confirm the expected `cwd`, verify required tools with `command -v`, and verify referenced files/directories exist before reading or searching them.
 - State assumptions explicitly; if requirements are unclear or have multiple interpretations, ask before verifying.
 - Prefer the simplest verification that proves the claim; do not add speculative tests or scope.
 - Keep changes surgical if you must modify code or tests; avoid refactors unrelated to verification.
 - Define explicit success criteria and map each to a concrete check.
+- Prefer quoted paths and explicit path checks when running shell commands to reduce avoidable glob/path failures.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 
 When a current plan is the subject, use **plan verification mode**: review, critique, and refine the plan; run small investigations if needed; then return a fresh, improved plan.
@@ -49,6 +51,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 - Identify the recent changes or claims to verify.
 - Extract acceptance criteria, expected behavior, invariants, and risk areas.
 - Ensure every relevant change, decision, and assumption is explicitly reviewed; do not leave gaps.
+- Run preflight checks first (`pwd`, required tools, path existence, and test entrypoints).
 - Ask minimal clarifying questions only when requirements are ambiguous.
 - Note what would constitute proof of correctness vs. "good enough."
 - If verifying a plan: capture the current plan, its goals, constraints, and why it is being proposed now.
@@ -57,6 +60,9 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 
 - Map each criterion to a concrete check (tests, manual steps, logs, queries, static analysis).
 - Prefer fast, focused probes first; include regression checks around touched areas.
+- Prefer `uv run pytest` over bare `pytest` unless the repo explicitly uses another test runner flow.
+- For long-running checks, use explicit timeouts and capture logs to a temporary artifact path for later review.
+- Treat "no tests collected" as a coverage signal that requires adjustment, not as a pass.
 - If basics fail, stop early and fix before scaling the verification effort.
 - Prefer production-like configurations and real datasets when feasible; document data sources and constraints.
 - Keep a lightweight verification log in `plan/current/verify.md` (untracked) with probes and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
