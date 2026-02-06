@@ -23,6 +23,8 @@ The spec is the primary working artifact for the task and should be saved in `pl
 - Write summaries in plain, concise language with brief context; avoid analogies and define technical terms when needed.
 - When a plan can answer a question via investigation or reasonable assumptions, do so and make assumptions explicit; only ask questions that are truly blocking.
 - Ensure the plan is executable end-to-end without further input or decisions; resolve all decisions up front.
+- For long-running or parallel work, define a note hierarchy and routing strategy up front (scratch vs durable notes) to reduce context bloat.
+- Define explicit stop criteria and iteration limits so optimization does not turn into open-ended churn.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - State assumptions explicitly and surface alternate interpretations; do not pick one silently.
 - Prefer the simplest viable approach and call out overcomplication or speculative scope.
@@ -63,6 +65,7 @@ If the plan introduces or recommends a decision that should be durable, capture 
 - Investigate unknowns early and capture evidence needed for confident planning.
 - When feasible, run targeted empirical probes (real data, real runs) to validate key assumptions before finalizing the plan.
 - Capture notes in `plan/current/plan.md` if scratch space is needed.
+- For long or multi-workstream plans, also define where to capture running notes, worker status, and handoff summaries.
 
 ### 2) Resolve immediate, low-risk items
 
@@ -108,6 +111,7 @@ If the plan introduces or recommends a decision that should be durable, capture 
 - Avoid end-only testing; embed verification after each meaningful phase.
 - Include contingencies and mitigation steps tied to likely failure modes.
 - For multi-step work, present step -> verify checks explicitly.
+- Include execution budget guardrails (for example max passes/retries or explicit "re-open only with new evidence" criteria).
 - Keep the plan extremely detailed and explicit; no hand-wavy steps.
 
 ### 8) Validation and experimentation phase (required)
@@ -134,12 +138,14 @@ If the plan introduces or recommends a decision that should be durable, capture 
   - Current state summary
   - Target state
   - Evidence and investigations (what was tested, learned, and assumed)
+  - Note hierarchy and routing plan (scratch notes, status tracking, and durable promotion path)
   - Decisions (with pros/cons and recommendations)
   - Phased plan with detailed steps
   - Verification/validation plan (required; follows implementation plan and is omitted only with explicit justification)
   - Validation/experimentation phase (required; extensive, empirical, and uses real data when feasible)
   - Risks and mitigations
   - Contingencies and mitigation playbook
+  - Stop criteria and re-entry triggers (what ends the cycle and what justifies another cycle)
   - Open questions (only if truly blocking; if any exist, state that execution cannot proceed without input)
 
 ## Repeat invocations

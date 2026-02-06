@@ -13,6 +13,13 @@ Use gh to locate failing PR checks, fetch GitHub Actions logs for actionable fai
 
 Prereq: authenticate with the standard GitHub CLI once (for example, run `gh auth login`), then confirm with `gh auth status` (repo + workflow scopes are typically required).
 
+## Preflight (must run first)
+
+- Confirm repo context and branch state (`git rev-parse --show-toplevel`, `git symbolic-ref -q --short HEAD`).
+- Confirm `gh` availability/auth (`command -v gh`, `gh auth status`).
+- If detached HEAD or no branch PR is available, require an explicit PR number/URL instead of guessing.
+- Verify referenced paths exist before writing logs or artifacts.
+
 ## Inputs
 
 - `repo`: path inside the repo (default `.`)
@@ -32,6 +39,7 @@ Prereq: authenticate with the standard GitHub CLI once (for example, run `gh aut
 2. Resolve the PR.
    - Prefer the current branch PR: `gh pr view --json number,url`.
    - If the user provides a PR number or URL, use that directly.
+   - If current-branch PR discovery fails, retry once with explicit `--repo <owner>/<repo>` before asking the user.
 3. Inspect failing checks (GitHub Actions only).
    - Preferred: run the bundled script (handles gh field drift and job-log fallbacks):
      - `python "<path-to-skill>/scripts/inspect_pr_checks.py" --repo "." --pr "<number-or-url>"`
@@ -39,6 +47,7 @@ Prereq: authenticate with the standard GitHub CLI once (for example, run `gh aut
    - Manual fallback:
      - `gh pr checks <pr> --json name,state,bucket,link,startedAt,completedAt,workflow`
        - If a field is rejected, rerun with the available fields reported by `gh`.
+       - Keep a minimal fallback field set ready: `name,state,link` to survive CLI schema drift.
      - For each failing check, extract the run id from `detailsUrl` and run:
        - `gh run view <run_id> --json name,workflowName,conclusion,status,url,event,headBranch,headSha`
        - `gh run view <run_id> --log`
@@ -56,6 +65,12 @@ Prereq: authenticate with the standard GitHub CLI once (for example, run `gh aut
    - Apply the approved plan, summarize diffs/tests, and ask about opening a PR.
 8. Recheck status.
    - After changes, suggest re-running the relevant tests and `gh pr checks` to confirm.
+
+## Failure-handling defaults
+
+- Treat `Unknown JSON field` from `gh` as schema drift; retry with a reduced field set instead of failing the task.
+- Treat `could not determine current branch` as branch-state ambiguity; switch to explicit PR mode.
+- Treat `Not Found (404)` as repo/PR mismatch first; verify `--repo` and PR identity before deeper debugging.
 
 ## Bundled Resources
 

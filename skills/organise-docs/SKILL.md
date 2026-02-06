@@ -13,6 +13,7 @@ Extract durable knowledge from the current conversation and convert it into high
 
 Run a compounding cycle after each substantial task.
 - Treat a task as substantial when it includes multi-step debugging/investigation, meaningful code edits, non-trivial design decisions, or repeated back-and-forth that produced reusable knowledge.
+- Keep a lightweight "write it down now" habit during execution so useful details are not reconstructed from memory later.
 - Capture ephemeral exploration notes in `plan/` while working.
 - Promote durable learnings into `docs/` before finishing the task.
 - Consolidate duplicated scratch notes and prune stale `plan/` artifacts after promotion.
@@ -25,6 +26,15 @@ Apply documentation edits autonomously when confidence is high.
 - Create, merge, split, move, rename, reorganize, and delete docs when this improves clarity and maintainability.
 - If confidence is not high, do not invent facts. Leave content unchanged or call out the uncertainty in the final summary.
 
+## Notes hierarchy and routing (must follow)
+
+- Treat notes and snippets as flexible raw material; organization can evolve as understanding improves.
+- Route ephemeral notes to `plan/current/` and keep them concise, task-linked, and disposable.
+- Route durable guidance to `docs/` only after de-duplication and contradiction checks.
+- Keep per-workstream notes near the workstream context (for example in its worktree/cwd notes file) and reflect only compact pointers in shared indexes.
+- For multi-workstream/subagent efforts, keep a compact shared index (for example `plan/current/notes-index.md`) that links workstream notes and latest status.
+- If `plan/` cannot be created, keep an in-memory index and call it out in the report.
+
 ## Workflow
 
 1. Build the evidence set.
@@ -32,6 +42,7 @@ Apply documentation edits autonomously when confidence is high.
 - Use only evidence-backed statements.
 - Prefer concrete facts over interpretations.
 - Keep temporary extraction notes in `plan/current/` while building the evidence set.
+- Gather relevant notes and snippets from active workstreams before consolidation so nothing important is dropped.
 
 2. Filter for durable knowledge.
 - Keep: decisions, trade-offs, rules, invariants, failure modes, and stable process guidance.
@@ -49,6 +60,7 @@ Apply documentation edits autonomously when confidence is high.
 - Create new docs when the existing structure cannot hold content clearly.
 - Merge fragmented docs when they duplicate scope.
 - Split overloaded docs when mixed topics reduce clarity.
+- Reorganize notes into a clear hierarchy when raw notes have grown large or hard to navigate.
 
 5. Write concise, structured updates.
 - Use explicit sections or bullet entries that are easy to scan.
