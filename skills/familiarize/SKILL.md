@@ -5,6 +5,12 @@ description: Meticulously familiarize with a codebase to understand structure, p
 
 # Familiarize
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
 ## Overview
 
 Build a clear, accurate mental model of the codebase: layout, purpose, key flows, and current change state. When reviewing changes, conduct a deep, thorough review so every relevant change and decision is understood.

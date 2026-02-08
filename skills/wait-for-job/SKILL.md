@@ -5,6 +5,12 @@ description: Wait for long-running external tasks to finish before continuing wo
 
 # Wait For Job
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
 ## Overview
 
 Block until an external task is complete, then continue with downstream analysis or execution. Use the bundled poller to avoid racing ahead while jobs are still running.

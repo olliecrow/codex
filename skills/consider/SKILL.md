@@ -5,6 +5,12 @@ description: Consider new evidence or reviews about recent work, investigate and
 
 # Consider
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
 ## Overview
 
 Evaluate new evidence or reviews about current work (for example, an independent review of a branch or codebase) without treating them as gospel. Investigate, research, and reason deeply to determine whether any points are valid, whether changes or further investigation are warranted, and what to do next. It is acceptable to conclude that nothing should change and to ignore suggestions that are not supported by evidence.

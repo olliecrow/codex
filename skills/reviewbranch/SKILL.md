@@ -5,6 +5,12 @@ description: Alias for `gitreview`. Use when a user requests `$reviewbranch`; de
 
 # reviewbranch
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
 ## Overview
 
 This is a thin alias for the `gitreview` skill.
