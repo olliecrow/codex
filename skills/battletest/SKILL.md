@@ -5,6 +5,12 @@ description: Proactively battle-test recent code changes across many configurati
 
 # battletest
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
 ## Overview
 
 Run many test perspectives and configurations, starting small and scaling up, then summarize outcomes, red flags, and next steps. Conduct a deep, thorough validation that maps coverage to all relevant changes and decisions, and reason through the results.

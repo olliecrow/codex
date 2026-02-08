@@ -5,6 +5,12 @@ description: Initialize docs/plan/decisions conventions plus note-routing and or
 
 # Setup
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
 ## Overview
 
 Set up a consistent, agent-focused operating model in any repo. The setup is idempotent: if everything required is already in place, do nothing.

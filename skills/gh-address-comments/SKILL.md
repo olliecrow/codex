@@ -11,6 +11,12 @@ Guide to find the open PR for the current branch and address its comments with g
 
 Prereq: ensure `gh` is authenticated (for example, run `gh auth login` once), then run `gh auth status` with escalated permissions (include workflow/repo scopes) so `gh` commands succeed. If sandboxing blocks `gh auth status`, rerun it with `sandbox_permissions=require_escalated`.
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
 ## Preflight (must run first)
 
 - Confirm repo context and branch state (`git rev-parse --show-toplevel`, `git symbolic-ref -q --short HEAD`).

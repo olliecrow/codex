@@ -5,6 +5,12 @@ description: Assess a codebase for potentially dangerous or malicious behavior b
 
 # Dangercheck
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
 ## Overview
 
 Assess a repo for malicious or risky behavior without executing code. This skill is strictly static analysis: read files only, do not run code, do not install dependencies, and do not execute any scripts or binaries. Conduct a deep, thorough review of all relevant files, entrypoints, and dependencies, and reason through every finding. Focus on entrypoints, scripts, dependency hooks, and suspicious patterns that could exfiltrate data, modify the system, or download and execute remote content.

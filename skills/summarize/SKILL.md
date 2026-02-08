@@ -5,6 +5,12 @@ description: Summarize complex information from any source into concise, decisio
 
 # Summarize
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
 ## Goal
 
 Produce a clear, concise, direct summary that fully equips the reader to understand what happened, why it happened, and what decisions or actions are needed next.

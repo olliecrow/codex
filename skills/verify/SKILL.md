@@ -5,6 +5,12 @@ description: Verify correctness of recent code changes, decisions, plans, or out
 
 # Verify
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
 ## Overview
 
 Verify recent work by collecting evidence that it is correct, complete, and matches requirements, prioritizing targeted checks over broad stress testing unless risk demands it. Conduct a deep, thorough verification that reviews all relevant changes, decisions, and assumptions end-to-end and reasons through the evidence.

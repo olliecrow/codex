@@ -9,6 +9,12 @@ description: "Use when the task requires automating a real browser from the term
 Drive a real browser from the terminal using `playwright-cli`. Prefer the bundled wrapper script so the CLI works even when it is not globally installed.
 Treat this skill as CLI-first automation. Do not pivot to `@playwright/test` unless the user explicitly asks for test files.
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
 ## Prerequisite check (required)
 
 Before proposing commands, check whether `npx` is available (the wrapper depends on it):

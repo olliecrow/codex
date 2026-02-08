@@ -5,6 +5,12 @@ description: Commit all current uncommitted changes into small, logical commits 
 
 # Gitcommit
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
 ## Overview
 
 Commit all appropriate uncommitted changes (including relevant untracked files) into many small, logical commits with descriptive messages. Do not push. End with no changes that should be committed left uncommitted.

@@ -13,6 +13,12 @@ Create clean, reproducible Jupyter notebooks for two primary modes:
 
 Prefer the bundled templates and the helper script for consistent structure and fewer JSON mistakes.
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
 ## When to use
 - Create a new `.ipynb` notebook from scratch.
 - Convert rough notes or scripts into a structured notebook.

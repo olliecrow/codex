@@ -5,6 +5,12 @@ description: Review recent changes and/or broader code to simplify or reduce tec
 
 # Cleanup
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
 ## Overview
 
 Relentlessly search for tech debt, bloat, redundancy, unused code, and unnecessary complexity across the project, then simplify, tidy, and de-over-engineer while preserving performance. Conduct a deep, thorough review of all relevant areas and reason through every cleanup decision.

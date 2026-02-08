@@ -3,6 +3,12 @@ name: "yeet"
 description: "Use only when the user explicitly asks to stage, commit, push, and open a GitHub pull request in one flow using the GitHub CLI (`gh`)."
 ---
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
 ## Prerequisites
 
 - Require GitHub CLI `gh`. Check `gh --version`. If missing, ask the user to install `gh` and stop.

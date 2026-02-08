@@ -5,6 +5,12 @@ description: Execute the current plan end-to-end, verifying completion; use when
 
 # execute
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
 ## Overview
 
 Execute an existing plan step by step until it is fully complete and verified. Follow the plan spec's validation checkpoints and contingencies, using real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces.

@@ -5,6 +5,12 @@ description: Prepare the current branch to merge cleanly into main by ensuring a
 
 # gitmerge
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
 ## Overview
 
 Get the current branch to a merge-ready state with main by first understanding both branches in depth, then planning a careful integration that preserves functionality from each side. Do not rush into a merge: fully map how main has progressed and how the current branch diverges before changing anything. Treat integration as a potentially difficult, long‑thinking task; reason and plan deeply before executing any state‑changing git commands. Once the plan is validated, perform the required git operations to reach a fully merged state. Conduct a deep, thorough review of all diffs and decisions, and ensure functionality from both branches is preserved after the merge.
