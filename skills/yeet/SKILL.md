@@ -47,8 +47,9 @@ description: "Use only when the user explicitly asks to stage, commit, push, and
 - Commit tersely with the description: `git commit -m "{description}"`
 - Push with tracking: `git push -u origin $(git branch --show-current)`
 - If git push fails due to workflow auth errors, pull from master and retry the push.
-- If the branch has no active PR (open draft or ready-for-review), open one: `GH_PROMPT_DISABLED=1 GIT_TERMINAL_PROMPT=0 gh pr create --draft --fill --head $(git branch --show-current)`.
-- If the branch already has an active PR (open draft or ready-for-review), do not create a duplicate; edit the existing PR instead.
+- If the branch has no active PR, open one in ready-for-review state: `GH_PROMPT_DISABLED=1 GIT_TERMINAL_PROMPT=0 gh pr create --fill --head $(git branch --show-current)`.
+- If the branch already has an active PR, do not create a duplicate; edit the existing PR instead.
+- If the active PR is draft, promote it before finishing: `GH_PROMPT_DISABLED=1 GIT_TERMINAL_PROMPT=0 gh pr ready $(git branch --show-current)`.
 - Write the PR description to a temp file with real newlines (e.g. pr-body.md ... EOF) and run pr-body.md to avoid \\n-escaped markdown.
 - PR description (markdown) must be detailed prose covering the issue, the cause and effect on users, the root cause, the fix, and any tests or checks used to validate.
 - At the end, always compare the active PR title/body to the final branch delta and update stale metadata with `gh pr edit`.

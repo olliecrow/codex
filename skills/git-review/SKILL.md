@@ -39,7 +39,7 @@ When PR feedback surfaces high-confidence issues worth action, investigate deepl
 - Keep review scope surgical: every comment should trace to a specific change.
 - Define explicit readiness criteria and verify them before concluding.
 - If a PR exists, treat review comments and discussion as required inputs (not gospel); investigate each item deeply and determine whether it is addressed, out of scope, or worth action.
-- At the end of the review, check whether the branch has an active PR (open draft or ready-for-review) and update title/body when metadata no longer matches the branch delta.
+- At the end of the review, check whether the branch has an active PR and update title/body when metadata no longer matches the branch delta.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - Prefer quoted paths and explicit path checks when running shell commands to reduce avoidable glob/path failures.
 - If there is nothing left to do, say so explicitly and stop.
@@ -137,7 +137,8 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
 
 10. Refresh active PR metadata:
-   - Check whether the current branch has an active PR (open draft or ready-for-review).
+   - Check whether the current branch has an active PR.
    - If yes, compare PR title/body against the reviewed branch intent and actual delta after any fixes.
    - If title/body are stale or incomplete, update them (for example with `gh pr edit --title ... --body-file ...`).
+   - If the active PR is draft and the branch is review-ready, promote it (for example with `gh pr ready <pr-number-or-url>`).
    - If no active PR exists, state that explicitly and continue.
