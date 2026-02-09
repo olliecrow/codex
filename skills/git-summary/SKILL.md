@@ -35,7 +35,7 @@ Produce a precise, lower-case PR summary by fully understanding how the current 
 - Do not assume intent or fill gaps; call out uncertainty if needed.
 - Prefer the simplest summary that covers the actual changes; avoid speculative detail.
 - Keep scope surgical: every bullet must map to a specific change.
-- At the end of the workflow, check whether the branch has an active PR (open draft or ready-for-review) and update title/body if metadata is stale.
+- At the end of the workflow, check whether the branch has an active PR and update title/body if metadata is stale.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - If there is nothing left to do, say so explicitly and stop.
 
@@ -97,7 +97,8 @@ If changes include issue fixes or key decisions, confirm the rationale is captur
    - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
 
 6. Refresh active PR metadata:
-   - Check whether the current branch has an active PR (open draft or ready-for-review).
+   - Check whether the current branch has an active PR.
    - If yes, compare PR title/body against the actual branch delta and generated summary.
    - If title/body are stale or incomplete, update them (for example with `gh pr edit --title ... --body-file ...`).
+   - If the active PR is draft and the branch is review-ready, promote it (for example with `gh pr ready <pr-number-or-url>`).
    - If no active PR exists, state that explicitly and continue.

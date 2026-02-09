@@ -43,7 +43,7 @@ If committing is prohibited by project or system instructions, state that you ca
 - If you must adjust code to capture rationale or fix small issues discovered during review, keep it minimal and directly tied to the request.
 - Do not create any commit until all applicable pre-commit checks, tests, and CI checks have been run and passed.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
-- Treat active-PR title/body updates as in-scope for this skill: if the branch has an active PR (open draft or ready-for-review) and metadata drift is detected, update it.
+- Treat active-PR title/body updates as in-scope for this skill: if the branch has an active PR and metadata drift is detected, update it.
 - If there is nothing left to do, say so explicitly and stop.
 
 ## Git safety and permissions
@@ -124,9 +124,10 @@ Before committing, ensure that any issue fixes or key decisions are documented i
    - If any files that should be committed remain, create additional commits until the tree is clean.
 
 9. Refresh active PR metadata:
-   - Check whether the current branch has an active PR (open draft or ready-for-review).
+   - Check whether the current branch has an active PR.
    - If yes, compare PR title/body against the current branch intent and the actual delta.
    - If title/body are stale or incomplete after additional changes, update them (for example with `gh pr edit --title ... --body-file ...`).
+   - If the active PR is draft and the branch is review-ready, promote it (for example with `gh pr ready <pr-number-or-url>`).
    - If no active PR exists, state that explicitly and continue.
 
 10. If committing is disallowed:
