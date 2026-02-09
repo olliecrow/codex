@@ -1,9 +1,9 @@
 ---
-name: gitsummary
+name: git-summary
 description: Analyze current branch vs main, understand all diffs and intent, and produce a concise lower-case bullet list suitable for a PR summary, including nuances and gotchas.
 ---
 
-# gitsummary
+# git-summary
 
 ## Multi-agent collaboration
 

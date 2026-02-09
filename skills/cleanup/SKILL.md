@@ -63,7 +63,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 
 3. Prioritize and log (when addressing tech debt):
    - Rank items by impact (maintainability, risk, churn) and effort.
-   - Track a lightweight debt log in `plan/current/techdebt.md` (untracked) with found items, fixes, and deferred items plus the reason. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
+   - Track a lightweight debt log in `plan/current/tech-debt.md` (untracked) with found items, fixes, and deferred items plus the reason. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
    - For each planned change, state the intent (behavior-preserving or behavior-changing) and why the change is worth it.
 
 4. Investigate and validate:

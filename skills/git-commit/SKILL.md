@@ -1,5 +1,5 @@
 ---
-name: gitcommit
+name: git-commit
 description: Commit all current uncommitted changes into small, logical commits with clear messages. Do not push. Use when asked to commit everything in the working tree.
 ---
 

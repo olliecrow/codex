@@ -1,9 +1,9 @@
 ---
-name: techdebt
-description: Alias for `cleanup` with a tech-debt focus. Use when a user requests `$techdebt`; delegate directly to the `cleanup` skill workflow.
+name: tech-debt
+description: Alias for `cleanup` with a tech-debt focus. Use when a user requests `$tech-debt`; delegate directly to the `cleanup` skill workflow.
 ---
 
-# techdebt
+# tech-debt
 
 ## Multi-agent collaboration
 

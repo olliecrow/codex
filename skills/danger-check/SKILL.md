@@ -1,5 +1,5 @@
 ---
-name: dangercheck
+name: danger-check
 description: Assess a codebase for potentially dangerous or malicious behavior before running it. Use when the user wants a safety audit of an untrusted repo, scripts, installers, build/test pipelines, or dependencies to decide whether to run locally or only in a sandbox/container.
 ---
 
@@ -18,7 +18,7 @@ Assess a repo for malicious or risky behavior without executing code. This skill
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
-- Never execute code or install dependencies in dangercheck; there is no approval path for execution.
+- Never execute code or install dependencies in danger-check; there is no approval path for execution.
 - State assumptions explicitly; if a finding has multiple interpretations, list them and note uncertainty.
 - Prefer the simplest explanation supported by evidence; do not assume safety or malice without proof.
 - Keep scope surgical and static-only; do not expand into unrelated audits or execution.
@@ -61,7 +61,7 @@ When you make a remediation recommendation or reach an important decision, captu
 - Identify repo root, primary languages, and build tooling.
 - Inventory files and size so you know what you are scanning.
 - Ensure every relevant area is reviewed; explicitly call out any unscanned scope.
-- If the user is re-running dangercheck, review prior findings and avoid duplicating the same probes.
+- If the user is re-running danger-check, review prior findings and avoid duplicating the same probes.
 
 Suggested commands (adapt):
 - `rg --files -g '!.git/**' -g '!**/node_modules/**' -g '!**/vendor/**'`
@@ -86,7 +86,7 @@ If the repo is huge, note unscanned areas explicitly (for example: large `vendor
   - obfuscation and encoded payloads
   - filesystem destruction
 - For each hit, open the file and evaluate context, intent, and reachability.
-- Track a lightweight investigation log in `plan/current/dangercheck.md` (untracked) with probes and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
+- Track a lightweight investigation log in `plan/current/danger-check.md` (untracked) with probes and outcomes. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
 - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
 ### 4) Dependency and supply-chain review
@@ -119,9 +119,9 @@ If the repo is huge, note unscanned areas explicitly (for example: large `vendor
 
 ## Repeat invocations
 
-When dangercheck is called multiple times on the same repo, expand coverage rather than repeat the same scans.
+When danger-check is called multiple times on the same repo, expand coverage rather than repeat the same scans.
 
-- Review the prior `plan/current/dangercheck.md` log and avoid duplicate probes unless validating a fix.
+- Review the prior `plan/current/danger-check.md` log and avoid duplicate probes unless validating a fix.
 - Add new perspectives: different entrypoints, less common ecosystems, or deeper analysis of suspicious files.
 - Increase depth in stages:
   1) New entrypoints and hooks not previously scanned.

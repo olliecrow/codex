@@ -1,9 +1,9 @@
 ---
-name: gitmerge
+name: git-merge
 description: Prepare the current branch to merge cleanly into main by ensuring a clean working tree, syncing with remote, understanding diffs and intent, planning safe changes, resolving conflicts, and verifying with battle tests.
 ---
 
-# gitmerge
+# git-merge
 
 ## Multi-agent collaboration
 
@@ -126,4 +126,4 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
 
 - If called multiple times, avoid repeating the same probes or tests unless verifying a fix.
 - Expand coverage gradually: re-check diffs after updates, deepen review of conflicted areas, or add broader tests if risk warrants it.
-- Keep a lightweight log in `plan/current/gitmerge.md` (untracked) of decisions, conflicts, and fixes to avoid rework. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
+- Keep a lightweight log in `plan/current/git-merge.md` (untracked) of decisions, conflicts, and fixes to avoid rework. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
