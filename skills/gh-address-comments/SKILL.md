@@ -51,9 +51,10 @@ Prereq: ensure `gh` is authenticated (for example, run `gh auth login` once), th
 - Apply fixes for the selected comments
 
 ## 4) Refresh active PR metadata (always)
-- Check whether the current branch has an active PR (open draft or ready-for-review).
+- Check whether the current branch has an active PR.
 - Compare PR title/body against the branch intent and actual delta after addressed comments.
 - If title/body are stale or incomplete, update them (for example with `gh pr edit --title ... --body-file ...`).
+- If the active PR is draft and the branch is review-ready, promote it (for example with `gh pr ready <pr-number-or-url>`).
 - If no active PR exists, state that explicitly and continue.
 
 Notes:
