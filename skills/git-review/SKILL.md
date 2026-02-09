@@ -1,9 +1,9 @@
 ---
-name: gitreview
+name: git-review
 description: Deep review of a branch vs main to find critical issues before merge. Use when asked to assess readiness to merge or to audit differences for red flags.
 ---
 
-# gitreview
+# git-review
 
 ## Multi-agent collaboration
 
@@ -101,7 +101,7 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
 
 8. Handle huge diffs without skipping coverage:
    - Still review all changes end-to-end; do not sample or skip files.
-   - Break the review into batches (by directory, feature, or risk area) and track progress in `plan/current/gitreview.md`. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
+   - Break the review into batches (by directory, feature, or risk area) and track progress in `plan/current/git-review.md`. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
    - Use tooling to manage scale (e.g., `git diff --stat`, `git diff --numstat`, per-file diffs, and focused searches) but ensure every file and hunk is covered.
    - If time or compute constraints make a full review impractical, ask the user for a time budget or additional constraints, but keep the full-review requirement explicit.
 
