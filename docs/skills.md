@@ -18,6 +18,7 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 - Default to autonomous execution when confidence is high and the workflow allows it; escalate when confidence is low.
 - Drive work end-to-end when confidence is high: prefer complete verified outcomes over partial handoffs.
 - Keep repository documentation accurate: promote durable learnings and decisions to `docs/` as part of normal skill execution.
+- For large or long tasks, run recurring milestone checkpoints instead of a single end wrap-up: use `git-commit` for small logical commits and `organise-docs` to promote durable learnings, then prune stale `plan/` artifacts.
 - For git/PR workflows, always check active PR metadata (open draft or ready-for-review) at the end and update stale title/body when needed.
 - If a skill is missing or blocked, say so briefly and use the closest safe fallback.
 - If applicability is unclear, ask a brief clarifying question before proceeding.
