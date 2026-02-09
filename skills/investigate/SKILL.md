@@ -16,6 +16,7 @@ description: Deep, meticulous investigation of a problem, issue, or topic by for
 Deep dive into a topic or issue by exploring hypotheses, validating them with evidence, and iterating until confidence is high. First build confidence in the current state, then confirm the proposed change is the right thing to change. Be relentless and keep going until you reach the bottom of the topic or problem, even if it takes a long time. Conduct a deep, thorough investigation that reviews all relevant changes, decisions, and assumptions and reasons through them explicitly.
 
 Prefer empirical investigation with real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces.
+For experiment-heavy work, prioritize maximizing learning throughput: focus on high-information findings and actionable next experiments.
 
 ## Required output contract (must follow)
 
@@ -116,6 +117,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
 - If evidence is inconclusive or conflicting, state uncertainty and seek additional data.
 - Do not conclude early; keep iterating until the investigation is genuinely exhausted or the root cause is fully understood.
 - If evidence suggests the proposed change is not the right target, pivot and update the plan.
+- When confidence is high, recommend concrete follow-up experiments/actions immediately; if confidence is low, explicitly call out what is needed before acting.
 
 ### 6) Report
 

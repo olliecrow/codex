@@ -31,6 +31,7 @@ The spec is the primary working artifact for the task and should be saved in `pl
 - Ensure the plan is executable end-to-end without further input or decisions; resolve all decisions up front.
 - For long-running or parallel work, define a note hierarchy and routing strategy up front (scratch vs durable notes) to reduce context bloat.
 - Define explicit stop criteria and iteration limits so optimization does not turn into open-ended churn.
+- For experiment-driven work, optimize for learning yield and throughput, not just task completion.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - State assumptions explicitly and surface alternate interpretations; do not pick one silently.
 - Prefer the simplest viable approach and call out overcomplication or speculative scope.
@@ -118,6 +119,7 @@ If the plan introduces or recommends a decision that should be durable, capture 
 - Include contingencies and mitigation steps tied to likely failure modes.
 - For multi-step work, present step -> verify checks explicitly.
 - Include execution budget guardrails (for example max passes/retries or explicit "re-open only with new evidence" criteria).
+- For cluster/experiment plans, include clear criteria for autonomous submission when confidence is high and escalation rules when confidence is low.
 - Keep the plan extremely detailed and explicit; no hand-wavy steps.
 
 ### 8) Validation and experimentation phase (required)

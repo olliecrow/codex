@@ -13,6 +13,9 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 - Use progressive disclosure: open `SKILL.md` first, then only the referenced files you need.
 - Keep context tight: avoid bulk-loading folders, and summarize long sections.
 - Prefer skill-provided scripts or templates over retyping or reinventing workflows.
+- Encourage multi-agent/subagent collaboration when it improves speed, quality, or confidence; split work into clear packets with synthesis checks.
+- For experiment-heavy work, optimize for learning throughput and high-information outcomes, not only task completion.
+- Default to autonomous execution when confidence is high and the workflow allows it; escalate when confidence is low.
 - If a skill is missing or blocked, say so briefly and use the closest safe fallback.
 - If applicability is unclear, ask a brief clarifying question before proceeding.
 
