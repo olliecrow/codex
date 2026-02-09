@@ -49,7 +49,9 @@ Notes:
 - Reasoning effort: `xhigh`
 - Tool output token limit: `25000`
 - Auto-compaction token threshold: `233000`
-- Features: `web_search_request`, `unified_exec`, `apply_patch_freeform`, `skills`, `shell_snapshot` enabled; `ghost_commit` disabled
+- Unstable feature warning suppression: enabled
+- TUI startup tooltips: disabled
+- Features: `web_search_request`, `unified_exec`, `skills`, `shell_snapshot` enabled; `ghost_commit` and `apply_patch_freeform` disabled
 
 You can override defaults by editing the generated `/home/dev/.codex-container/config.toml` inside the container. Host-side `~/.codex/config.toml` is ignored.
 
