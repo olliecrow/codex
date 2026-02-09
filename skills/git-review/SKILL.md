@@ -13,7 +13,8 @@ description: Deep review of a branch vs main to find critical issues before merg
 
 ## Overview
 
-Compare the current branch against main, analyze each change's intent and risk, and hunt for critical red flags before merge. If the branch has an open PR, incorporate all PR comments and interactions into the review. Conduct a deep, thorough review that covers every change and decision end-to-end.
+Compare the current branch against main, analyze each change's intent and risk, and hunt for critical red flags before merge. If the branch has an open PR, incorporate all PR comments and interactions into the review. PR comments are inputs, not gospel. Conduct a deep, thorough review that covers every change and decision end-to-end.
+When PR feedback surfaces high-confidence issues worth action, investigate deeply, add them to the plan, execute fixes, and verify outcomes before finalizing the verdict.
 
 ## Behavioral guardrails (must follow)
 
@@ -24,6 +25,7 @@ Compare the current branch against main, analyze each change's intent and risk, 
 - Keep review scope surgical: every comment should trace to a specific change.
 - Define explicit readiness criteria and verify them before concluding.
 - If a PR exists, treat review comments and discussion as required inputs (not gospel); investigate each item deeply and determine whether it is addressed, out of scope, or worth action.
+- At the end of the review, check whether the branch has an active PR (open draft or ready-for-review) and update title/body when metadata no longer matches the branch delta.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - Prefer quoted paths and explicit path checks when running shell commands to reduce avoidable glob/path failures.
 - If there is nothing left to do, say so explicitly and stop.
@@ -96,8 +98,11 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
 
 7. Triage PR feedback:
    - Enumerate every PR comment and interaction; for each, decide one of: addressed, not worth addressing (with rationale), or needs action.
-   - For each item that needs action, build a plan that preserves intent, minimizes risk, and links back to the specific feedback.
+   - For each item that needs action, investigate deeply to confirm root cause and expected impact.
+   - Build a plan that preserves intent, minimizes risk, and links back to the specific feedback.
    - Flesh out the plan with concrete steps, dependencies, and verification.
+   - Execute high-confidence, in-scope fixes and run relevant verification checks before closing the review.
+   - Re-classify each acted-on item as addressed only after evidence-backed verification.
 
 8. Handle huge diffs without skipping coverage:
    - Still review all changes end-to-end; do not sample or skip files.
@@ -109,9 +114,16 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - Investigate each potential change one by one and state whether it is high‑confidence/conviction, optional, or not worth doing.
    - Consolidate all items that should change into a final, ordered plan (even if the verdict is Ready).
    - For each plan item, include scope, rationale, dependencies, and verification steps.
-   - Summarize PR comment triage with dispositions and link each planned item to the originating comment when applicable.
+   - Summarize PR comment triage with dispositions and link each planned and executed item to the originating comment when applicable.
+   - Distinguish executed-and-verified fixes from deferred items, and justify any deferrals.
    - Note required fixes before merge and provide a merge readiness assessment and next steps.
    - Use a concise verdict template: Ready / Needs fixes / Blocked.
    - If called repeatedly, you may follow prior suggested next steps or take a fresh angle; both are fine. Continue deeper review and append new findings rather than repeating prior summaries.
    - Write the report in plain, concise, and intuitive language with brief context so a new reader can follow it.
    - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
+
+10. Refresh active PR metadata:
+   - Check whether the current branch has an active PR (open draft or ready-for-review).
+   - If yes, compare PR title/body against the reviewed branch intent and actual delta after any fixes.
+   - If title/body are stale or incomplete, update them (for example with `gh pr edit --title ... --body-file ...`).
+   - If no active PR exists, state that explicitly and continue.

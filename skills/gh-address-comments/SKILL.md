@@ -36,6 +36,12 @@ Prereq: ensure `gh` is authenticated (for example, run `gh auth login` once), th
 ## 3) If user chooses comments
 - Apply fixes for the selected comments
 
+## 4) Refresh active PR metadata (always)
+- Check whether the current branch has an active PR (open draft or ready-for-review).
+- Compare PR title/body against the branch intent and actual delta after addressed comments.
+- If title/body are stale or incomplete, update them (for example with `gh pr edit --title ... --body-file ...`).
+- If no active PR exists, state that explicitly and continue.
+
 Notes:
 - If gh hits auth/rate issues mid-run, prompt the user to re-authenticate with `gh auth login`, then retry.
 - Treat `Unknown JSON field` as schema drift and reduce requested fields before failing.

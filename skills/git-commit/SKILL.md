@@ -29,6 +29,7 @@ If committing is prohibited by project or system instructions, state that you ca
 - If you must adjust code to capture rationale or fix small issues discovered during review, keep it minimal and directly tied to the request.
 - Do not create any commit until all applicable pre-commit checks, tests, and CI checks have been run and passed.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
+- Treat active-PR title/body updates as in-scope for this skill: if the branch has an active PR (open draft or ready-for-review) and metadata drift is detected, update it.
 - If there is nothing left to do, say so explicitly and stop.
 
 ## Git safety and permissions
@@ -108,13 +109,19 @@ Before committing, ensure that any issue fixes or key decisions are documented i
    - Re-check `git status -sb` and confirm the working tree is clean.
    - If any files that should be committed remain, create additional commits until the tree is clean.
 
-9. If committing is disallowed:
+9. Refresh active PR metadata:
+   - Check whether the current branch has an active PR (open draft or ready-for-review).
+   - If yes, compare PR title/body against the current branch intent and the actual delta.
+   - If title/body are stale or incomplete after additional changes, update them (for example with `gh pr edit --title ... --body-file ...`).
+   - If no active PR exists, state that explicitly and continue.
+
+10. If committing is disallowed:
    - State that you cannot commit here.
    - Provide a single copy-pasteable block of git commands that will stage and commit all changes in logical units.
    - The block must contain only commands, one per line, in execution order, with no extra text between them.
    - Do not ask the user whether they want commands or a summary.
 
-10. If there are no changes to commit:
+11. If there are no changes to commit:
    - State that the working tree is clean and stop.
    - If called repeatedly, you may follow prior suggested next steps or start fresh; both are fine. Re-check the repo and continue only if new changes exist.
 
