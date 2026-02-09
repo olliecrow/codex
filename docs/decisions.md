@@ -33,6 +33,13 @@ Trade-offs: Slightly less human checkpointing on routine decisions; mitigated by
 Enforcement: Shared principles in `docs/skills.md`, repo guidance in `AGENTS.md`, and per-skill `Proactive autonomy and knowledge compounding` sections in `skills/*/SKILL.md`.
 References: `docs/skills.md`, `AGENTS.md`, `skills/organise-docs/SKILL.md`.
 
+Decision: Large or long-running workflows must use recurring milestone checkpoints rather than waiting for a single end-of-task wrap-up.
+Context: Long execution cycles were accumulating too much uncommitted work and leaving durable learnings in ephemeral notes for too long.
+Rationale: Milestone checkpoints reduce rollback risk, keep progress auditable, and compound reusable knowledge into `docs/` while work is still fresh.
+Trade-offs: Adds lightweight process overhead during long tasks, but improves recoverability and documentation quality.
+Enforcement: Repo guidance in `AGENTS.md`, shared principle in `docs/skills.md`, and per-skill `Long-task checkpoint cadence` sections in `skills/*/SKILL.md`.
+References: `AGENTS.md`, `docs/skills.md`, `skills/git-commit/SKILL.md`, `skills/organise-docs/SKILL.md`.
+
 ## Template
 ```
 Decision:

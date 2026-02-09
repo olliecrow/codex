@@ -37,6 +37,7 @@ This repository hosts the Codex CLI container, agent documentation, and reusable
 - `plan/` is short-lived and disposable. Keep it tidy, consolidate notes, and clean up artifacts as you go.
 - Decision capture policy lives in `docs/decisions.md`. Record important fixes and decisions in the smallest local place (code, tests, or docs) per that policy.
 - Skills should run proactively and autonomously on high-conviction, in-scope actions, complete work end-to-end with verification, and keep `docs/` accurate by promoting durable learnings/decisions from ongoing work.
+- For large or long tasks/plans, run recurring milestone checkpoints: use `git-commit` for small logical commits and `organise-docs` to promote durable learnings/decisions into `docs/`.
 
 ## Plan Directory Structure (agent usage)
 If `/plan/` does not exist, create it with the following subdirectories:
