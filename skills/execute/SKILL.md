@@ -11,6 +11,13 @@ description: Execute the current plan end-to-end, verifying completion; use when
 - Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
 - Use single-agent execution when scope is small or coordination overhead outweighs gains.
 
+## Proactive autonomy and knowledge compounding
+
+- Be proactive: move the task forward without waiting when the next high-value action is clear.
+- Act autonomously on high-conviction, in-scope actions and fixes; ask only when confidence is low or risk is meaningful.
+- Drive work to complete outcomes with verification, not partial handoffs.
+- Compound knowledge continuously: keep `docs/` accurate and up to date, and promote durable learnings and decisions from work into docs.
+
 ## Overview
 
 Execute an existing plan step by step until it is fully complete and verified. Follow the plan spec's validation checkpoints and contingencies, using real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces.

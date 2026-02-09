@@ -17,6 +17,13 @@ Prereq: ensure `gh` is authenticated (for example, run `gh auth login` once), th
 - Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
 - Use single-agent execution when scope is small or coordination overhead outweighs gains.
 
+## Proactive autonomy and knowledge compounding
+
+- Be proactive: move the task forward without waiting when the next high-value action is clear.
+- Act autonomously on high-conviction, in-scope actions and fixes; ask only when confidence is low or risk is meaningful.
+- Drive work to complete outcomes with verification, not partial handoffs.
+- Compound knowledge continuously: keep `docs/` accurate and up to date, and promote durable learnings and decisions from work into docs.
+
 ## Preflight (must run first)
 
 - Confirm repo context and branch state (`git rev-parse --show-toplevel`, `git symbolic-ref -q --short HEAD`).

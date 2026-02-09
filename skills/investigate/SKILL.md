@@ -11,6 +11,13 @@ description: Deep, meticulous investigation of a problem, issue, or topic by for
 - Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
 - Use single-agent execution when scope is small or coordination overhead outweighs gains.
 
+## Proactive autonomy and knowledge compounding
+
+- Be proactive: move the task forward without waiting when the next high-value action is clear.
+- Act autonomously on high-conviction, in-scope actions and fixes; ask only when confidence is low or risk is meaningful.
+- Drive work to complete outcomes with verification, not partial handoffs.
+- Compound knowledge continuously: keep `docs/` accurate and up to date, and promote durable learnings and decisions from work into docs.
+
 ## Overview
 
 Deep dive into a topic or issue by exploring hypotheses, validating them with evidence, and iterating until confidence is high. First build confidence in the current state, then confirm the proposed change is the right thing to change. Be relentless and keep going until you reach the bottom of the topic or problem, even if it takes a long time. Conduct a deep, thorough investigation that reviews all relevant changes, decisions, and assumptions and reasons through them explicitly.

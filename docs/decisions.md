@@ -25,6 +25,14 @@ Keep entries short and focused:
 - **Enforcement**: which tests or code paths lock it in.
 - **References** (optional): file paths, tests, or PRs that embody the decision.
 
+## Recorded decisions
+Decision: Skills default to proactive, autonomous execution for high-conviction, in-scope work, with end-to-end completion and verification.
+Context: Repeated skill invocations were spending avoidable cycles on partial handoffs and delayed follow-through.
+Rationale: Proactive autonomy improves throughput and reduces coordination overhead while preserving quality through explicit verification requirements.
+Trade-offs: Slightly less human checkpointing on routine decisions; mitigated by requiring escalation when confidence is low or risk is meaningful.
+Enforcement: Shared principles in `docs/skills.md`, repo guidance in `AGENTS.md`, and per-skill `Proactive autonomy and knowledge compounding` sections in `skills/*/SKILL.md`.
+References: `docs/skills.md`, `AGENTS.md`, `skills/organise-docs/SKILL.md`.
+
 ## Template
 ```
 Decision:

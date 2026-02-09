@@ -11,6 +11,13 @@ description: Commit all current uncommitted changes into small, logical commits 
 - Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
 - Use single-agent execution when scope is small or coordination overhead outweighs gains.
 
+## Proactive autonomy and knowledge compounding
+
+- Be proactive: move the task forward without waiting when the next high-value action is clear.
+- Act autonomously on high-conviction, in-scope actions and fixes; ask only when confidence is low or risk is meaningful.
+- Drive work to complete outcomes with verification, not partial handoffs.
+- Compound knowledge continuously: keep `docs/` accurate and up to date, and promote durable learnings and decisions from work into docs.
+
 ## Overview
 
 Commit all appropriate uncommitted changes (including relevant untracked files) into many small, logical commits with descriptive messages. Do not push. End with no changes that should be committed left uncommitted.

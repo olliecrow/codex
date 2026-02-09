@@ -11,6 +11,13 @@ description: Create a comprehensive, high-conviction change plan that improves t
 - Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
 - Use single-agent execution when scope is small or coordination overhead outweighs gains.
 
+## Proactive autonomy and knowledge compounding
+
+- Be proactive: move the task forward without waiting when the next high-value action is clear.
+- Act autonomously on high-conviction, in-scope actions and fixes; ask only when confidence is low or risk is meaningful.
+- Drive work to complete outcomes with verification, not partial handoffs.
+- Compound knowledge continuously: keep `docs/` accurate and up to date, and promote durable learnings and decisions from work into docs.
+
 ## Overview
 
 Create a single, consolidated, highly detailed plan spec that moves the codebase from its current state to a better state. This skill is intended for long, end-to-end work: produce a comprehensive spec so execution can proceed start-to-finish without additional questions, input, or decisions. Do not produce short or partial plans. Incorporate all available information (conversation, prior decisions, AGENTS.md, docs/, code, recent changes, tech debt notes, and any evidence gathered). Pack the questions, assumptions, investigation results, reasoning, and decisions up front. The plan must be high confidence: only include steps you strongly believe are correct and beneficial. If anything material is uncertain or low-conviction, resolve it via investigation or explicit assumptions before including it in the plan. If it cannot be resolved, state that planning is blocked and stop.

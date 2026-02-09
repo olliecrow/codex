@@ -11,6 +11,13 @@ description: Review recent changes and/or broader code to simplify or reduce tec
 - Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
 - Use single-agent execution when scope is small or coordination overhead outweighs gains.
 
+## Proactive autonomy and knowledge compounding
+
+- Be proactive: move the task forward without waiting when the next high-value action is clear.
+- Act autonomously on high-conviction, in-scope actions and fixes; ask only when confidence is low or risk is meaningful.
+- Drive work to complete outcomes with verification, not partial handoffs.
+- Compound knowledge continuously: keep `docs/` accurate and up to date, and promote durable learnings and decisions from work into docs.
+
 ## Overview
 
 Relentlessly search for tech debt, bloat, redundancy, unused code, and unnecessary complexity across the project, then simplify, tidy, and de-over-engineer while preserving performance. Conduct a deep, thorough review of all relevant areas and reason through every cleanup decision.

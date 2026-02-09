@@ -11,6 +11,13 @@ description: Deep, thorough decision support. Use when the conversation presents
 - Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
 - Use single-agent execution when scope is small or coordination overhead outweighs gains.
 
+## Proactive autonomy and knowledge compounding
+
+- Be proactive: move the task forward without waiting when the next high-value action is clear.
+- Act autonomously on high-conviction, in-scope actions and fixes; ask only when confidence is low or risk is meaningful.
+- Drive work to complete outcomes with verification, not partial handoffs.
+- Compound knowledge continuously: keep `docs/` accurate and up to date, and promote durable learnings and decisions from work into docs.
+
 ## Overview
 
 This skill is for decision points in a conversation. Conduct deep and thorough background research for each decision, including investigations and considerations, then deliver a single, consolidated decision report. If the research shows there is no longer a decision to be made, omit that decision from the decision list and explain why a decision is no longer needed.
