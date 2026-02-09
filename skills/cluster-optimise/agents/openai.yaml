@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cluster Optimise"
+  short_description: "Iteratively optimize cluster throughput and resource usage"
+  default_prompt: "Run iterative cluster trials from small to larger scales, analyze queue/runtime/log/resource evidence, and tune job shapes to minimize total wall-clock time while avoiding failures."
