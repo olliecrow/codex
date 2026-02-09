@@ -128,14 +128,18 @@ tool_output_token_limit = 25000
 model_auto_compact_token_limit = 233000
 sandbox_mode = "danger-full-access"
 approval_policy = "never"
+suppress_unstable_features_warning = true
 
 [features]
 web_search_request = true
 ghost_commit = false
 unified_exec = true
-apply_patch_freeform = true
+apply_patch_freeform = false
 skills = true
 shell_snapshot = true
+
+[tui]
+show_tooltips = false
 EOF
 '
 
