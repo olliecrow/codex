@@ -1,0 +1,3 @@
+interface:
+  display_name: "Cluster Check"
+  short_description: "Investigate recent cluster jobs and derive actionable next steps"

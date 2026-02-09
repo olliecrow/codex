@@ -48,7 +48,7 @@ If `/plan/` does not exist, create it with the following subdirectories:
 - `/plan/handoffs/`: sequential workflow handoffs from `container/run_sequence_*` scripts.
 
 ## Skills
-- Current skills: `battletest`, `cleanup`, `consider`, `create-plan`, `dangercheck`, `decisions`, `execute`, `familiarize`, `gh-address-comments`, `gh-fix-ci`, `gitcommit`, `gitmerge`, `gitreview`, `gitsummary`, `investigate`, `jupyter-notebook`, `learnings`, `openai-docs`, `organise-docs`, `plan`, `playwright`, `reviewbranch`, `setup`, `summarize`, `techdebt`, `verify`, `wait-for-job`, `yeet`.
+- Current skills: `battletest`, `cleanup`, `cluster-check`, `consider`, `create-plan`, `dangercheck`, `decisions`, `execute`, `familiarize`, `gh-address-comments`, `gh-fix-ci`, `gitcommit`, `gitmerge`, `gitreview`, `gitsummary`, `investigate`, `jupyter-notebook`, `learnings`, `openai-docs`, `organise-docs`, `plan`, `playwright`, `reviewbranch`, `setup`, `summarize`, `techdebt`, `verify`, `wait-for-job`, `yeet`.
 - System skills remain in `~/.codex/skills/.system` and are not versioned in this repo.
 - When adding/removing skills here, keep the `~/.codex/skills` symlinks in sync.
 
