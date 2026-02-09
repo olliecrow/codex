@@ -14,6 +14,7 @@ description: Execute the current plan end-to-end, verifying completion; use when
 ## Overview
 
 Execute an existing plan step by step until it is fully complete and verified. Follow the plan spec's validation checkpoints and contingencies, using real data and real runs when relevant. Avoid mock or stub data unless there is no alternative; if you must use non-real data, explain why and what risk it introduces.
+For experimentation workflows, execute to maximize learning throughput while preserving quality and safety checks.
 
 ## Controller/worker orchestration mode (must follow for non-trivial plans)
 
@@ -94,6 +95,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
    - After each meaningful action, append a concise note with what was done, what changed, and what remains.
    - If a step fails, diagnose, fix, and retry before moving on.
    - Run the step-specific validation checks from the plan as you go; do not defer all testing to the end.
+   - When confidence is high and the plan explicitly allows autonomous continuation, execute the next concrete action without waiting for additional prompts.
    - If the plan is ambiguous or would require scope expansion, stop and ask before proceeding.
    - Do not stop until all steps are complete.
 

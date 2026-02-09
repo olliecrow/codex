@@ -29,6 +29,13 @@ Block until an external task is complete, then continue with downstream analysis
 - Exit code `0`: proceed with the next requested step.
 - Non-zero exit: stop and report the reason; do not continue silently.
 
+## Cluster defaults (Slurm)
+
+- For Slurm job waits, filter polling to the current project/user scope whenever that context is available.
+- If project cluster env is required, prefer loading it explicitly (for example via `CLUSTER_ENV_FILE=\"$PWD/.env\"`).
+- If `.env` is missing, attempt high-confidence reconstruction from project conventions first; if confidence is low, fail fast and ask.
+- If waits expose clearly lingering/stuck jobs, hand off to cluster triage/cancellation workflow before resuming normal execution.
+
 ## Quick Start
 
 ### Exit-code mode
