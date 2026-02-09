@@ -16,6 +16,8 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 - Encourage multi-agent/subagent collaboration when it improves speed, quality, or confidence; split work into clear packets with synthesis checks.
 - For experiment-heavy work, optimize for learning throughput and high-information outcomes, not only task completion.
 - Default to autonomous execution when confidence is high and the workflow allows it; escalate when confidence is low.
+- Drive work end-to-end when confidence is high: prefer complete verified outcomes over partial handoffs.
+- Keep repository documentation accurate: promote durable learnings and decisions to `docs/` as part of normal skill execution.
 - For git/PR workflows, always check active PR metadata (open draft or ready-for-review) at the end and update stale title/body when needed.
 - If a skill is missing or blocked, say so briefly and use the closest safe fallback.
 - If applicability is unclear, ask a brief clarifying question before proceeding.

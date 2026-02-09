@@ -11,6 +11,13 @@ description: Prepare the current branch to merge cleanly into main by ensuring a
 - Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
 - Use single-agent execution when scope is small or coordination overhead outweighs gains.
 
+## Proactive autonomy and knowledge compounding
+
+- Be proactive: move the task forward without waiting when the next high-value action is clear.
+- Act autonomously on high-conviction, in-scope actions and fixes; ask only when confidence is low or risk is meaningful.
+- Drive work to complete outcomes with verification, not partial handoffs.
+- Compound knowledge continuously: keep `docs/` accurate and up to date, and promote durable learnings and decisions from work into docs.
+
 ## Overview
 
 Get the current branch to a merge-ready state with main by first understanding both branches in depth, then planning a careful integration that preserves functionality from each side. Do not rush into a merge: fully map how main has progressed and how the current branch diverges before changing anything. Treat integration as a potentially difficult, long‑thinking task; reason and plan deeply before executing any state‑changing git commands. Once the plan is validated, perform the required git operations to reach a fully merged state. Conduct a deep, thorough review of all diffs and decisions, and ensure functionality from both branches is preserved after the merge.
