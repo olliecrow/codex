@@ -24,6 +24,7 @@ Get the current branch to a merge-ready state with main by first understanding b
 - Keep changes surgical and limited to merge needs; do not "improve" unrelated code.
 - Define success criteria and verify after each meaningful step.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
+- At the end of the merge workflow, check whether the branch has an active PR (open draft or ready-for-review) and update title/body when metadata no longer matches the merged branch delta.
 - Prefer quoted paths and explicit path checks when running shell commands to reduce avoidable glob/path failures.
 - Perform the merge when required without asking for permission; only stop to ask if there is ambiguity, missing information, or a risky decision that cannot be inferred.
 - Never blindly accept default merge resolutions; inspect every conflict and ensure functionality from both branches is preserved.
@@ -121,6 +122,12 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
    - Confirm merge readiness and note any remaining risks or follow-ups.
    - Write in plain, concise, and intuitive language with brief context.
    - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
+
+9. Refresh active PR metadata:
+   - Check whether the current branch has an active PR (open draft or ready-for-review).
+   - If yes, compare PR title/body against the merged branch intent and actual delta.
+   - If title/body are stale or incomplete, update them (for example with `gh pr edit --title ... --body-file ...`).
+   - If no active PR exists, state that explicitly and continue.
 
 ## Repeat invocations
 

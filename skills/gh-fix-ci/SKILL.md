@@ -71,6 +71,11 @@ Prereq: authenticate with the standard GitHub CLI once (for example, run `gh aut
    - Apply the approved plan, summarize diffs/tests, and ask about opening a PR.
 8. Recheck status.
    - After changes, suggest re-running the relevant tests and `gh pr checks` to confirm.
+9. Refresh active PR metadata.
+   - Check whether the current branch has an active PR (open draft or ready-for-review).
+   - Compare PR title/body against the branch intent and actual delta after CI fixes.
+   - If title/body are stale or incomplete, update them (for example with `gh pr edit --title ... --body-file ...`).
+   - If no active PR exists, state that explicitly and continue.
 
 ## Failure-handling defaults
 

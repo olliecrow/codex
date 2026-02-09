@@ -20,3 +20,4 @@ This is a thin alias for the `git-review` skill.
 1. Load and follow `../git-review/SKILL.md`.
 2. Apply the `git-review` workflow end-to-end without adding a second, conflicting process.
 3. If there is any mismatch, prefer the canonical `git-review` skill instructions.
+4. This includes checking active PR metadata (open draft or ready-for-review) and updating title/body when stale.
