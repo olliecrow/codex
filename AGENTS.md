@@ -93,3 +93,4 @@ Sanity checks after run:
 ## Agent‑Specific Instructions
 - When editing files under `container/`, preserve: non‑root user, git pin + wrappers, two mounts only, and always‑fresh builds.
 - Do not add new mounts or relax security without explicit approval.
+# llm-subscription-refresh
