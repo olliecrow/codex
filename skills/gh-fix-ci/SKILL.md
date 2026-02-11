@@ -1,6 +1,6 @@
 ---
 name: "gh-fix-ci"
-description: "Use when a user asks to debug or fix failing GitHub PR checks that run in GitHub Actions; use `gh` to inspect checks and logs, summarize failure context, draft a fix plan, and implement only after explicit approval. Treat external providers (for example Buildkite) as out of scope and report only the details URL."
+description: "Use when a user asks to debug or fix failing GitHub PR checks that run in GitHub Actions; use `gh` to inspect checks and logs, summarize failure context, draft a fix plan, and implement autonomously with verification unless a true blocker requires user input. Treat external providers (for example Buildkite) as out of scope and report only the details URL."
 ---
 
 
@@ -37,8 +37,8 @@ description: "Use when a user asks to debug or fix failing GitHub PR checks that
 
 ## Overview
 
-Use gh to locate failing PR checks, fetch GitHub Actions logs for actionable failures, summarize the failure snippet, then propose a fix plan and implement after explicit approval.
-- If a plan-oriented skill (for example `create-plan`) is available, use it; otherwise draft a concise plan inline and request approval before implementing.
+Use gh to locate failing PR checks, fetch GitHub Actions logs for actionable failures, summarize the failure snippet, then propose and execute a fix plan autonomously with explicit verification.
+- If a plan-oriented skill (for example `create-plan`) is available, use it; otherwise draft a concise plan inline and proceed when confidence is high.
 
 Prereq: authenticate with the standard GitHub CLI once (for example, run `gh auth login`), then confirm with `gh auth status` (repo + workflow scopes are typically required).
 
@@ -64,7 +64,7 @@ Prereq: authenticate with the standard GitHub CLI once (for example, run `gh aut
 
 1. Verify gh authentication.
    - Run `gh auth status` in the repo.
-   - If unauthenticated, ask the user to run `gh auth login` (ensuring repo + workflow scopes) before proceeding.
+   - If unauthenticated, try available non-interactive auth/context fallbacks first (for example existing token env or alternate host context). Ask the user to run `gh auth login` only if auth remains blocked.
 2. Resolve the PR.
    - Prefer the current branch PR: `gh pr view --json number,url`.
    - If the user provides a PR number or URL, use that directly.
@@ -89,11 +89,12 @@ Prereq: authenticate with the standard GitHub CLI once (for example, run `gh aut
    - Provide the failing check name, run URL (if any), and a concise log snippet.
    - Call out missing logs explicitly.
 6. Create a plan.
-   - Use the `create-plan` skill to draft a concise plan and request approval.
-7. Implement after approval.
-   - Apply the approved plan, summarize diffs/tests, and ask about opening a ready-for-review PR (never draft).
+   - Use the `create-plan` skill to draft a concise, execution-ready plan.
+7. Implement and verify.
+   - Apply high-confidence in-scope fixes autonomously, summarize diffs/tests, and update PR metadata as needed (never create draft PRs).
 8. Recheck status.
-   - After changes, suggest re-running the relevant tests and `gh pr checks` to confirm.
+   - After changes, rerun the relevant tests and `gh pr checks` to confirm.
+   - Keep iterating plan -> fix -> verify until checks are green or a true blocker remains.
 9. Refresh active PR metadata.
    - Check whether the current branch has an active PR.
    - Compare PR title/body against the branch intent and actual delta after CI fixes.

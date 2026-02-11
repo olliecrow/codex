@@ -1,6 +1,6 @@
 ---
 name: plan
-description: Create a comprehensive, high-conviction change plan that improves the codebase using all available context and decisions. Only include plan items you are highly confident in; if anything is unclear or low conviction, pause to request clarification or schedule targeted investigation before adding it.
+description: Create a comprehensive, high-conviction change plan that improves the codebase using all available context and decisions. Only include plan items you are highly confident in; if anything is unclear or low conviction, run targeted investigation first and ask for clarification only when still blocked.
 ---
 
 # plan
@@ -119,7 +119,7 @@ If the plan introduces or recommends a decision that should be durable, capture 
 
 - List possible improvements and map them to goals.
 - Filter aggressively: keep only high-confidence, high-conviction items.
-- For any candidate with uncertainty or low conviction, schedule investigation or ask for clarification before committing it to the plan.
+- For any candidate with uncertainty or low conviction, schedule investigation first and ask for clarification only when uncertainty remains blocking.
 
 ### 6) Make required decisions
 

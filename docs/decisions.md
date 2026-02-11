@@ -54,6 +54,13 @@ Trade-offs: Slightly more autonomous retries can add extra command attempts; mit
 Enforcement: Shared proactive-autonomy bullets in `skills/*/SKILL.md`, plus explicit transient-failure handling in cluster and wait workflows.
 References: `skills/wait-for-job/SKILL.md`, `skills/cluster-check/SKILL.md`, `skills/cluster-optimise/SKILL.md`.
 
+Decision: Session startup should default to `prime` familiarization and contract setup before deep execution.
+Context: Recent multi-repo sessions repeatedly spent early turns re-establishing autonomy expectations, local context, and hygiene cadence.
+Rationale: A standardized prime pass improves first-pass quality by immediately grounding execution in repo docs/state and activating recurring `organise-docs`/`git-commit`/`cleanup`/verification loops.
+Trade-offs: Adds lightweight startup overhead; mitigated by keeping prime preflight concise and immediately transitioning into execution.
+Enforcement: `prime` skill workflow requirements, shared principles in `docs/skills.md`, and skill list routing in `AGENTS.md`.
+References: `skills/prime/SKILL.md`, `docs/skills.md`, `AGENTS.md`.
+
 ## Template
 ```
 Decision:
