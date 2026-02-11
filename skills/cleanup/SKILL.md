@@ -13,16 +13,21 @@ description: Review recent changes and/or broader code to simplify or reduce tec
 
 ## Proactive autonomy and knowledge compounding
 
-- Be proactive: move the task forward without waiting when the next high-value action is clear.
-- Act autonomously on high-conviction, in-scope actions and fixes; ask only when confidence is low or risk is meaningful.
+- Be proactive: immediately take the next highest-value in-scope action when it is clear.
+- Default to autonomous execution: do not pause for confirmation between normal in-scope steps.
+- Request user input only when absolutely necessary: ambiguous requirements, material risk tradeoffs, missing required data/access, or destructive/irreversible actions outside policy.
 - Drive work to complete outcomes with verification, not partial handoffs.
+- Treat iterative execution as the default for non-trivial work; run adaptive loop passes. Example loops (adapt as needed, not rigid): issue-resolution `investigate -> plan -> fix -> verify -> battletest -> organise-docs -> git-commit -> re-review`; cleanup `scan -> prioritize -> clean -> verify -> re-scan`; docs `audit -> update -> verify -> re-audit`.
+- Keep looping until actual completion criteria are met: no actionable in-scope items remain, verification is green, and confidence is high.
+- Run `organise-docs` frequently during execution to capture durable decisions and learnings, not only at the end.
+- Create small checkpoint commits frequently with `git-commit` when changes are commit-eligible, checks are green, and repo policy permits commits.
 - Compound knowledge continuously: keep `docs/` accurate and up to date, and promote durable learnings and decisions from work into docs.
 
 ## Long-task checkpoint cadence
 
-- For large or long tasks/plans, run recurring checkpoint cycles instead of waiting for a single end-of-task wrap-up.
-- At each meaningful milestone with commit-eligible changes, invoke `git-commit` to create a small logical checkpoint commit once relevant checks are green and repo policy permits commits.
-- At the same milestone, invoke `organise-docs` when new durable learnings/decisions exist, and prune stale `plan/` scratch artifacts.
+- For any non-trivial task (including long efforts), run recurring checkpoint cycles instead of waiting for a single end-of-task wrap-up.
+- At each meaningful milestone with commit-eligible changes, and at least once per major phase, invoke `git-commit` to create a small logical checkpoint commit once relevant checks are green and repo policy permits commits.
+- At the same cadence, invoke `organise-docs` whenever durable learnings/decisions appear, and prune stale `plan/` scratch artifacts.
 - If either checkpoint is blocked (for example failing checks or low-confidence documentation), resolve or record the blocker immediately and retry before expanding scope.
 
 ## Overview
@@ -103,11 +108,16 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
    - Clean up temporary test scripts unless they are needed to track a discovered issue.
    - Do a scope check: confirm changes stayed within cleanup/tech-debt work and did not drift into feature work.
 
-7. Summarize results:
+7. Run another cleanup pass:
+   - Repeat Steps 2-6 in additional passes until no new actionable cleanup items remain.
+   - Treat "no actionable cleanup items remain" as the default exit criterion; otherwise continue autonomously.
+   - On each pass, record findings in `plan/current/tech-debt.md` (or in-memory fallback), then checkpoint with `organise-docs` and `git-commit` when eligible.
+
+8. Summarize results:
    - List areas cleaned up and why.
    - Call out deferred debt or risky areas left untouched.
    - Call out any risky areas avoided.
    - Note possible next cleanup steps.
-   - If called repeatedly, you may follow prior suggested next steps or take a fresh angle; both are fine. Continue finding new cleanup opportunities and avoid repeating prior summaries unless there are no new changes.
+   - In repeated invocations, continue from prior findings and prioritize net-new cleanup opportunities before revisiting lower-impact areas.
    - Write the summary in plain, concise, and intuitive language with brief context so a new reader can follow it.
    - Avoid analogies; use simple, direct explanations and define any necessary technical terms.

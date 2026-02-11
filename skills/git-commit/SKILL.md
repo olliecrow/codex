@@ -13,16 +13,21 @@ description: Commit all current uncommitted changes into small, logical commits 
 
 ## Proactive autonomy and knowledge compounding
 
-- Be proactive: move the task forward without waiting when the next high-value action is clear.
-- Act autonomously on high-conviction, in-scope actions and fixes; ask only when confidence is low or risk is meaningful.
+- Be proactive: immediately take the next highest-value in-scope action when it is clear.
+- Default to autonomous execution: do not pause for confirmation between normal in-scope steps.
+- Request user input only when absolutely necessary: ambiguous requirements, material risk tradeoffs, missing required data/access, or destructive/irreversible actions outside policy.
 - Drive work to complete outcomes with verification, not partial handoffs.
+- Treat iterative execution as the default for non-trivial work; run adaptive loop passes. Example loops (adapt as needed, not rigid): issue-resolution `investigate -> plan -> fix -> verify -> battletest -> organise-docs -> git-commit -> re-review`; cleanup `scan -> prioritize -> clean -> verify -> re-scan`; docs `audit -> update -> verify -> re-audit`.
+- Keep looping until actual completion criteria are met: no actionable in-scope items remain, verification is green, and confidence is high.
+- Run `organise-docs` frequently during execution to capture durable decisions and learnings, not only at the end.
+- Create small checkpoint commits frequently with `git-commit` when changes are commit-eligible, checks are green, and repo policy permits commits.
 - Compound knowledge continuously: keep `docs/` accurate and up to date, and promote durable learnings and decisions from work into docs.
 
 ## Long-task checkpoint cadence
 
-- For large or long tasks/plans, run recurring checkpoint cycles instead of waiting for a single end-of-task wrap-up.
-- At each meaningful milestone with commit-eligible changes, invoke `git-commit` to create a small logical checkpoint commit once relevant checks are green and repo policy permits commits.
-- At the same milestone, invoke `organise-docs` when new durable learnings/decisions exist, and prune stale `plan/` scratch artifacts.
+- For any non-trivial task (including long efforts), run recurring checkpoint cycles instead of waiting for a single end-of-task wrap-up.
+- At each meaningful milestone with commit-eligible changes, and at least once per major phase, invoke `git-commit` to create a small logical checkpoint commit once relevant checks are green and repo policy permits commits.
+- At the same cadence, invoke `organise-docs` whenever durable learnings/decisions appear, and prune stale `plan/` scratch artifacts.
 - If either checkpoint is blocked (for example failing checks or low-confidence documentation), resolve or record the blocker immediately and retry before expanding scope.
 
 ## Overview
@@ -138,9 +143,10 @@ Before committing, ensure that any issue fixes or key decisions are documented i
 
 11. If there are no changes to commit:
    - State that the working tree is clean and stop.
-   - If called repeatedly, you may follow prior suggested next steps or start fresh; both are fine. Re-check the repo and continue only if new changes exist.
+   - In repeated invocations, re-check the repo and continue autonomously when new commit-eligible changes exist.
 
 ## Repeat invocations
 
 - If called multiple times, only commit newly added changes.
 - Avoid recombining prior commits; do not rewrite history.
+- Continue committing eligible new changes in small logical batches until no commit-eligible changes remain.
