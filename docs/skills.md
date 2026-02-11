@@ -19,6 +19,8 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 - Request user input only when absolutely necessary: ambiguous requirements, material-risk trade-offs, missing required data/access, or destructive/irreversible actions outside policy.
 - Drive work end-to-end with verification; prefer complete outcomes over partial handoffs.
 - Treat iterative loop passes as the default for non-trivial work; adapt loop shape by skill and keep looping until no actionable in-scope items remain, verification is green, and confidence is high.
+- Before reporting blocked, attempt high-confidence fallbacks and bounded retries for transient command/tool/environment failures, and capture failure evidence.
+- On repeated invocations of the same objective, resume from prior artifacts and prioritize net-new progress over rerunning identical work unless reruns are required for verification.
 - Keep repository documentation accurate: promote durable learnings and decisions to `docs/` as part of normal skill execution.
 - Run `organise-docs` frequently during execution when durable learnings or decisions appear; do not defer all documentation to the end.
 - For any non-trivial task, run recurring milestone checkpoints instead of a single end wrap-up: use `git-commit` frequently for small logical commits and `organise-docs` to promote durable learnings, then prune stale `plan/` artifacts.

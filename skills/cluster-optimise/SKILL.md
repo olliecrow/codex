@@ -16,6 +16,10 @@ description: Iteratively optimize cluster job throughput and resource efficiency
 - Be proactive: immediately take the next highest-value in-scope action when it is clear.
 - Default to autonomous execution: do not pause for confirmation between normal in-scope steps.
 - Request user input only when absolutely necessary: ambiguous requirements, material risk tradeoffs, missing required data/access, or destructive/irreversible actions outside policy.
+- If blocked by command/tool/env failures, attempt high-confidence fallbacks autonomously before escalating (for example `rg` -> `find`/`grep`, `python` -> `python3`, alternate repo-native scripts).
+- When the workflow uses `plan/`, ensure required plan directories exist before reading/writing them (create when edits are allowed; otherwise use an in-memory fallback and call it out).
+- Treat transient external failures (network/SSH/remote APIs/timeouts) as retryable by default: run bounded retries with backoff and capture failure evidence before concluding blocked.
+- On repeated invocations for the same objective, resume from prior findings/artifacts and prioritize net-new progress over rerunning identical work unless verification requires reruns.
 - Drive work to complete outcomes with verification, not partial handoffs.
 - Treat iterative execution as the default for non-trivial work; run adaptive loop passes. Example loops (adapt as needed, not rigid): issue-resolution `investigate -> plan -> fix -> verify -> battletest -> organise-docs -> git-commit -> re-review`; cleanup `scan -> prioritize -> clean -> verify -> re-scan`; docs `audit -> update -> verify -> re-audit`.
 - Keep looping until actual completion criteria are met: no actionable in-scope items remain, verification is green, and confidence is high.
@@ -60,6 +64,7 @@ Treat each experiment as a learning step: capture what changed, what improved, a
 - Use the `wait-for-job` skill to block for completion whenever downstream analysis depends on finished jobs.
 - Distinguish queue delay from runtime delay; optimize for total wall-clock, not runtime alone.
 - Fail fast on repeated OOM/crash patterns; do not continue scaling unstable configurations.
+- For transient cluster connectivity failures (SSH timeouts, temporary scheduler RPC issues), run bounded retries and resume optimization rounds once access is restored.
 - Separate CPU and GPU optimization paths when bottlenecks differ.
 - Assume CPU capacity is typically more abundant than GPU capacity unless current cluster evidence shows otherwise.
 - Ask for clarification only when constraints are ambiguous or a risky decision cannot be inferred.

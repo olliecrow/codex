@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prime"
+  short_description: "Prime conversations for autonomous execution"
+  default_prompt: "Use $prime to prime this session for proactive autonomous execution and frequent docs/commit/cleanup checkpoints."

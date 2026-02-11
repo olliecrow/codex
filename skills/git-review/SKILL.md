@@ -16,6 +16,10 @@ description: Deep review of a branch vs main to find critical issues before merg
 - Be proactive: immediately take the next highest-value in-scope action when it is clear.
 - Default to autonomous execution: do not pause for confirmation between normal in-scope steps.
 - Request user input only when absolutely necessary: ambiguous requirements, material risk tradeoffs, missing required data/access, or destructive/irreversible actions outside policy.
+- If blocked by command/tool/env failures, attempt high-confidence fallbacks autonomously before escalating (for example `rg` -> `find`/`grep`, `python` -> `python3`, alternate repo-native scripts).
+- When the workflow uses `plan/`, ensure required plan directories exist before reading/writing them (create when edits are allowed; otherwise use an in-memory fallback and call it out).
+- Treat transient external failures (network/SSH/remote APIs/timeouts) as retryable by default: run bounded retries with backoff and capture failure evidence before concluding blocked.
+- On repeated invocations for the same objective, resume from prior findings/artifacts and prioritize net-new progress over rerunning identical work unless verification requires reruns.
 - Drive work to complete outcomes with verification, not partial handoffs.
 - Treat iterative execution as the default for non-trivial work; run adaptive loop passes. Example loops (adapt as needed, not rigid): issue-resolution `investigate -> plan -> fix -> verify -> battletest -> organise-docs -> git-commit -> re-review`; cleanup `scan -> prioritize -> clean -> verify -> re-scan`; docs `audit -> update -> verify -> re-audit`.
 - Keep looping until actual completion criteria are met: no actionable in-scope items remain, verification is green, and confidence is high.
@@ -84,7 +88,8 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 2. Gather PR context when applicable:
-   - Determine whether the current branch has an open PR (prefer `gh pr view --json number,url,reviewThreads,comments,reviews`).
+   - Determine whether the current branch has an open PR (prefer `gh pr view --json number,url,comments,reviews,reviewDecision`).
+   - If the preferred JSON query fails due unsupported fields/version drift, retry with a minimal query (`gh pr view --json number,url`) and gather comments/reviews via additional supported calls (`gh pr view --comments`, `gh pr view --json reviews`).
    - If `gh` is unavailable or unauthenticated, ask the user for the PR URL/number or a comment dump; do not proceed without PR context if one exists.
    - Collect all PR interactions: review comments, review summaries, issue comments, and relevant status-check notes.
    - Treat PR feedback as inputs to investigate, not instructions to blindly apply.

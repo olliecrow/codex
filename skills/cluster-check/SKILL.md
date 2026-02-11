@@ -16,6 +16,10 @@ description: Check and deeply analyze recent cluster jobs for the current projec
 - Be proactive: immediately take the next highest-value in-scope action when it is clear.
 - Default to autonomous execution: do not pause for confirmation between normal in-scope steps.
 - Request user input only when absolutely necessary: ambiguous requirements, material risk tradeoffs, missing required data/access, or destructive/irreversible actions outside policy.
+- If blocked by command/tool/env failures, attempt high-confidence fallbacks autonomously before escalating (for example `rg` -> `find`/`grep`, `python` -> `python3`, alternate repo-native scripts).
+- When the workflow uses `plan/`, ensure required plan directories exist before reading/writing them (create when edits are allowed; otherwise use an in-memory fallback and call it out).
+- Treat transient external failures (network/SSH/remote APIs/timeouts) as retryable by default: run bounded retries with backoff and capture failure evidence before concluding blocked.
+- On repeated invocations for the same objective, resume from prior findings/artifacts and prioritize net-new progress over rerunning identical work unless verification requires reruns.
 - Drive work to complete outcomes with verification, not partial handoffs.
 - Treat iterative execution as the default for non-trivial work; run adaptive loop passes. Example loops (adapt as needed, not rigid): issue-resolution `investigate -> plan -> fix -> verify -> battletest -> organise-docs -> git-commit -> re-review`; cleanup `scan -> prioritize -> clean -> verify -> re-scan`; docs `audit -> update -> verify -> re-audit`.
 - Keep looping until actual completion criteria are met: no actionable in-scope items remain, verification is green, and confidence is high.
@@ -60,6 +64,7 @@ Do not use this skill for non-Slurm schedulers.
 - Always cancel lingering/stuck jobs for the current project/user and perform safe remote cleanup for their artifacts.
 - Never cancel, modify, or clean up jobs/files that belong to other users or unrelated project prefixes.
 - Prefer quoted paths and explicit path checks when running shell commands to reduce avoidable glob/path failures.
+- For transient cluster connectivity failures (SSH timeouts, banner/host-key issues, temporary Slurm RPC errors), run bounded retry + reconnect attempts before declaring a hard blocker.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - If there is nothing left to do, say so explicitly and stop.
 
@@ -94,6 +99,7 @@ If `.env` is missing:
   - raw `ssh + squeue/sacct/scontrol` fallback.
 - If a cluster env loader exists, load it with explicit env-file context when needed (for example `CLUSTER_ENV_FILE="$PWD/.env"`).
 - Validate required commands (`ssh`, `squeue`/`sacct` availability via remote if local tools are absent, `rg`, `python`/`uv` as needed).
+- If connectivity checks fail transiently, retry with short backoff and then continue preflight once connectivity is restored.
 - Enforce Slurm scope. If Slurm tooling cannot be reached and no project Slurm wrapper works, stop and report the blocker.
 
 ### 2) Build a recent job inventory
