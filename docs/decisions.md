@@ -26,19 +26,26 @@ Keep entries short and focused:
 - **References** (optional): file paths, tests, or PRs that embody the decision.
 
 ## Recorded decisions
-Decision: Skills default to proactive, autonomous execution for high-conviction, in-scope work, with end-to-end completion and verification.
-Context: Repeated skill invocations were spending avoidable cycles on partial handoffs and delayed follow-through.
-Rationale: Proactive autonomy improves throughput and reduces coordination overhead while preserving quality through explicit verification requirements.
-Trade-offs: Slightly less human checkpointing on routine decisions; mitigated by requiring escalation when confidence is low or risk is meaningful.
+Decision: Skills default to proactive, autonomous execution for normal in-scope work, and user input is requested only when absolutely necessary.
+Context: Repeated invocations were losing momentum due to avoidable check-ins and partial handoffs.
+Rationale: Minimizing interruptions improves throughput while preserving safety by narrowing prompts to true blockers and risk decisions.
+Trade-offs: Less routine human checkpointing; mitigated by strict escalation triggers for ambiguity, material-risk trade-offs, missing required access/data, and destructive/irreversible actions outside policy.
 Enforcement: Shared principles in `docs/skills.md`, repo guidance in `AGENTS.md`, and per-skill `Proactive autonomy and knowledge compounding` sections in `skills/*/SKILL.md`.
-References: `docs/skills.md`, `AGENTS.md`, `skills/organise-docs/SKILL.md`.
+References: `docs/skills.md`, `AGENTS.md`, `skills/organise-docs/SKILL.md`, `skills/git-commit/SKILL.md`.
 
-Decision: Large or long-running workflows must use recurring milestone checkpoints rather than waiting for a single end-of-task wrap-up.
-Context: Long execution cycles were accumulating too much uncommitted work and leaving durable learnings in ephemeral notes for too long.
-Rationale: Milestone checkpoints reduce rollback risk, keep progress auditable, and compound reusable knowledge into `docs/` while work is still fresh.
-Trade-offs: Adds lightweight process overhead during long tasks, but improves recoverability and documentation quality.
-Enforcement: Repo guidance in `AGENTS.md`, shared principle in `docs/skills.md`, and per-skill `Long-task checkpoint cadence` sections in `skills/*/SKILL.md`.
-References: `AGENTS.md`, `docs/skills.md`, `skills/git-commit/SKILL.md`, `skills/organise-docs/SKILL.md`.
+Decision: Non-trivial skill workflows run adaptive loop passes until completion criteria are met.
+Context: One-pass execution was leaving actionable issues unresolved between passes.
+Rationale: Adaptive loops improve quality by repeatedly investigating, fixing, verifying, and re-checking until evidence shows completion.
+Trade-offs: Additional execution cycles on complex tasks; mitigated by explicit stop criteria and scope discipline.
+Enforcement: Shared principles in `docs/skills.md`, loop requirements in per-skill proactive sections, and explicit repeat-pass workflow steps in key skills.
+References: `docs/skills.md`, `skills/cleanup/SKILL.md`, `skills/git-review/SKILL.md`, `skills/battletest/SKILL.md`.
+
+Decision: For any non-trivial task, run recurring checkpoints with frequent `organise-docs` updates and small logical `git-commit` checkpoints.
+Context: Durable rationale and reviewable progress were drifting when updates were deferred to end-of-task.
+Rationale: Frequent docs + commit checkpoints improve recoverability, reduce risk, and compound reusable knowledge while context is fresh.
+Trade-offs: Adds lightweight process overhead; mitigated by keeping checkpoints small and tied to meaningful milestones.
+Enforcement: Shared checkpoint guidance in `docs/skills.md`, repo policy in `AGENTS.md`, and per-skill `Long-task checkpoint cadence` sections.
+References: `docs/skills.md`, `AGENTS.md`, `skills/organise-docs/SKILL.md`, `skills/git-commit/SKILL.md`.
 
 ## Template
 ```
