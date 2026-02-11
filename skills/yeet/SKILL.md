@@ -23,6 +23,7 @@ description: "Use only when the user explicitly asks to stage, commit, push, and
 - Keep looping until actual completion criteria are met: no actionable in-scope items remain, verification is green, and confidence is high.
 - Run `organise-docs` frequently during execution to capture durable decisions and learnings, not only at the end.
 - Create small checkpoint commits frequently with `git-commit` when changes are commit-eligible, checks are green, and repo policy permits commits.
+- Never squash commits; always use merge commits when integrating branches.
 - Compound knowledge continuously: keep `docs/` accurate and up to date, and promote durable learnings and decisions from work into docs.
 
 ## Long-task checkpoint cadence
