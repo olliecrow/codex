@@ -15,10 +15,13 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 - Prefer skill-provided scripts or templates over retyping or reinventing workflows.
 - Encourage multi-agent/subagent collaboration when it improves speed, quality, or confidence; split work into clear packets with synthesis checks.
 - For experiment-heavy work, optimize for learning throughput and high-information outcomes, not only task completion.
-- Default to autonomous execution when confidence is high and the workflow allows it; escalate when confidence is low.
-- Drive work end-to-end when confidence is high: prefer complete verified outcomes over partial handoffs.
+- Default to autonomous execution for normal in-scope steps; do not pause for avoidable confirmations.
+- Request user input only when absolutely necessary: ambiguous requirements, material-risk trade-offs, missing required data/access, or destructive/irreversible actions outside policy.
+- Drive work end-to-end with verification; prefer complete outcomes over partial handoffs.
+- Treat iterative loop passes as the default for non-trivial work; adapt loop shape by skill and keep looping until no actionable in-scope items remain, verification is green, and confidence is high.
 - Keep repository documentation accurate: promote durable learnings and decisions to `docs/` as part of normal skill execution.
-- For large or long tasks, run recurring milestone checkpoints instead of a single end wrap-up: use `git-commit` for small logical commits and `organise-docs` to promote durable learnings, then prune stale `plan/` artifacts.
+- Run `organise-docs` frequently during execution when durable learnings or decisions appear; do not defer all documentation to the end.
+- For any non-trivial task, run recurring milestone checkpoints instead of a single end wrap-up: use `git-commit` frequently for small logical commits and `organise-docs` to promote durable learnings, then prune stale `plan/` artifacts.
 - For git/PR workflows, always check active PR metadata at the end and update stale title/body when needed.
 - Never create draft PRs when opening a PR; open ready-for-review PRs only.
 - If a pre-existing draft PR is encountered and the work is review-ready, promote it with `gh pr ready` before finishing.
