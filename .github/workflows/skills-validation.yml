@@ -1,0 +1,36 @@
+name: skills-validation
+
+on:
+  pull_request:
+    paths:
+      - "skills/**"
+      - "docs/skills.md"
+      - "docs/decisions.md"
+      - "AGENTS.md"
+      - ".github/workflows/skills-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "skills/**"
+      - "docs/skills.md"
+      - "docs/decisions.md"
+      - "AGENTS.md"
+      - ".github/workflows/skills-validation.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate skills
+        run: |
+          python3 skills/validate_skills.py

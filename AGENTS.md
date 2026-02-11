@@ -75,6 +75,7 @@ Sanity checks after run:
 - For container changes, verify:
   1) Codex TUI launches; 2) `.git` is read‑only; 3) internet works; 4) writes to `/workspace` persist on host; 5) timezone is detected when possible.
 - For skill definition changes, run `python3 "${CODEX_HOME:-$HOME/.codex}/skills/validate_skills.py"` and require a passing result before commit/push.
+- Skill definition changes are also enforced in CI via `.github/workflows/skills-validation.yml`.
 
 ## Commit & Pull Request Guidelines
 - Commits: concise, imperative subject (“Add Codex git wrappers”), small scoped diffs, and commit little and often.
