@@ -16,6 +16,10 @@ description: Wait for long-running external tasks to finish before continuing wo
 - Be proactive: immediately take the next highest-value in-scope action when it is clear.
 - Default to autonomous execution: do not pause for confirmation between normal in-scope steps.
 - Request user input only when absolutely necessary: ambiguous requirements, material risk tradeoffs, missing required data/access, or destructive/irreversible actions outside policy.
+- If blocked by command/tool/env failures, attempt high-confidence fallbacks autonomously before escalating (for example `rg` -> `find`/`grep`, `python` -> `python3`, alternate repo-native scripts).
+- When the workflow uses `plan/`, ensure required plan directories exist before reading/writing them (create when edits are allowed; otherwise use an in-memory fallback and call it out).
+- Treat transient external failures (network/SSH/remote APIs/timeouts) as retryable by default: run bounded retries with backoff and capture failure evidence before concluding blocked.
+- On repeated invocations for the same objective, resume from prior findings/artifacts and prioritize net-new progress over rerunning identical work unless verification requires reruns.
 - Drive work to complete outcomes with verification, not partial handoffs.
 - Treat iterative execution as the default for non-trivial work; run adaptive loop passes. Example loops (adapt as needed, not rigid): issue-resolution `investigate -> plan -> fix -> verify -> battletest -> organise-docs -> git-commit -> re-review`; cleanup `scan -> prioritize -> clean -> verify -> re-scan`; docs `audit -> update -> verify -> re-audit`.
 - Keep looping until actual completion criteria are met: no actionable in-scope items remain, verification is green, and confidence is high.
@@ -44,9 +48,10 @@ Block until an external task is complete, then continue with downstream analysis
 2. Run the poller with explicit limits.
 - Keep `--interval-seconds` at `120` unless the user asks for different polling cadence.
 - Use `--timeout-seconds` with an upper bound of `28800` (8 hours). The script enforces this cap and defaults to `28800`.
+- For checks that depend on unstable transports (SSH/remote APIs), treat transient command failures as retryable and rerun the poller with bounded retries before hard-failing.
 3. Continue only on success.
 - Exit code `0`: proceed with the next requested step.
-- Non-zero exit: stop and report the reason; do not continue silently.
+- Non-zero exit after bounded retries: stop and report the reason; do not continue silently.
 
 ## Cluster defaults (Slurm)
 
@@ -103,4 +108,5 @@ Exit codes:
 
 - Wait for poller completion before doing downstream steps.
 - Report the exact check command and completion signal used.
+- If polling fails for transient transport reasons, retry up to 3 attempts with short backoff before reporting blocked.
 - Ask for clarification only when completion signal cannot be inferred.

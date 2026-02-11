@@ -47,6 +47,13 @@ Trade-offs: Adds lightweight process overhead; mitigated by keeping checkpoints 
 Enforcement: Shared checkpoint guidance in `docs/skills.md`, repo policy in `AGENTS.md`, and per-skill `Long-task checkpoint cadence` sections.
 References: `docs/skills.md`, `AGENTS.md`, `skills/organise-docs/SKILL.md`, `skills/git-commit/SKILL.md`.
 
+Decision: Skills should default to autonomous fallback/retry/resume behavior before reporting blockers.
+Context: Recent sessions showed repeated transient failures (timeouts, SSH/remote transport issues, missing tools/paths) and repeated re-invocations of the same objectives.
+Rationale: Explicit fallback/retry/resume rules reduce avoidable interruptions, improve progress continuity, and keep agents focused on net-new work.
+Trade-offs: Slightly more autonomous retries can add extra command attempts; mitigated by bounded retries, backoff, and explicit failure evidence before escalation.
+Enforcement: Shared proactive-autonomy bullets in `skills/*/SKILL.md`, plus explicit transient-failure handling in cluster and wait workflows.
+References: `skills/wait-for-job/SKILL.md`, `skills/cluster-check/SKILL.md`, `skills/cluster-optimise/SKILL.md`.
+
 ## Template
 ```
 Decision:
