@@ -47,6 +47,29 @@ REQUIRED_PATTERNS = [
     ),
 ]
 
+FORBIDDEN_PATTERNS = [
+    (
+        "blocking approval gate phrase",
+        r"\bafter explicit approval\b",
+    ),
+    (
+        "blocking wait phrase",
+        r"\bwait for results before continuing\b",
+    ),
+    (
+        "blocking pause phrase",
+        r"\bpause until the user reports back\b",
+    ),
+    (
+        "blocking ask phrase",
+        r"\bstop and ask\b",
+    ),
+    (
+        "blocking pause execution phrase",
+        r"\bpause execution\b",
+    ),
+]
+
 
 def repo_root_from_script() -> Path:
     # script: skills/lint_skill_policy.py
@@ -87,13 +110,19 @@ def normalize_targets(targets: list[str]) -> list[Path]:
     return normalized
 
 
-def lint_skill(skill_md: Path) -> list[str]:
+def lint_skill(skill_md: Path) -> tuple[list[str], list[str]]:
     content = skill_md.read_text(encoding="utf-8")
     missing: list[str] = []
     for label, pattern in REQUIRED_PATTERNS:
         if re.search(pattern, content, re.MULTILINE) is None:
             missing.append(label)
-    return missing
+    forbidden: list[str] = []
+    for label, pattern in FORBIDDEN_PATTERNS:
+        for match in re.finditer(pattern, content, flags=re.IGNORECASE | re.MULTILINE):
+            line_no = content.count("\n", 0, match.start()) + 1
+            line_text = content.splitlines()[line_no - 1].strip()
+            forbidden.append(f"{label} at line {line_no}: {line_text}")
+    return missing, forbidden
 
 
 def main() -> int:
@@ -124,19 +153,21 @@ def main() -> int:
         print("No SKILL.md files found to lint.")
         return 1
 
-    failures: list[tuple[Path, list[str]]] = []
+    failures: list[tuple[Path, list[str], list[str]]] = []
     for skill_md in skill_files:
-        missing = lint_skill(skill_md)
-        if missing:
-            failures.append((skill_md, missing))
+        missing, forbidden = lint_skill(skill_md)
+        if missing or forbidden:
+            failures.append((skill_md, missing, forbidden))
 
     if failures:
-        print(f"Skill policy lint failed: {len(failures)} skill(s) missing required content.")
-        for skill_md, missing in failures:
+        print(f"Skill policy lint failed: {len(failures)} skill(s) need fixes.")
+        for skill_md, missing, forbidden in failures:
             rel = skill_md.relative_to(repo_root)
             print(f"- {rel}")
             for item in missing:
                 print(f"  - missing: {item}")
+            for item in forbidden:
+                print(f"  - forbidden: {item}")
         return 1
 
     print(f"Skill policy lint passed for {len(skill_files)} skill(s).")
