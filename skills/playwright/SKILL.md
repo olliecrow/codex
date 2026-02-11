@@ -46,7 +46,12 @@ Before proposing commands, check whether `npx` is available (the wrapper depends
 command -v npx >/dev/null 2>&1
 ```
 
-If it is not available, pause and ask the user to install Node.js/npm (which provides `npx`). Provide these steps verbatim:
+If it is not available, do not stop immediately:
+- Check whether `playwright-cli` is already available globally (`command -v playwright-cli`); if yes, proceed with that binary.
+- If `node`/`npm` are available, attempt a one-time install yourself (`npm install -g @playwright/mcp@latest`) and re-check.
+- Ask the user to install Node.js/npm only if both paths remain blocked.
+
+Fallback install/check steps:
 
 ```bash
 # Verify Node/npm are installed

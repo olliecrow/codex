@@ -33,6 +33,9 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 
 ## Shared Requirements and Conventions
 For decision framing, rationale capture, plan/docs robustness, git safety, and reporting style, follow the repo-wide policies in `AGENTS.md` and `docs/decisions.md`.
+- After editing skill definitions, run policy lint and quick validation before committing:
+  - `python3 /Users/oc/repos/me/codex/skills/lint_skill_policy.py`
+  - `python3 /Users/oc/repos/me/codex/skills/.system/skill-creator/scripts/quick_validate.py <skill_directory>`
 
 ### Repeat invocations (where present)
 - Continue from prior logs and avoid repeating identical probes unless verifying a fix.

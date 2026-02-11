@@ -100,7 +100,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
    - Review `git diff` and `git diff --staged` for local changes.
    - If diffs are large, start with `git diff --stat` or `git diff --name-only` and then review per-file diffs to keep output manageable.
    - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat`, `git diff --name-only`, or per-file diffs instead of unbounded commands.
-   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
+   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands, continue with non-git repo familiarization, and mark git-dependent findings as pending.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 6. Compare against main when relevant:
@@ -109,7 +109,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
    - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat main...HEAD`, `git diff --name-only main...HEAD`, or per-file diffs instead of unbounded commands.
    - Summarize how the current branch diverges (scope and intent) and which areas are affected.
    - Review every changed file and hunk when comparing against main; do not skip relevant areas.
-   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
+   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands, continue architecture/workflow familiarization, and call out any branch-diff uncertainty explicitly.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 7. Optional deeper dives (as needed):
