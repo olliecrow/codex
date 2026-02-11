@@ -13,16 +13,21 @@ description: Deep review of a branch vs main to find critical issues before merg
 
 ## Proactive autonomy and knowledge compounding
 
-- Be proactive: move the task forward without waiting when the next high-value action is clear.
-- Act autonomously on high-conviction, in-scope actions and fixes; ask only when confidence is low or risk is meaningful.
+- Be proactive: immediately take the next highest-value in-scope action when it is clear.
+- Default to autonomous execution: do not pause for confirmation between normal in-scope steps.
+- Request user input only when absolutely necessary: ambiguous requirements, material risk tradeoffs, missing required data/access, or destructive/irreversible actions outside policy.
 - Drive work to complete outcomes with verification, not partial handoffs.
+- Treat iterative execution as the default for non-trivial work; run adaptive loop passes. Example loops (adapt as needed, not rigid): issue-resolution `investigate -> plan -> fix -> verify -> battletest -> organise-docs -> git-commit -> re-review`; cleanup `scan -> prioritize -> clean -> verify -> re-scan`; docs `audit -> update -> verify -> re-audit`.
+- Keep looping until actual completion criteria are met: no actionable in-scope items remain, verification is green, and confidence is high.
+- Run `organise-docs` frequently during execution to capture durable decisions and learnings, not only at the end.
+- Create small checkpoint commits frequently with `git-commit` when changes are commit-eligible, checks are green, and repo policy permits commits.
 - Compound knowledge continuously: keep `docs/` accurate and up to date, and promote durable learnings and decisions from work into docs.
 
 ## Long-task checkpoint cadence
 
-- For large or long tasks/plans, run recurring checkpoint cycles instead of waiting for a single end-of-task wrap-up.
-- At each meaningful milestone with commit-eligible changes, invoke `git-commit` to create a small logical checkpoint commit once relevant checks are green and repo policy permits commits.
-- At the same milestone, invoke `organise-docs` when new durable learnings/decisions exist, and prune stale `plan/` scratch artifacts.
+- For any non-trivial task (including long efforts), run recurring checkpoint cycles instead of waiting for a single end-of-task wrap-up.
+- At each meaningful milestone with commit-eligible changes, and at least once per major phase, invoke `git-commit` to create a small logical checkpoint commit once relevant checks are green and repo policy permits commits.
+- At the same cadence, invoke `organise-docs` whenever durable learnings/decisions appear, and prune stale `plan/` scratch artifacts.
 - If either checkpoint is blocked (for example failing checks or low-confidence documentation), resolve or record the blocker immediately and retry before expanding scope.
 
 ## Overview
@@ -132,7 +137,7 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - Distinguish executed-and-verified fixes from deferred items, and justify any deferrals.
    - Note required fixes before merge and provide a merge readiness assessment and next steps.
    - Use a concise verdict template: Ready / Needs fixes / Blocked.
-   - If called repeatedly, you may follow prior suggested next steps or take a fresh angle; both are fine. Continue deeper review and append new findings rather than repeating prior summaries.
+   - On repeated passes, continue deeper review and append net-new findings; avoid repeating prior summaries unless needed for traceability.
    - Write the report in plain, concise, and intuitive language with brief context so a new reader can follow it.
    - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
 
@@ -142,3 +147,8 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - If title/body are stale or incomplete, update them (for example with `gh pr edit --title ... --body-file ...`).
    - If the active PR is draft and the branch is review-ready, promote it (for example with `gh pr ready <pr-number-or-url>`).
    - If no active PR exists, state that explicitly and continue.
+
+11. Repeat review-fix-verification passes until complete:
+   - Re-run review passes after each batch of fixes.
+   - Continue looping until no material findings remain unaddressed, verification is green, and merge readiness is clearly supported by evidence.
+   - Only stop early when an explicit blocker is outside scope or requires user input under the "absolutely necessary" policy.
