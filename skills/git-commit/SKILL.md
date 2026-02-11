@@ -97,6 +97,7 @@ Before committing, ensure that any issue fixes or key decisions are documented i
 
 3. Run pre-commit checks first:
    - If the repo defines pre-commit checks (config or standard script), run them before committing.
+   - If any skill definitions or skill scripts changed (for example `skills/*/SKILL.md` or `skills/*.py`), run `python3 "${CODEX_HOME:-$HOME/.codex}/skills/validate_skills.py"` and require a passing result before committing.
    - If no pre-commit checks are defined, skip this step.
    - Ensure pre-commit checks pass before committing.
    - If failures are small and reasonable to fix, fix them before committing.
