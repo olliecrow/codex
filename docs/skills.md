@@ -26,6 +26,7 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 - Run `organise-docs` frequently during execution when durable learnings or decisions appear; do not defer all documentation to the end.
 - For any non-trivial task, run recurring milestone checkpoints instead of a single end wrap-up: use `git-commit` frequently for small logical commits and `organise-docs` to promote durable learnings, then prune stale `plan/` artifacts.
 - Never squash commits in skill workflows; preserve history and use merge commits when integrating branches.
+- Prefer simplification over added complexity in skill workflows: aggressively remove bloat, redundancy, and over-engineering while preserving correctness.
 - For git/PR workflows, always check active PR metadata at the end and update stale title/body when needed.
 - Never create draft PRs when opening a PR; open ready-for-review PRs only.
 - If a pre-existing draft PR is encountered and the work is review-ready, promote it with `gh pr ready` before finishing.

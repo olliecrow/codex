@@ -49,6 +49,10 @@ REQUIRED_PATTERNS = [
         "merge-only history rule",
         r"Never squash commits; always use merge commits when integrating branches\.",
     ),
+    (
+        "simplification-first rule",
+        r"Prefer simplification over added complexity: aggressively remove bloat, redundancy, and over-engineering while preserving correctness\.",
+    ),
 ]
 
 FORBIDDEN_PATTERNS = [
