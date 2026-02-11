@@ -79,6 +79,7 @@ Sanity checks after run:
 
 ## Commit & Pull Request Guidelines
 - Commits: concise, imperative subject (“Add Codex git wrappers”), small scoped diffs, and commit little and often.
+- Never squash commits; preserve commit history and always use merge commits when integrating branches.
 - Repo policy: commits and pushes are permitted when working directly in this repo on the host (outside the container).
 - Rewriting git history is not allowed (e.g., `git rebase`, `git commit --amend`, `git reset` on commits, `git filter-branch`).
 - Force pushes and other destructive git actions (e.g., `git push --force`, `git push --force-with-lease`, `git reset --hard`, `git clean -fdx`) are prohibited.

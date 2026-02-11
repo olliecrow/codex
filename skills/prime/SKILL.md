@@ -31,6 +31,7 @@ Start with a fast familiarization sweep of docs and current repo state, then set
 - Compound knowledge aggressively over time: capture notes/findings continuously, then promote durable learnings/decisions into long-lived docs as soon as confidence is high.
 - Run `organise-docs` frequently during execution to capture durable decisions and learnings, not only at the end.
 - Create small checkpoint commits frequently with `git-commit` when changes are commit-eligible, checks are green, and repo policy permits commits.
+- Never squash commits; always use merge commits when integrating branches.
 - Compound knowledge continuously: keep `docs/` accurate and up to date, and promote durable learnings and decisions from work into docs.
 
 ## Long-task checkpoint cadence

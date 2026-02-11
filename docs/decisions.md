@@ -68,6 +68,13 @@ Trade-offs: Adds a small extra check step during skill edits; mitigated by fast 
 Enforcement: Run `validate_skills.py` (policy lint + quick validation) whenever skill definitions change; use targeted lint/quick checks as needed. CI also enforces this via `skills-validation.yml`.
 References: `skills/validate_skills.py`, `skills/lint_skill_policy.py`, `skills/.system/skill-creator/scripts/quick_validate.py`, `.github/workflows/skills-validation.yml`, `docs/skills.md`.
 
+Decision: Skill workflows must never squash commits and must use merge commits for branch integration.
+Context: Squash merges collapse logical checkpoint history and weaken traceability of autonomous multi-pass work.
+Rationale: Preserving granular commit history improves auditing, rollback precision, and review clarity across long-running skill loops.
+Trade-offs: Merge history is more verbose than squash history; mitigated by keeping commits small, logical, and well-labeled.
+Enforcement: Shared policy text in `AGENTS.md`, `docs/skills.md`, and per-skill proactive sections; enforced by `lint_skill_policy.py` and `validate_skills.py`.
+References: `AGENTS.md`, `docs/skills.md`, `skills/lint_skill_policy.py`, `skills/validate_skills.py`, `skills/*/SKILL.md`.
+
 ## Template
 ```
 Decision:

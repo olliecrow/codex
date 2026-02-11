@@ -45,6 +45,10 @@ REQUIRED_PATTERNS = [
         "git-commit checkpoint behavior",
         r"Create small checkpoint commits frequently with `git-commit`",
     ),
+    (
+        "merge-only history rule",
+        r"Never squash commits; always use merge commits when integrating branches\.",
+    ),
 ]
 
 FORBIDDEN_PATTERNS = [
