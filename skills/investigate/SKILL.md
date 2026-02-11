@@ -26,6 +26,7 @@ description: Deep, meticulous investigation of a problem, issue, or topic by for
 - Run `organise-docs` frequently during execution to capture durable decisions and learnings, not only at the end.
 - Create small checkpoint commits frequently with `git-commit` when changes are commit-eligible, checks are green, and repo policy permits commits.
 - Never squash commits; always use merge commits when integrating branches.
+- Prefer simplification over added complexity: aggressively remove bloat, redundancy, and over-engineering while preserving correctness.
 - Compound knowledge continuously: keep `docs/` accurate and up to date, and promote durable learnings and decisions from work into docs.
 
 ## Long-task checkpoint cadence

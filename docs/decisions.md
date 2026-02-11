@@ -75,6 +75,13 @@ Trade-offs: Merge history is more verbose than squash history; mitigated by keep
 Enforcement: Shared policy text in `AGENTS.md`, `docs/skills.md`, and per-skill proactive sections; enforced by `lint_skill_policy.py` and `validate_skills.py`.
 References: `AGENTS.md`, `docs/skills.md`, `skills/lint_skill_policy.py`, `skills/validate_skills.py`, `skills/*/SKILL.md`.
 
+Decision: Skill workflows should prefer simplification over additional complexity and aggressively clean up bloat as they proceed.
+Context: Long-running autonomous sessions can accumulate unnecessary complexity when each pass only adds behavior without consolidation.
+Rationale: Explicit simplification pressure keeps maintenance cost down, reduces regression surface area, and improves long-term execution speed and reliability.
+Trade-offs: More frequent cleanup can add incremental short-term effort; mitigated by keeping cleanup changes scoped, verified, and tied to current work.
+Enforcement: Shared policy text in `AGENTS.md`, `docs/skills.md`, and per-skill proactive sections; enforced by `lint_skill_policy.py` and `validate_skills.py`.
+References: `AGENTS.md`, `docs/skills.md`, `skills/lint_skill_policy.py`, `skills/validate_skills.py`, `skills/*/SKILL.md`.
+
 ## Template
 ```
 Decision:

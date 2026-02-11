@@ -69,6 +69,7 @@ Sanity checks after run:
 - Scripts: kebab or snake with `.sh` suffix (e.g., `build.sh`, `run.sh`).
 - Dockerfiles: non‑root user, minimal deps, explicit versions, tidy caches.
 - Keep mounts and environment flags explicit and minimal.
+- Prefer simplification over added complexity: aggressively remove bloat, redundancy, and over-engineering as you work, while preserving correctness.
 
 ## Testing Guidelines
 - No formal unit tests. Validate via the sanity checks above.
