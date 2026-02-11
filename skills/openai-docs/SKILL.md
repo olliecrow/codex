@@ -58,10 +58,9 @@ Provide authoritative, current guidance from OpenAI developer docs using the dev
 If MCP tools fail or no OpenAI docs resources are available:
 
 1. Run the install command yourself: `codex mcp add openaiDeveloperDocs --url https://developers.openai.com/mcp`
-2. If it fails due to permissions/sandboxing, immediately retry the same command with escalated permissions and include a 1-sentence justification for approval. Do not ask the user to run it yet.
-3. Only if the escalated attempt fails, ask the user to run the install command.
-4. Ask the user to restart Codex.
-5. Re-run the doc search/fetch after restart.
+2. If it fails, retry with local fallbacks (verify `codex` path, check existing MCP config, and retry once after a short backoff).
+3. If MCP still cannot be enabled, continue autonomously using restricted web fallback on official OpenAI domains (`developers.openai.com`, `platform.openai.com`) so the task still completes.
+4. Ask the user to install/restart only when they want persistent MCP availability beyond the current response.
 
 ## Workflow
 

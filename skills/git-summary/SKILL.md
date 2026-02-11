@@ -70,7 +70,7 @@ If changes include issue fixes or key decisions, confirm the rationale is captur
    - Fetch the most recent `origin/main` before any other steps (do not checkout, merge, or rebase).
    - If the repo uses a different mainline (for example, `master`), fetch that instead.
    - If the update cannot be fetched, run bounded retries and fallback to local mainline refs; ask only if no valid comparison base can be established.
-   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
+   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands, continue with available local context, and mark any missing upstream evidence explicitly.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 2. Establish baseline:
@@ -84,7 +84,7 @@ If changes include issue fixes or key decisions, confirm the rationale is captur
    - Review file-level changes and key hunks to understand intent.
    - Review every changed file and hunk; do not skip any relevant changes.
    - Read related docs or comments if they explain why changes were made.
-   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
+   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands, continue summarization from available diffs, and note which parts depend on pending command output.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 4. Understand intent and impact:

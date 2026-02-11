@@ -84,7 +84,7 @@ Before committing, ensure that any issue fixes or key decisions are documented i
 1. Sync remote main before anything else:
    - Fetch the most recent `origin/main` before any other steps (do not checkout, merge, or rebase).
    - If `origin/main` does not exist, detect alternate mainline refs (`origin/master`, upstream default branch, or local mainline) and continue; ask only if no valid baseline can be established.
-   - If git operations can be executed here, run them directly; otherwise, output explicit commands and wait for results before continuing.
+   - If git operations can be executed here, run them directly; otherwise, output explicit commands, continue prep/analysis, and mark command-result-dependent steps as pending.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 2. Inspect repo state:
@@ -92,7 +92,7 @@ Before committing, ensure that any issue fixes or key decisions are documented i
    - Review `git diff`, `git diff --staged`, and `git diff --name-only` to understand all changes (tracked and untracked).
    - If diffs are large, start with `git diff --stat` and then review per-file diffs.
    - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat`, `git diff --name-only`, or per-file diffs instead of unbounded commands.
-   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
+   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands, continue packaging logical commit units, and mark any unresolved staging status as pending.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 3. Run pre-commit checks first:
@@ -125,7 +125,7 @@ Before committing, ensure that any issue fixes or key decisions are documented i
    - Use `git commit -m "..."` with concise, descriptive, imperative messages tailored to each change.
    - Each commit should stand on its own as a logical, best-practice change that can be understood and reverted independently.
    - Order commits so they read as a coherent sequence with minimal backtracking or cross-dependencies.
-   - If git operations can be executed here, run them directly; otherwise, provide explicit commands and pause until the user reports back.
+   - If git operations can be executed here, run them directly; otherwise, provide explicit commands and continue with the remaining actionable preparation/reporting steps without waiting.
    - Do not push.
 
 8. Ensure nothing appropriate is left uncommitted:

@@ -88,7 +88,7 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
    - Fetch the most recent `origin/main` before any other steps (do not checkout, merge, or rebase).
    - If the repo uses a different mainline (for example, `master`), fetch that instead.
    - If the update cannot be fetched, run bounded retries and mainline fallbacks (`origin/master`, local mainline refs); ask only if no valid merge base can be established.
-   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands for the user to run and wait for their results before continuing.
+   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands, continue with read-only planning/analysis, and mark command-dependent merge actions as pending.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 2. Require a clean working tree:
@@ -100,7 +100,7 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
    - Fetch latest refs for the current branch.
    - Update the current branch from remote (pull or fast-forward) so it is up to date.
    - If remote update fails, retry with bounded backoff and explicit refspec fallback; ask only if branch state cannot be recovered safely.
-   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands for the user to run and wait for their results before continuing.
+   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands, continue conflict-risk analysis, and mark branch-sync status as pending.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 4. Build a two‑sided understanding before merging:
@@ -127,7 +127,7 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
    - Resolve conflicts carefully with reasoning aligned to main’s intent and the branch’s intent, preserving behavior from both.
    - Keep changes minimal and avoid introducing new behavior unless required by the plan.
    - Perform the merge directly when git operations can be executed here; do not ask for permission.
-   - If git operations cannot be executed here, provide explicit commands and pause until the user reports back.
+   - If git operations cannot be executed here, provide explicit commands and continue with any remaining non-state-changing validation/planning/reporting steps.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 7. Verify and battle test:

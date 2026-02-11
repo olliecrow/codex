@@ -34,8 +34,8 @@ description: "Use only when the user explicitly asks to stage, commit, push, and
 
 ## Prerequisites
 
-- Require GitHub CLI `gh`. Check `gh --version`. If missing, ask the user to install `gh` and stop.
-- Require authenticated `gh` session. Run `gh auth status`. If not authenticated, ask the user to run `gh auth login` (and re-run `gh auth status`) before continuing.
+- Require GitHub CLI `gh`. Check `gh --version`. If missing, attempt a non-interactive install path available on the host (for example `brew`, `apt`, or existing repo bootstrap scripts), then re-check. Ask the user only if installation remains blocked.
+- Require authenticated `gh` session. Run `gh auth status`. If unauthenticated, attempt token-based auth via `GH_TOKEN`/`GITHUB_TOKEN` when available, then re-check. Ask the user to run `gh auth login` only if auth remains blocked.
 
 ## Naming conventions
 
@@ -55,7 +55,7 @@ description: "Use only when the user explicitly asks to stage, commit, push, and
   - If checks fail due to missing deps/tools, install dependencies and rerun once.
 - Commit tersely with the description: `git commit -m "{description}"`
 - Push with tracking: `git push -u origin $(git branch --show-current)`
-- If git push fails due to workflow auth errors, pull from master and retry the push.
+- If git push fails due to workflow auth errors, refresh from the tracked upstream (or the detected mainline branch) and retry the push once.
 - If the branch has no active PR, open one in ready-for-review state: `GH_PROMPT_DISABLED=1 GIT_TERMINAL_PROMPT=0 gh pr create --fill --head $(git branch --show-current)`.
 - If the branch already has an active PR, do not create a duplicate; edit the existing PR instead.
 - If the active PR is draft, promote it before finishing: `GH_PROMPT_DISABLED=1 GIT_TERMINAL_PROMPT=0 gh pr ready $(git branch --show-current)`.

@@ -61,6 +61,13 @@ Trade-offs: Adds lightweight startup overhead; mitigated by keeping prime prefli
 Enforcement: `prime` skill workflow requirements, shared principles in `docs/skills.md`, and skill list routing in `AGENTS.md`.
 References: `skills/prime/SKILL.md`, `docs/skills.md`, `AGENTS.md`.
 
+Decision: Skill policy regressions should be caught with a dedicated lint script before commits.
+Context: Cross-skill wording drift can silently reintroduce avoidable pauses or weaken autonomous loop/checkpoint behavior.
+Rationale: A deterministic policy lint provides fast, repeatable enforcement of required autonomy/loop/checkpoint language across all versioned skills.
+Trade-offs: Adds a small extra check step during skill edits; mitigated by fast local runtime.
+Enforcement: Run `lint_skill_policy.py` plus `quick_validate.py` whenever skill definitions change.
+References: `skills/lint_skill_policy.py`, `skills/.system/skill-creator/scripts/quick_validate.py`, `docs/skills.md`.
+
 ## Template
 ```
 Decision:

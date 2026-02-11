@@ -84,7 +84,7 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - Fetch the most recent `origin/main` before any other steps (do not checkout, merge, or rebase).
    - If the repo uses a different mainline (for example, `master`), fetch that instead.
    - If the update cannot be fetched, run bounded retries and mainline fallbacks (`origin/master`, local mainline refs); proceed with local refs if needed and only ask if no valid comparison base exists.
-   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
+   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands, continue with available evidence, and mark dependent checks as pending until command results are available.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 2. Gather PR context when applicable:
@@ -100,7 +100,7 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - Always conduct a full review of every changed file and hunk.
    - If diffs are large, start with `git diff --stat` or `git diff --name-only` and then review per-file diffs to keep output manageable.
    - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat`, `git diff --name-only`, or per-file diffs instead of unbounded commands.
-   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
+   - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands, continue analysis on available local context, and mark any blocked verification explicitly.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 4. Understand intent:
