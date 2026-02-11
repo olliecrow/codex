@@ -83,7 +83,7 @@ Before committing, ensure that any issue fixes or key decisions are documented i
 
 1. Sync remote main before anything else:
    - Fetch the most recent `origin/main` before any other steps (do not checkout, merge, or rebase).
-   - If `origin/main` does not exist, stop and ask for guidance.
+   - If `origin/main` does not exist, detect alternate mainline refs (`origin/master`, upstream default branch, or local mainline) and continue; ask only if no valid baseline can be established.
    - If git operations can be executed here, run them directly; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
@@ -105,11 +105,11 @@ Before committing, ensure that any issue fixes or key decisions are documented i
 4. Run tests (or the most relevant subset) before committing:
    - Prefer the smallest relevant test target(s) when full test suites are too heavy.
    - Ensure tests pass before committing.
-   - If tests cannot be run here, say so and request the user to run them and confirm results before proceeding.
+   - If tests cannot run here due hard blockers, capture exact blocker evidence and provide exact commands for later execution; commit only when verification evidence is available per policy.
 
 5. Run CI checks before committing:
    - If CI scripts or workflow equivalents are available locally, run them.
-   - If CI can only run remotely, trigger it and wait for success before committing; if you cannot, ask the user to run CI and confirm results.
+   - If CI can only run remotely, trigger it and wait for success before committing; if triggering is impossible here, provide exact commands and mark commit as blocked pending CI evidence.
    - Ensure CI checks pass before committing.
    - This requirement applies even when you cannot commit and must output copy-pasteable git commands.
 

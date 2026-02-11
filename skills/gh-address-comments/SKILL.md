@@ -1,6 +1,6 @@
 ---
 name: gh-address-comments
-description: Help address review/issue comments on the open GitHub PR for the current branch using gh CLI; verify gh auth first and prompt the user to authenticate if not logged in.
+description: Help address review/issue comments on the open GitHub PR for the current branch using gh CLI; verify gh auth first and address actionable comments autonomously, asking the user only for true blockers or ambiguous high-risk choices.
 metadata:
   short-description: Address comments in a GitHub PR review
 ---
@@ -44,7 +44,7 @@ Prereq: ensure `gh` is authenticated (for example, run `gh auth login` once), th
 
 - Confirm repo context and branch state (`git rev-parse --show-toplevel`, `git symbolic-ref -q --short HEAD`).
 - Confirm `gh` availability/auth (`command -v gh`, `gh auth status`).
-- If detached HEAD or branch PR lookup fails, require an explicit PR number/URL instead of guessing.
+- If detached HEAD or branch PR lookup fails, retry with explicit `--repo <owner>/<repo>` and current branch metadata before requesting a PR number/URL.
 - Verify referenced paths exist before reading/writing helper outputs.
 
 ## 1) Inspect comments needing attention
@@ -52,12 +52,15 @@ Prereq: ensure `gh` is authenticated (for example, run `gh auth login` once), th
 - If branch-based PR discovery fails, retry with explicit `--repo <owner>/<repo>` and PR identifier.
 - If the script fails due to `gh` JSON schema drift, rerun with a reduced field set and continue.
 
-## 2) Ask the user for clarification
-- Number all the review threads and comments and provide a short summary of what would be required to apply a fix for it
-- Ask the user which numbered comments should be addressed
+## 2) Triage comments autonomously
+- Number all review threads/comments and classify each as: `address now`, `already addressed`, `not worth addressing` (with rationale), or `blocked`.
+- Default to addressing all high-confidence in-scope comments without waiting for user selection.
+- Ask a minimal user question only when a comment implies an ambiguous high-risk behavior change that cannot be resolved from code/tests/docs.
 
-## 3) If user chooses comments
-- Apply fixes for the selected comments
+## 3) Apply fixes and verify
+- Apply fixes for all `address now` comments in focused batches.
+- Run relevant checks/tests after each batch, then re-fetch comments to confirm dispositions.
+- Keep looping until no actionable in-scope comments remain or a true blocker is identified.
 
 ## 4) Refresh active PR metadata (always)
 - Check whether the current branch has an active PR.

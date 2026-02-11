@@ -86,7 +86,7 @@ Use the most specific available source in this order:
 
 If `.env` is missing:
 - Attempt high-confidence reconstruction from `.env.example`, project cluster scripts, and existing project conventions.
-- If reconstruction confidence is not high, fail fast and ask the user for the missing env details.
+- If reconstruction confidence is not high, try additional local evidence (`ssh` config aliases, recent job artifacts/logs, wrapper defaults, and conservative read-only probes) before asking the user for only the minimal missing detail.
 
 ## Workflow
 

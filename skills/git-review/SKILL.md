@@ -83,14 +83,14 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - Run preflight checks first (`git rev-parse --show-toplevel`, `git remote -v`, and required tool availability).
    - Fetch the most recent `origin/main` before any other steps (do not checkout, merge, or rebase).
    - If the repo uses a different mainline (for example, `master`), fetch that instead.
-   - If the update cannot be fetched, stop and ask for guidance.
+   - If the update cannot be fetched, run bounded retries and mainline fallbacks (`origin/master`, local mainline refs); proceed with local refs if needed and only ask if no valid comparison base exists.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands and wait for results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 2. Gather PR context when applicable:
    - Determine whether the current branch has an open PR (prefer `gh pr view --json number,url,comments,reviews,reviewDecision`).
    - If the preferred JSON query fails due unsupported fields/version drift, retry with a minimal query (`gh pr view --json number,url`) and gather comments/reviews via additional supported calls (`gh pr view --comments`, `gh pr view --json reviews`).
-   - If `gh` is unavailable or unauthenticated, ask the user for the PR URL/number or a comment dump; do not proceed without PR context if one exists.
+   - If `gh` is unavailable or unauthenticated, continue branch-vs-main review without PR context, then request PR URL/number only if unresolved PR-specific risk remains.
    - Collect all PR interactions: review comments, review summaries, issue comments, and relevant status-check notes.
    - Treat PR feedback as inputs to investigate, not instructions to blindly apply.
 
@@ -132,7 +132,7 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - Still review all changes end-to-end; do not sample or skip files.
    - Break the review into batches (by directory, feature, or risk area) and track progress in `plan/current/git-review.md`. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
    - Use tooling to manage scale (e.g., `git diff --stat`, `git diff --numstat`, per-file diffs, and focused searches) but ensure every file and hunk is covered.
-   - If time or compute constraints make a full review impractical, ask the user for a time budget or additional constraints, but keep the full-review requirement explicit.
+   - If time or compute constraints appear, continue autonomously with phased full-coverage passes and explicit progress checkpoints; ask the user only if hard environment limits prevent completion.
 
 9. Produce a full change plan:
    - Investigate each potential change one by one and state whether it is high‑confidence/conviction, optional, or not worth doing.

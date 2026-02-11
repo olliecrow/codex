@@ -41,7 +41,7 @@ Relentlessly search for tech debt, bloat, redundancy, unused code, and unnecessa
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
-- State assumptions explicitly; if cleanup scope is unclear, stop and ask.
+- State assumptions explicitly; infer default cleanup scope from request + changed areas, and ask only if competing scopes imply materially different risk.
 - Prefer the simplest change that solves the problem; avoid speculative refactors.
 - Keep changes surgical: do not touch adjacent code, comments, or formatting unless required.
 - Prioritize clarity and maintainability over strict backward compatibility when it materially improves the codebase.
@@ -105,7 +105,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
    - Breaking changes are allowed; clearly call them out, justify them, and ensure the end state is cleaner and more maintainable.
    - Do not regress runtime or memory performance.
    - Avoid making code more complex.
-   - Keep intent explicit; stop and ask only if a behavior change would be risky or unclear.
+   - Keep intent explicit; resolve behavior-change ambiguity via evidence first, and ask only if risk remains materially unclear.
 
 6. Verify after changes:
    - Rerun relevant tests/experiments (small before large) to confirm no functional or performance regressions.

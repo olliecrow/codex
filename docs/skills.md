@@ -15,6 +15,7 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 - Prefer skill-provided scripts or templates over retyping or reinventing workflows.
 - Encourage multi-agent/subagent collaboration when it improves speed, quality, or confidence; split work into clear packets with synthesis checks.
 - For experiment-heavy work, optimize for learning throughput and high-information outcomes, not only task completion.
+- When a conversation is being started or re-oriented and autonomy posture is unclear, run `prime` first to establish startup familiarization plus recurring docs/commit/cleanup/verification loops.
 - Default to autonomous execution for normal in-scope steps; do not pause for avoidable confirmations.
 - Request user input only when absolutely necessary: ambiguous requirements, material-risk trade-offs, missing required data/access, or destructive/irreversible actions outside policy.
 - Drive work end-to-end with verification; prefer complete outcomes over partial handoffs.
@@ -28,7 +29,7 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 - Never create draft PRs when opening a PR; open ready-for-review PRs only.
 - If a pre-existing draft PR is encountered and the work is review-ready, promote it with `gh pr ready` before finishing.
 - If a skill is missing or blocked, say so briefly and use the closest safe fallback.
-- If applicability is unclear, ask a brief clarifying question before proceeding.
+- If applicability is unclear, infer from skill descriptions and task intent first; ask only if ambiguity remains materially blocking.
 
 ## Shared Requirements and Conventions
 For decision framing, rationale capture, plan/docs robustness, git safety, and reporting style, follow the repo-wide policies in `AGENTS.md` and `docs/decisions.md`.

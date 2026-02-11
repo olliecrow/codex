@@ -42,7 +42,7 @@ Get the current branch to a merge-ready state with main by first understanding b
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
 - Run a preflight before substantial work: confirm you are at the repo root, verify `git`/required tools with `command -v`, and verify expected refs/remotes before state-changing commands.
-- State assumptions explicitly; if intent or requirements are unclear, stop and ask.
+- State assumptions explicitly; resolve intent from code/tests/docs/history first, and ask only when ambiguity remains materially risky.
 - Prefer the simplest merge resolution that preserves intent on both sides; avoid extra refactors.
 - Keep changes surgical and limited to merge needs; do not "improve" unrelated code.
 - Define success criteria and verify after each meaningful step.
@@ -87,19 +87,19 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
    - Run preflight checks first (`git rev-parse --show-toplevel`, `git remote -v`, and required tool availability).
    - Fetch the most recent `origin/main` before any other steps (do not checkout, merge, or rebase).
    - If the repo uses a different mainline (for example, `master`), fetch that instead.
-   - If the update cannot be fetched, stop and ask for guidance.
+   - If the update cannot be fetched, run bounded retries and mainline fallbacks (`origin/master`, local mainline refs); ask only if no valid merge base can be established.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands for the user to run and wait for their results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
 2. Require a clean working tree:
    - Check `git status -sb` next.
-   - If there are unstaged or uncommitted changes, stop and ask the user to address them.
-   - If changes should be preserved, commit them before proceeding so there is a clear rollback point.
+   - If there are unstaged or uncommitted changes, preserve them autonomously first (prefer checkpoint commit via `git-commit`; fallback to explicit non-destructive stash/branch safety step).
+   - Ask only if safe preservation strategy is truly ambiguous or blocked by policy.
 
 3. Sync the current branch with remote:
    - Fetch latest refs for the current branch.
    - Update the current branch from remote (pull or fast-forward) so it is up to date.
-   - If remote update fails, stop and ask for guidance.
+   - If remote update fails, retry with bounded backoff and explicit refspec fallback; ask only if branch state cannot be recovered safely.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands for the user to run and wait for their results before continuing.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
@@ -117,7 +117,7 @@ When you resolve a conflict, fix an issue, or make an important merge decision, 
    - Call out doc-heavy areas and plan for editorial reconciliation rather than mechanical conflict resolution.
    - Develop a clear plan to address changes safely.
    - Think deeply and verify the plan is correct and low risk.
-   - If there are critical open questions or unclear intent, stop and ask only the necessary clarifying questions.
+   - If there are critical open questions or unclear intent, attempt resolution from existing evidence first; ask only the minimal necessary clarifying questions when still blocked.
    - Use a `plan/` directory as scratch space if needed; create it only if permitted, keep it untracked, and never commit it. If you cannot create it, keep a lightweight in-memory log and call it out in the report.
    - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 

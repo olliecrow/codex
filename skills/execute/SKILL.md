@@ -66,7 +66,7 @@ Use a controller role to coordinate focused workers.
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
 - Run a preflight before substantial work: confirm the expected `cwd`, verify required tools with `command -v`, and verify referenced files/directories exist before reading or searching them.
-- State assumptions explicitly; if anything is unclear or has multiple interpretations, stop and ask.
+- State assumptions explicitly; resolve ambiguity from plan/context/evidence first and only ask when competing interpretations materially change risk or scope.
 - Prefer the simplest implementation that satisfies the plan; avoid speculative features or extra flexibility.
 - Keep changes surgical and within plan scope; do not refactor or "improve" adjacent code unless required.
 - Define success criteria per step and verify before moving on.
@@ -106,7 +106,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
    - If `docs/workflows.md` exists, align note routing and status tracking with it before execution starts.
    - If workflow conventions are missing and edits are allowed, prefer running `setup` before long-running or parallel execution.
    - For long or parallel execution, initialize note routing up front: scratch notes, status board, and the promotion path for durable learnings.
-   - If critical information is missing, ask only the necessary questions and pause execution.
+   - If critical information is missing, attempt high-confidence reconstruction from repo/docs/history first; ask only the minimal blocking question if reconstruction is insufficient.
    - Use `plan/` as scratch space when needed; create it only if permitted, keep it untracked, and never commit it. If you cannot create it, keep a lightweight in-memory log and call it out in the report.
    - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
@@ -119,7 +119,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
    - If a step fails, diagnose, fix, and retry before moving on.
    - Run the step-specific validation checks from the plan as you go; do not defer all testing to the end.
    - When confidence is high and the plan explicitly allows autonomous continuation, execute the next concrete action without waiting for additional prompts.
-   - If the plan is ambiguous or would require scope expansion, stop and ask before proceeding.
+   - If the plan is ambiguous or would require scope expansion, choose the narrowest safe interpretation first; ask only when expansion risk cannot be resolved from evidence.
    - Do not stop until all steps are complete.
 
 4. Verify completion:
