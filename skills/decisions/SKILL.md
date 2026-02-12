@@ -77,7 +77,7 @@ When a decision is made or a recommendation is adopted, record the "why" in a du
 
 - Treat `plan/` as short-term scratch and never commit it.
 - If `plan/` is missing, create it (and any needed subdirs) only when edits are permitted; otherwise keep a lightweight in-memory log and state in the report that plan logging was not persisted.
-- Treat `docs/` as long-lived, evergreen guidance; prefer updating existing entries over adding new files.
+- Treat `docs/` as long-lived, evergreen guidance; prefer updating existing docs when they have a clear home, but create new focused docs/subdirectories when it improves navigability (and link them from related docs or indexes).
 - If `docs/decisions.md` is missing, prefer using the `setup` skill to create it when allowed. If you cannot create docs, capture rationale in the smallest durable local place and call out the missing decision doc in the report.
 
 ## Workflow

@@ -55,6 +55,8 @@ Run a compounding cycle after each substantial task.
 Apply documentation edits autonomously when confidence is high.
 - Auto-apply doc edits without asking for permission when evidence is strong.
 - Create, merge, split, move, rename, reorganize, and delete docs when this improves clarity and maintainability.
+- Do not be afraid to create a deep `docs/` hierarchy (nested directories) when it improves navigability. Prefer a coherent structure over a flat, overloaded `docs/`.
+- Make docs interrelate: add and maintain relative links between related docs, and keep an entrypoint index current (for example `docs/README.md`, plus per-directory `README.md`/`index.md` when useful).
 - If confidence is not high, do not invent facts. Leave content unchanged or call out the uncertainty in the final summary.
 
 ## Notes hierarchy and routing (must follow)
@@ -92,6 +94,7 @@ Apply documentation edits autonomously when confidence is high.
 - Merge fragmented docs when they duplicate scope.
 - Split overloaded docs when mixed topics reduce clarity.
 - Reorganize notes into a clear hierarchy when raw notes have grown large or hard to navigate.
+- Prefer making the structure explicit (nested directories + topic indexes) rather than relying on tribal knowledge. Avoid orphan docs by linking them from at least one index or related doc.
 
 5. Write concise, structured updates.
 - Use explicit sections or bullet entries that are easy to scan.
