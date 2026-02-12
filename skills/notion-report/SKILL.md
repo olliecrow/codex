@@ -1,11 +1,11 @@
 ---
 name: notion-report
-description: Generate a standalone, Notion-ready report (copy/paste Markdown plus explicit image placeholders) from a specific set of experiment artifacts (local run folders, cluster job outputs). Use when the user asks for an objective experiment/cluster report to paste into Notion with tables, comparisons, and plots saved to disk.
+description: Generate a standalone, Notion-importable experiment report (single zip containing Markdown + images) from a specific set of experiment artifacts (local run folders, cluster job outputs). Use when the user asks for an objective experiment/cluster report with tables, comparisons, and plots, with redaction of local filesystem paths.
 ---
 
 # Notion Report
 
-Create a self-contained experiment report suitable for copy/paste into Notion, with plots and other visuals written to an ephemeral output directory (default: `plan/artifacts/notion-report/...`).
+Create a self-contained experiment report suitable for Notion import, packaged as a single zip (Markdown + images) written to an ephemeral output directory (default: `plan/artifacts/notion-report/...`).
 
 The report must be:
 - standalone: readable without external links or prior-run context
@@ -15,6 +15,7 @@ The report must be:
 
 Do not include subjective commentary (for example “promising”, “good/bad”, “I think”, “we believe”).
 When comparing runs, use objective phrasing (for example “higher/lower”, “delta”, “rank”, “span”, “percent difference”).
+Do not include local filesystem paths, hostnames, or directory structures in the report content (treat as private information).
 
 ## Multi-agent collaboration
 
@@ -50,19 +51,20 @@ When comparing runs, use objective phrasing (for example “higher/lower”, “
 ## Output contract
 
 Write the following to a single, isolated output directory (prefer under `plan/artifacts/` so it stays ephemeral and gitignored):
-- `report.md`: Notion-ready Markdown with explicit placeholders for images.
+- `report.md`: Notion-importable Markdown that embeds images via relative paths (for example `![](images/foo.svg)`).
 - `images/`: generated plots (and any copied visuals) with stable filenames.
-- `inventory.json`: the inputs discovered/used (paths, metrics sources, copied images, warnings).
+- `inventory.json`: inputs discovered/used (redacted; no absolute filesystem paths).
+- `*.zip` (written next to the output directory by default): a single zip suitable for Notion import, containing exactly one Markdown file + `images/`.
 
-Always surface the full output directory path at the end so the user can find the images.
+Always surface the final zip path at the end.
 
 ## Notion formatting rules
 
 - Prefer: headings, bullets, and Markdown tables.
-- Do not rely on local-image Markdown embedding. Instead, include explicit placeholders like:
-  - `[[INSERT IMAGE: images/metric_reward_overlay.svg]]`
-- Keep placeholders adjacent to the caption text so it is obvious where to insert each image.
-- Do not paste full configs into the report. If settings/configuration are relevant, include a condensed summary (a small table or bullets of key parameters) and a reference path to the config/artifact for reproducibility.
+- Use Markdown image embeds with relative paths (for example `![](images/metric_reward_overlay.svg)`) so Notion imports images from the zip.
+- Do not paste full configs into the report. Prefer:
+  - a single baseline config (key subset), and
+  - per-run overrides (shown keys only).
 
 ## Skill path (set once)
 
@@ -98,9 +100,8 @@ python3 "$NOTION_REPORT_CLI" \\
 - Remove references to other past runs or upcoming work.
 - If configs exist, summarize only the small set of key parameters needed to interpret the runs; do not paste entire config files.
 
-5. Provide the copy/paste payload.
-- Print the contents of `report.md` in the chat so the user can paste into Notion.
-- Remind the user to insert images from `images/` at the placeholders.
+5. Import into Notion.
+- Import the produced zip into Notion (single page). The images should import inline.
 
 ## Script reference
 
