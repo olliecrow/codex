@@ -21,12 +21,19 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Iterable
 
+try:
+    import tomllib  # py>=3.11
+except ModuleNotFoundError:  # pragma: no cover
+    tomllib = None  # type: ignore[assignment]
+
 
 DEFAULT_MAX_FILES_SCANNED = 20_000
 DEFAULT_MAX_JSONL_RECORDS = 200_000
 DEFAULT_MAX_POINTS_PER_SERIES = 2_000
 DEFAULT_MAX_METRICS = 8
 DEFAULT_MAX_IMAGES_PER_RUN = 12
+DEFAULT_MAX_CONFIG_BYTES = 512 * 1024
+DEFAULT_MAX_CONFIG_KEYS = 12
 
 IGNORE_DIR_NAMES = {
     ".git",
@@ -69,6 +76,10 @@ class CopiedImage:
 class RunInfo:
     name: str
     path: str
+    config_path: str | None = None
+    command_path: str | None = None
+    command: str | None = None
+    config_summary: dict[str, str] = field(default_factory=dict)
     metrics_timeseries_path: str | None = None
     metrics_summary_path: str | None = None
     step_key: str | None = None
@@ -279,6 +290,181 @@ def discover_metrics_files(run_dir: Path, files: list[Path]) -> tuple[Path | Non
     return ts, sm
 
 
+def discover_config_file(run_dir: Path, files: list[Path]) -> Path | None:
+    candidates: list[Path] = []
+    for p in files:
+        name = p.name.lower()
+        if name in {
+            "config.json",
+            "args.json",
+            "hparams.json",
+            "params.json",
+            "run_config.json",
+            "config.toml",
+            "args.toml",
+            "params.toml",
+        }:
+            candidates.append(p)
+
+    def prefer(paths: list[Path], preferred_names: list[str]) -> Path | None:
+        if not paths:
+            return None
+        by_name: dict[str, Path] = {p.name.lower(): p for p in paths}
+        for n in preferred_names:
+            if n in by_name:
+                return by_name[n]
+        # Prefer shallower paths, then smaller files.
+        return sorted(paths, key=lambda p: (len(p.relative_to(run_dir).parts), p.stat().st_size))[0]
+
+    return prefer(
+        candidates,
+        ["config.json", "args.json", "hparams.json", "params.json", "config.toml", "args.toml", "params.toml"],
+    )
+
+
+def discover_command_file(run_dir: Path, files: list[Path]) -> Path | None:
+    candidates: list[Path] = []
+    for p in files:
+        name = p.name.lower()
+        if name in {
+            "command.txt",
+            "cmd.txt",
+            "argv.txt",
+            "run_command.txt",
+            "commandline.txt",
+        }:
+            candidates.append(p)
+
+    if not candidates:
+        return None
+    # Prefer files closest to the run root.
+    return sorted(candidates, key=lambda p: (len(p.relative_to(run_dir).parts), p.stat().st_size))[0]
+
+
+def read_first_line(path: Path, *, max_bytes: int) -> tuple[str | None, list[str]]:
+    warnings: list[str] = []
+    try:
+        with path.open("rb") as f:
+            data = f.read(max_bytes + 1)
+    except OSError as exc:
+        return None, [f"failed to read {path}: {exc}"]
+    if len(data) > max_bytes:
+        warnings.append(f"file truncated at {max_bytes} bytes: {path}")
+        data = data[:max_bytes]
+    try:
+        text = data.decode("utf-8", errors="replace")
+    except Exception as exc:  # pragma: no cover
+        return None, [f"failed to decode {path} as utf-8: {exc}"]
+    line = text.splitlines()[0].strip() if text.splitlines() else ""
+    return (line or None), warnings
+
+
+def read_config(path: Path, *, max_bytes: int) -> tuple[dict[str, Any], list[str]]:
+    warnings: list[str] = []
+    try:
+        size = path.stat().st_size
+    except OSError as exc:
+        return {}, [f"failed to stat config {path}: {exc}"]
+    if size > max_bytes:
+        return {}, [f"skipped config >{max_bytes} bytes: {path} ({size} bytes)"]
+
+    try:
+        raw = path.read_bytes()
+    except OSError as exc:
+        return {}, [f"failed to read config {path}: {exc}"]
+
+    suffix = path.suffix.lower()
+    if suffix == ".json":
+        try:
+            obj = json.loads(raw.decode("utf-8"))
+        except UnicodeDecodeError as exc:
+            return {}, [f"failed to decode json config {path}: {exc}"]
+        except json.JSONDecodeError as exc:
+            return {}, [f"failed to parse json config {path}: {exc}"]
+        if not isinstance(obj, dict):
+            return {}, [f"json config is not an object/dict: {path}"]
+        return obj, warnings
+
+    if suffix == ".toml":
+        if tomllib is None:
+            return {}, ["tomllib not available; cannot parse toml configs"]
+        try:
+            obj = tomllib.loads(raw.decode("utf-8"))
+        except UnicodeDecodeError as exc:
+            return {}, [f"failed to decode toml config {path}: {exc}"]
+        except Exception as exc:
+            return {}, [f"failed to parse toml config {path}: {exc}"]
+        if not isinstance(obj, dict):
+            return {}, [f"toml config is not a dict: {path}"]
+        return obj, warnings
+
+    return {}, [f"unsupported config type (expected .json or .toml): {path}"]
+
+
+def config_value_to_str(val: Any) -> str | None:
+    if isinstance(val, (str, int, float, bool)) and not isinstance(val, bool):
+        # bool is excluded from try_float; keep config values explicit.
+        if isinstance(val, float) and (math.isnan(val) or math.isinf(val)):
+            return None
+        if isinstance(val, str):
+            s = val.strip().replace("\n", " ")
+            return s if s else None
+        if isinstance(val, float):
+            return format_float(val)
+        return str(val)
+    if isinstance(val, bool):
+        return "true" if val else "false"
+    if isinstance(val, list) and len(val) <= 10 and all(isinstance(x, (str, int, float, bool)) for x in val):
+        parts: list[str] = []
+        for x in val:
+            s = config_value_to_str(x)
+            if s is None:
+                continue
+            parts.append(s)
+        return "[" + ", ".join(parts) + "]" if parts else None
+    return None
+
+
+def score_config_key(name: str) -> float:
+    lower = name.lower()
+    score = 0.0
+    if any(tok in lower for tok in ("seed",)):
+        score += 8.0
+    if any(tok in lower for tok in ("lr", "learning_rate", "learning-rate")):
+        score += 8.0
+    if any(tok in lower for tok in ("batch", "microbatch")):
+        score += 7.0
+    if any(tok in lower for tok in ("env", "task", "suite")):
+        score += 6.0
+    if any(tok in lower for tok in ("algo", "algorithm", "agent")):
+        score += 6.0
+    if any(tok in lower for tok in ("model", "policy", "arch", "network", "hidden", "layers")):
+        score += 5.0
+    if any(tok in lower for tok in ("gamma", "lambda", "clip", "entropy", "vf", "grad", "weight_decay", "optimizer")):
+        score += 4.0
+    score -= name.count("/") * 0.6
+    score -= min(len(lower), 160) * 0.02
+    return score
+
+
+def select_config_keys(
+    configs_by_run: list[dict[str, str]],
+    *,
+    max_keys: int,
+) -> list[str]:
+    coverage: dict[str, int] = {}
+    for cfg in configs_by_run:
+        for k in cfg.keys():
+            coverage[k] = coverage.get(k, 0) + 1
+
+    ranked = sorted(
+        coverage.keys(),
+        key=lambda k: (coverage[k], score_config_key(k)),
+        reverse=True,
+    )
+    return ranked[:max_keys]
+
+
 def read_summary_json(path: Path) -> tuple[dict[str, float], list[str]]:
     warnings: list[str] = []
     out: dict[str, float] = {}
@@ -360,6 +546,14 @@ def try_relpath(path: Path, *, base: Path) -> str:
         return str(path.relative_to(base))
     except ValueError:
         return str(path)
+
+
+def md_cell(text: str, *, max_len: int = 80) -> str:
+    s = text.replace("\n", " ").strip()
+    s = s.replace("|", "\\|")
+    if len(s) > max_len:
+        s = s[: max_len - 3] + "..."
+    return s
 
 
 def svg_escape(text: str) -> str:
@@ -620,6 +814,7 @@ def render_markdown_report(
     motivation: str | None,
     out_dir: Path,
     runs: list[RunInfo],
+    selected_config_keys: list[str],
     selected_metrics: list[str],
     plots: list[tuple[str, str]],
     base: Path,
@@ -631,30 +826,72 @@ def render_markdown_report(
     lines.append(f"# {title}")
     lines.append("")
     lines.append("## Purpose and scope")
-    lines.append(f"- motivation: {motivation.strip() if motivation else '<TODO: fill>'}")
+    lines.append(f"- motivation: {motivation.strip() if motivation else 'not provided'}")
     lines.append(f"- scope: {len(runs)} run(s) included; this report describes only these runs.")
     lines.append(f"- report artifacts: `{out_rel}`")
     lines.append("")
-    lines.append("## How to use in Notion")
-    lines.append("1. Copy/paste the Markdown from `report.md` into Notion.")
-    lines.append("2. For each `[[INSERT IMAGE: ...]]` placeholder, drag the referenced file from `images/` into Notion at that location.")
+    lines.append("## Visual placeholders")
+    lines.append("- image placeholders are written as `[[INSERT IMAGE: path]]`.")
+    lines.append("- insert the referenced file from `images/` at that location in Notion.")
     lines.append("")
     lines.append("## What was run")
-    lines.append("| run | path | metrics source | records | copied visuals | warnings |")
-    lines.append("| --- | --- | --- | --- | --- | --- |")
+    lines.append("| run | path | config | command | metrics source | records | copied visuals | warnings |")
+    lines.append("| --- | --- | --- | --- | --- | --- | --- | --- |")
     for r in runs:
         metrics_src = ""
         if r.metrics_timeseries_path:
             metrics_src = try_relpath(Path(r.metrics_timeseries_path), base=base)
         elif r.metrics_summary_path:
             metrics_src = try_relpath(Path(r.metrics_summary_path), base=base)
+        config_src = try_relpath(Path(r.config_path), base=base) if r.config_path else ""
+        cmd_src = try_relpath(Path(r.command_path), base=base) if r.command_path else ""
         n_records = str(r.n_records) if r.n_records is not None else ""
         visuals = str(len(r.copied_images))
-        warnings = "; ".join(r.warnings) if r.warnings else ""
+        warnings = md_cell("; ".join(r.warnings), max_len=120) if r.warnings else ""
+        config_cell = f"`{config_src}`" if config_src else ""
+        cmd_cell = f"`{cmd_src}`" if cmd_src else ""
+        metrics_cell = f"`{metrics_src}`" if metrics_src else ""
         lines.append(
-            f"| {r.name} | `{try_relpath(Path(r.path), base=base)}` | `{metrics_src}` | {n_records} | {visuals} | {warnings} |"
+            f"| {r.name} | `{try_relpath(Path(r.path), base=base)}` | {config_cell} | {cmd_cell} | {metrics_cell} | {n_records} | {visuals} | {warnings} |"
         )
     lines.append("")
+
+    any_commands = any(r.command for r in runs)
+    any_config = any(r.config_summary for r in runs)
+    if any_commands or any_config:
+        lines.append("## Run settings (condensed)")
+        if any_commands:
+            lines.append("- commands (first line):")
+            for r in runs:
+                if not r.command:
+                    continue
+                lines.append(f"  - {r.name}: `{md_cell(r.command, max_len=200)}`")
+        if selected_config_keys and any_config:
+            if len(runs) <= 6:
+                header = ["key"] + [r.name for r in runs]
+                lines.append("")
+                lines.append("- key settings (from parsed JSON/TOML configs):")
+                lines.append("| " + " | ".join(header) + " |")
+                lines.append("| " + " | ".join(["---"] * len(header)) + " |")
+                for key in selected_config_keys:
+                    row = [f"`{md_cell(key, max_len=64)}`"]
+                    for r in runs:
+                        val = r.config_summary.get(key, "")
+                        row.append(f"`{md_cell(val, max_len=48)}`" if val else "")
+                    lines.append("| " + " | ".join(row) + " |")
+            else:
+                lines.append("")
+                lines.append("- key settings (from parsed JSON/TOML configs):")
+                for r in runs:
+                    if not r.config_summary:
+                        continue
+                    lines.append(f"  - {r.name}:")
+                    for k in selected_config_keys:
+                        v = r.config_summary.get(k)
+                        if v is None:
+                            continue
+                        lines.append(f"    - `{k}`: `{md_cell(v, max_len=80)}`")
+        lines.append("")
 
     lines.append("## Results overview (final values)")
     if not selected_metrics:
@@ -696,21 +933,30 @@ def render_markdown_report(
                 lines.append(f"  - source: `{img.src}`")
             lines.append("")
 
-    lines.append("## Key takeaways (objective)")
-    if selected_metrics:
+    lines.append("## Insights and conclusions (objective)")
+    if not selected_metrics:
+        lines.append("- no numeric metrics were extracted; conclusions are limited to the artifact inventory above.")
+        lines.append("")
+    else:
         for m in selected_metrics:
             present = [(r.name, r.finals[m]) for r in runs if m in r.finals]
             if len(present) < 2:
                 continue
-            max_run, max_val = max(present, key=lambda t: t[1])
-            min_run, min_val = min(present, key=lambda t: t[1])
-            lines.append(f"- `{m}`: highest final value {format_float(max_val)} ({max_run}); lowest final value {format_float(min_val)} ({min_run}).")
-    else:
-        lines.append("- <TODO: add objective takeaways based on available evidence>")
+            present_sorted = sorted(present, key=lambda t: t[1])
+            min_run, min_val = present_sorted[0]
+            max_run, max_val = present_sorted[-1]
+            delta = max_val - min_val
+            pct = None if min_val == 0 else (delta / abs(min_val)) * 100.0
+            pct_str = f", {pct:.2f}%" if pct is not None else ""
+            lines.append(
+                f"- `{m}`: final values span {format_float(min_val)} ({min_run}) to {format_float(max_val)} ({max_run}); delta {format_float(delta)}{pct_str}."
+            )
     lines.append("")
 
     lines.append("## Limitations / missing data")
     missing: list[str] = []
+    if not motivation:
+        missing.append("- motivation was not provided.")
     for r in runs:
         if not r.finals:
             missing.append(f"- {r.name}: no numeric metrics extracted.")
@@ -727,6 +973,10 @@ def render_markdown_report(
             lines.append(f"- {r.name} timeseries: `{try_relpath(Path(r.metrics_timeseries_path), base=base)}`")
         if r.metrics_summary_path:
             lines.append(f"- {r.name} summary: `{try_relpath(Path(r.metrics_summary_path), base=base)}`")
+        if r.config_path:
+            lines.append(f"- {r.name} config: `{try_relpath(Path(r.config_path), base=base)}`")
+        if r.command_path:
+            lines.append(f"- {r.name} command file: `{try_relpath(Path(r.command_path), base=base)}`")
     lines.append("")
 
     return "\n".join(lines)
@@ -746,6 +996,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     p.add_argument("--out-dir", help="Output directory (default: plan/artifacts/notion-report/<timestamp>_<slug>)")
     p.add_argument("--metric", action="append", default=[], help="Metric name to include/plot (repeatable)")
     p.add_argument("--max-metrics", type=int, default=DEFAULT_MAX_METRICS)
+    p.add_argument("--max-config-keys", type=int, default=DEFAULT_MAX_CONFIG_KEYS)
+    p.add_argument("--max-config-bytes", type=int, default=DEFAULT_MAX_CONFIG_BYTES)
     p.add_argument("--max-files", type=int, default=DEFAULT_MAX_FILES_SCANNED)
     p.add_argument("--max-jsonl-records", type=int, default=DEFAULT_MAX_JSONL_RECORDS)
     p.add_argument("--max-points", type=int, default=DEFAULT_MAX_POINTS_PER_SERIES)
@@ -770,6 +1022,7 @@ def main(argv: list[str]) -> int:
     images_dir.mkdir(parents=True, exist_ok=True)
 
     runs: list[RunInfo] = []
+    configs_by_run: list[dict[str, str]] = []
     for raw in args.run:
         run_dir = Path(raw).expanduser().resolve()
         if not run_dir.exists() or not run_dir.is_dir():
@@ -779,8 +1032,28 @@ def main(argv: list[str]) -> int:
         run_name = run_dir.name
         files = list(iter_files(run_dir, max_files=args.max_files))
         ts_path, sm_path = discover_metrics_files(run_dir, files)
+        cfg_path = discover_config_file(run_dir, files)
+        cmd_path = discover_command_file(run_dir, files)
 
         info = RunInfo(name=run_name, path=str(run_dir))
+
+        # Condensed run settings (optional).
+        run_cfg_values: dict[str, str] = {}
+        if cfg_path is not None:
+            info.config_path = str(cfg_path)
+            cfg_obj, warns = read_config(cfg_path, max_bytes=int(args.max_config_bytes))
+            info.warnings.extend(warns)
+            flat_cfg = flatten_dict(cfg_obj)
+            for k, v in flat_cfg.items():
+                s = config_value_to_str(v)
+                if s is None:
+                    continue
+                run_cfg_values[str(k)] = s
+        if cmd_path is not None:
+            info.command_path = str(cmd_path)
+            cmd_line, warns = read_first_line(cmd_path, max_bytes=8192)
+            info.warnings.extend(warns)
+            info.command = cmd_line
 
         # Timeseries metrics (preferred).
         if ts_path is not None:
@@ -830,6 +1103,16 @@ def main(argv: list[str]) -> int:
             info.warnings.append("no metrics files discovered (expected metrics/history/progress jsonl/csv or summary/results/eval json)")
 
         runs.append(info)
+        configs_by_run.append(run_cfg_values)
+
+    selected_config_keys = select_config_keys(
+        configs_by_run,
+        max_keys=max(0, int(args.max_config_keys)),
+    )
+    for info, cfg in zip(runs, configs_by_run):
+        if not cfg or not selected_config_keys:
+            continue
+        info.config_summary = {k: cfg[k] for k in selected_config_keys if k in cfg}
 
     selected_metrics = select_metrics(
         runs,
@@ -879,6 +1162,7 @@ def main(argv: list[str]) -> int:
         motivation=args.motivation,
         out_dir=out_dir,
         runs=runs,
+        selected_config_keys=selected_config_keys,
         selected_metrics=selected_metrics,
         plots=plots,
         base=base,
@@ -890,6 +1174,7 @@ def main(argv: list[str]) -> int:
         "title": args.title,
         "motivation": args.motivation,
         "runs": [asdict(r) for r in runs],
+        "selected_config_keys": selected_config_keys,
         "selected_metrics": selected_metrics,
         "plots": [{"caption": c, "path": p} for c, p in plots],
     }

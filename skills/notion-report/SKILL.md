@@ -13,6 +13,9 @@ The report must be:
 - objective: state facts and evidence; avoid subjective tone and speculative future work
 - visual: prefer tables and plots over prose
 
+Do not include subjective commentary (for example “promising”, “good/bad”, “I think”, “we believe”).
+When comparing runs, use objective phrasing (for example “higher/lower”, “delta”, “rank”, “span”, “percent difference”).
+
 ## Multi-agent collaboration
 
 - Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
@@ -59,6 +62,7 @@ Always surface the full output directory path at the end so the user can find th
 - Do not rely on local-image Markdown embedding. Instead, include explicit placeholders like:
   - `[[INSERT IMAGE: images/metric_reward_overlay.svg]]`
 - Keep placeholders adjacent to the caption text so it is obvious where to insert each image.
+- Do not paste full configs into the report. If settings/configuration are relevant, include a condensed summary (a small table or bullets of key parameters) and a reference path to the config/artifact for reproducibility.
 
 ## Skill path (set once)
 
@@ -92,6 +96,7 @@ python3 "$NOTION_REPORT_CLI" \\
 - Ensure “motivation” explains only the reason for this report’s scope.
 - Ensure conclusions are phrased as objective findings tied to reported metrics/plots.
 - Remove references to other past runs or upcoming work.
+- If configs exist, summarize only the small set of key parameters needed to interpret the runs; do not paste entire config files.
 
 5. Provide the copy/paste payload.
 - Print the contents of `report.md` in the chat so the user can paste into Notion.
@@ -102,4 +107,4 @@ python3 "$NOTION_REPORT_CLI" \\
 - CLI: `scripts/notion_report.py`
 - Standard library only (no required dependencies).
 - Generates SVG plots when timeseries/final metrics are available; otherwise it emits a tables-only report and records missing-data warnings in `inventory.json`.
-
+- Reads only JSON/TOML configs for condensed settings summaries (YAML is not parsed to keep dependencies minimal).
