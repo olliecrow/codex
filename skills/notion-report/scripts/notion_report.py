@@ -1468,7 +1468,7 @@ def render_markdown_report(
             lines.append("| " + " | ".join(row) + " |")
         lines.append("")
 
-    lines.append("## Comparisons (plots)")
+    lines.append("## Comparisons")
     if not plots:
         lines.append("- no plots were generated (no suitable timeseries/final metrics).")
         lines.append("")
@@ -1761,7 +1761,7 @@ def render_html_report(
             lines.append("</tr>")
         lines.append("</tbody></table>")
 
-    lines.append("<h2>Comparisons (plots)</h2>")
+    lines.append("<h2>Comparisons</h2>")
     if not plot_images:
         lines.append("<p>no plots were generated (no suitable timeseries/final metrics).</p>")
     else:
@@ -2201,25 +2201,25 @@ def main(argv: list[str]) -> int:
                 metric_slug = sanitize_filename(metric)
                 img = make_embedded_overlay_plot(
                     series_by_run=series_by_run,
-                    title=f"{metric} (overlay)",
+                    title=f"{metric}",
                     x_label=runs[0].step_key or "index",
                     y_label=metric,
                     label_base=f"plot_metric_{metric_slug}_overlay",
                 )
                 if img is not None:
-                    plot_images.append((f"{metric} vs step (overlay)", img))
+                    plot_images.append((f"{metric} vs step", img))
 
             values = [(r.name, r.finals[metric]) for r in runs if metric in r.finals]
             if values:
                 metric_slug = sanitize_filename(metric)
                 img = make_embedded_bar_chart(
                     values_by_run=values,
-                    title=f"{metric} (final value)",
+                    title=f"{metric} final values",
                     y_label=metric,
                     label_base=f"plot_metric_{metric_slug}_final",
                 )
                 if img is not None:
-                    plot_images.append((f"{metric} final value by run", img))
+                    plot_images.append((f"{metric} final values", img))
 
         assert out_html is not None
         report_html = render_html_report(
@@ -2254,13 +2254,13 @@ def main(argv: list[str]) -> int:
             overlay_path = images_dir / overlay_name
             ok = svg_line_plot(
                 series_by_run=series_by_run,
-                title=f"{metric} (overlay)",
+                title=f"{metric}",
                 x_label=runs[0].step_key or "index",
                 y_label=metric,
                 out_path=overlay_path,
             )
             if ok:
-                plots.append((f"{metric} vs step (overlay)", f"images/{overlay_name}"))
+                plots.append((f"{metric} vs step", f"images/{overlay_name}"))
 
         # final-value bar chart (requires finals)
         values = [(r.name, r.finals[metric]) for r in runs if metric in r.finals]
@@ -2270,12 +2270,12 @@ def main(argv: list[str]) -> int:
             bar_path = images_dir / bar_name
             ok = svg_bar_chart(
                 values_by_run=values,
-                title=f"{metric} (final value)",
+                title=f"{metric} final values",
                 y_label=metric,
                 out_path=bar_path,
             )
             if ok:
-                plots.append((f"{metric} final value by run", f"images/{bar_name}"))
+                plots.append((f"{metric} final values", f"images/{bar_name}"))
 
     report_md = render_markdown_report(
         title=args.title,
