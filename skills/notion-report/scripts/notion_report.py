@@ -1396,7 +1396,7 @@ def render_markdown_report(
             lines.append(f"![]({rel_path})")
             lines.append("")
 
-    lines.append("## Insights and conclusions (objective)")
+    lines.append("## Insights and conclusions")
     if not selected_metrics:
         lines.append("- no numeric metrics were extracted; conclusions are limited to the artifact inventory above.")
         lines.append("")
@@ -1503,7 +1503,7 @@ def render_html_report(
     lines.append("<body>")
     lines.append('  <div class="container">')
     lines.append(f"  <h1>{esc(title_clean)}</h1>")
-    lines.append("<p>This report is an objective summary of the runs included below.</p>")
+    # Avoid restating report principles ("objective", etc.) in the report body.
 
     lines.append("<ul>")
     lines.append(f"<li>motivation: {esc(motivation_clean) if motivation_clean else 'not provided'}</li>")
@@ -1642,7 +1642,7 @@ def render_html_report(
             lines.append(f"<h3>{esc(caption)}</h3>")
             lines.append(f'<img src="{esc(img.data_uri)}" alt="{esc(img.label)}" />')
 
-    lines.append("<h2>Insights and conclusions (objective)</h2>")
+    lines.append("<h2>Insights and conclusions</h2>")
     if not selected_metrics:
         lines.append("<p>no numeric metrics were extracted; conclusions are limited to the artifact inventory above.</p>")
     else:
