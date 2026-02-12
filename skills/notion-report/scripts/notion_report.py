@@ -103,6 +103,14 @@ SENSITIVE_CONFIG_KEY_TOKENS = (
     "job",
 )
 
+_PATH_REDACTION_PATTERNS = [
+    # Common absolute path patterns.
+    re.compile(r"/Users/\\S+"),
+    re.compile(r"/home/\\S+"),
+    re.compile(r"[A-Za-z]:\\\\\\S+"),
+    re.compile(r"file://\\S+"),
+]
+
 
 @dataclass
 class CopiedImage:
@@ -157,6 +165,13 @@ def safe_exc_str(exc: BaseException) -> str:
         inner = ", ".join(parts)
         return f"{exc.__class__.__name__}({inner})" if inner else exc.__class__.__name__
     return exc.__class__.__name__
+
+
+def redact_paths(text: str) -> str:
+    s = text
+    for pat in _PATH_REDACTION_PATTERNS:
+        s = pat.sub("<redacted>", s)
+    return s
 
 
 def slugify(text: str) -> str:
@@ -1130,12 +1145,13 @@ def render_markdown_report(
     plots: list[tuple[str, str]],
 ) -> str:
     now = dt.datetime.now(dt.timezone.utc)
+    motivation_clean = redact_paths(motivation).strip() if motivation else None
 
     lines: list[str] = []
     # Note: the Notion page title typically comes from the Markdown filename on import.
     # Avoid duplicating the title as an in-page H1.
     lines.append("## Purpose and scope")
-    lines.append(f"- motivation: {motivation.strip() if motivation else 'not provided'}")
+    lines.append(f"- motivation: {motivation_clean if motivation_clean else 'not provided'}")
     lines.append(f"- scope: {len(runs)} run(s) included; this report describes only these runs.")
     if base_run_name and config_keys:
         lines.append(f"- config baseline: {base_run_name}")
@@ -1304,6 +1320,8 @@ def render_html_report(
 ) -> str:
     now = dt.datetime.now(dt.timezone.utc)
     esc = html_escape
+    title_clean = redact_paths(title).strip() or "notion-report"
+    motivation_clean = redact_paths(motivation).strip() if motivation else None
 
     css = (
         "body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; "
@@ -1326,16 +1344,16 @@ def render_html_report(
     lines.append("<head>")
     lines.append('  <meta charset="utf-8" />')
     lines.append('  <meta name="viewport" content="width=device-width, initial-scale=1" />')
-    lines.append(f"  <title>{esc(title)}</title>")
+    lines.append(f"  <title>{esc(title_clean)}</title>")
     lines.append(f"  <style>{css}</style>")
     lines.append("</head>")
     lines.append("<body>")
     lines.append('  <div class="container">')
-    lines.append(f"  <h1>{esc(title)}</h1>")
+    lines.append(f"  <h1>{esc(title_clean)}</h1>")
     lines.append("<p>This report is an objective summary of the runs included below.</p>")
 
     lines.append("<ul>")
-    lines.append(f"<li>motivation: {esc(motivation.strip()) if motivation else 'not provided'}</li>")
+    lines.append(f"<li>motivation: {esc(motivation_clean) if motivation_clean else 'not provided'}</li>")
     lines.append(f"<li>scope: {len(runs)} run(s) included; this report describes only these runs.</li>")
     if base_run_name and config_keys:
         lines.append(f"<li>config baseline: <code>{esc(base_run_name)}</code></li>")
@@ -1529,7 +1547,7 @@ def default_out_html(*, title: str, base: Path) -> Path:
 def notion_page_md_filename(title: str) -> str:
     # Notion import uses the Markdown filename as the page title.
     # Keep it readable and filesystem-safe.
-    s = title.strip()
+    s = redact_paths(title).strip()
     s = s.replace("/", "-").replace("\\", "-")
     s = re.sub(r"[\x00-\x1f]", " ", s)
     s = re.sub(r"[<>:\"|?*]+", "-", s)
@@ -1543,7 +1561,7 @@ def notion_page_md_filename(title: str) -> str:
 
 def notion_page_html_filename(title: str) -> str:
     # Keep it readable and filesystem-safe.
-    s = title.strip()
+    s = redact_paths(title).strip()
     s = s.replace("/", "-").replace("\\", "-")
     s = re.sub(r"[\x00-\x1f]", " ", s)
     s = re.sub(r"[<>:\"|?*]+", "-", s)
@@ -1648,7 +1666,7 @@ def main(argv: list[str]) -> int:
             out_dir.mkdir(parents=True, exist_ok=False)
             out_html = out_dir / notion_page_html_filename(args.title)
         else:
-            out_html = default_out_html(title=args.title, base=base).resolve()
+            out_html = default_out_html(title=redact_paths(args.title), base=base).resolve()
             out_html.parent.mkdir(parents=True, exist_ok=True)
         if out_html.exists():
             eprint(f"[ERROR] Output HTML already exists: {out_html.name}")
@@ -1657,7 +1675,11 @@ def main(argv: list[str]) -> int:
         if args.out_html:
             eprint("[ERROR] --out-html is only valid for --format html.")
             return 2
-        out_dir = Path(args.out_dir).expanduser() if args.out_dir else default_out_dir(title=args.title, base=base)
+        out_dir = (
+            Path(args.out_dir).expanduser()
+            if args.out_dir
+            else default_out_dir(title=redact_paths(args.title), base=base)
+        )
         out_dir = out_dir.resolve()
         images_dir = out_dir / "images"
 
@@ -1936,8 +1958,8 @@ def main(argv: list[str]) -> int:
         )
 
     inventory = {
-        "title": args.title,
-        "motivation": args.motivation,
+        "title": redact_paths(args.title).strip(),
+        "motivation": redact_paths(args.motivation).strip() if args.motivation else None,
         "runs": inventory_runs,
         "selected_config_keys": selected_config_keys,
         "selected_metrics": selected_metrics,
