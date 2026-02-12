@@ -81,7 +81,7 @@ If the plan introduces or recommends a decision that should be durable, capture 
 
 - Treat `plan/` as short-term scratch and never commit it. Store the plan spec in `plan/current/` as the working artifact for the task.
 - If `plan/` is missing, create it with the required subdirectories only when edits are permitted; otherwise keep a lightweight in-memory log and state in the report that plan logging was not persisted.
-- Treat `docs/` as long-lived, evergreen guidance; prefer updating existing entries over adding new files.
+- Treat `docs/` as long-lived, evergreen guidance; prefer updating existing docs when they have a clear home, but create new focused docs/subdirectories when it improves navigability (and link them from related docs or indexes).
 - Avoid time- or date-dependent language in `docs/`; prefer timeless, evergreen wording.
 - If `docs/decisions.md` is missing, prefer using the `setup` skill to create it when allowed. If you cannot create docs, capture rationale in the smallest durable local place and call out the missing decision doc in the report.
 

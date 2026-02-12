@@ -49,7 +49,7 @@ Primary outcomes:
 - disposable scratch space for active work
 - explicit routing from scratch notes to durable docs
 - clear multi-workstream tracking for orchestrated/subagent workflows
-- a spartan default setup that stays lightweight and maintainable
+- a spartan default setup that stays lightweight and maintainable (while supporting a deeply structured, interlinked `docs/` over time)
 
 ## Behavioral guardrails (must follow)
 
@@ -78,6 +78,7 @@ If edits are not permitted (policy, permissions, or explicit user instruction), 
 
 Baseline model to install:
 - `docs/` stores durable, evergreen guidance and decisions.
+- `docs/` may be organized as a deep hierarchy (nested directories). Encourage cross-linking between docs using relative links and keep indexes current so docs are easy to navigate.
 - `plan/` stores disposable, task-scoped scratch notes and execution artifacts.
 - Decisions are captured in the smallest durable place, with policy in `docs/decisions.md`.
 - Notes are routed by purpose:
@@ -151,7 +152,7 @@ Use these templates when creating new files.
 # Repository Guidelines
 
 ## Docs, Plans, and Decisions (agent usage)
-- `docs/` is long-lived and committed.
+- `docs/` is long-lived and committed (and may use nested directories + cross-links to stay organized).
 - `plan/` is short-lived scratch space and is not committed.
 - Decision capture policy lives in `docs/decisions.md`.
 - Operating workflow conventions live in `docs/workflows.md`.
@@ -175,9 +176,10 @@ This directory holds long-term, agent-focused documentation for this repo. It is
 Principles:
 - Keep content evergreen and aligned with the codebase.
 - Avoid time- or date-dependent language.
-- Prefer updating existing docs over adding new files unless the content is clearly distinct.
+- Prefer updating existing docs when they have a clear home, but do not hesitate to create new focused docs and nested subdirectories when it improves organization and findability.
 - Use docs for cross-cutting context or rationale that does not belong in code comments or tests.
 - Keep entries concise and high-signal.
+- Make docs interrelate: use relative links between related docs and avoid orphan docs by linking new docs from an index or a nearby "parent" doc.
 
 Relationship to `/plan/`:
 - `/plan/` is a short-term, disposable scratch space for agents and is not committed to git.
