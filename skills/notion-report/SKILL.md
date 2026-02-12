@@ -14,6 +14,7 @@ The report must be:
 - scoped: only describe the runs/outputs explicitly included in this report
 - objective: state facts and evidence; avoid subjective tone and speculative future work
 - visual: prefer tables and plots over prose
+- self-contained terminology: do not use acronyms/project-specific terms without defining them
 
 Do not include subjective commentary (for example “promising”, “good/bad”, “I think”, “we believe”).
 When comparing runs, use objective phrasing (for example “higher/lower”, “delta”, “rank”, “span”, “percent difference”).
@@ -93,6 +94,8 @@ python3 "$NOTION_REPORT_CLI" \\
   --format html \\
   --title "Experiment report: <short name>" \\
   --motivation "<why this was run (1-2 sentences)>" \\
+  --define "PPO=Proximal Policy Optimization" \\
+  --define "DPS=<expand project-specific acronym>" \\
   --run /path/to/run_a \\
   --run /path/to/run_b
 ```

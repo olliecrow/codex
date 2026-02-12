@@ -105,10 +105,12 @@ SENSITIVE_CONFIG_KEY_TOKENS = (
 
 _PATH_REDACTION_PATTERNS = [
     # Common absolute path patterns.
-    re.compile(r"/Users/\\S+"),
-    re.compile(r"/home/\\S+"),
-    re.compile(r"[A-Za-z]:\\\\\\S+"),
-    re.compile(r"file://\\S+"),
+    re.compile(r"/Users/\S+"),
+    re.compile(r"/home/\S+"),
+    re.compile(r"[A-Za-z]:\\\S+"),
+    re.compile(r"file://\S+"),
+    # Common relative path patterns.
+    re.compile(r"\.{1,2}/\S+"),
 ]
 
 
@@ -172,6 +174,142 @@ def redact_paths(text: str) -> str:
     for pat in _PATH_REDACTION_PATTERNS:
         s = pat.sub("<redacted>", s)
     return s
+
+
+_ACRONYM_RE = re.compile(r"\b[A-Z][A-Z0-9]{1,}\b")
+
+# Keep this list short and only include definitions that are unambiguous.
+_KNOWN_TERMS: dict[str, tuple[str, str]] = {
+    "api": ("API", "Application Programming Interface"),
+    "cli": ("CLI", "Command-Line Interface"),
+    "cpu": ("CPU", "Central Processing Unit"),
+    "gpu": ("GPU", "Graphics Processing Unit"),
+    "html": ("HTML", "HyperText Markup Language"),
+    "json": ("JSON", "JavaScript Object Notation"),
+    "png": ("PNG", "Portable Network Graphics"),
+    "ppo": ("PPO", "Proximal Policy Optimization"),
+    "ram": ("RAM", "Random-access memory"),
+    "rl": ("RL", "Reinforcement Learning"),
+    "svg": ("SVG", "Scalable Vector Graphics"),
+    "toml": ("TOML", "Tom's Obvious, Minimal Language"),
+    "utc": ("UTC", "Coordinated Universal Time"),
+    "zip": ("ZIP", "ZIP archive format"),
+}
+
+
+def parse_term_definitions(raw: list[str]) -> dict[str, tuple[str, str]]:
+    out: dict[str, tuple[str, str]] = {}
+    for item in raw:
+        s = str(item).strip()
+        if not s:
+            continue
+        if "=" not in s:
+            raise ValueError(f"invalid --define (expected TERM=Definition): {s}")
+        term, definition = s.split("=", 1)
+        term = term.strip()
+        definition = redact_paths(definition).strip()
+        if not term or not definition:
+            raise ValueError(f"invalid --define (expected TERM=Definition): {s}")
+        norm = term.lower()
+        # Keep a stable display key (preserve caller term case if they provided it).
+        out[norm] = (term, definition)
+    return out
+
+
+def extract_term_candidates(text: str) -> dict[str, str]:
+    # Returns norm->display for any acronym-like tokens found.
+    out: dict[str, str] = {}
+    if not text:
+        return out
+    s = redact_paths(text)
+    for t in _ACRONYM_RE.findall(s):
+        out[t.lower()] = t
+    # Also detect known terms when they appear in lower case (e.g. "ppo").
+    for norm, (disp, _) in _KNOWN_TERMS.items():
+        if re.search(rf"\b{re.escape(norm)}\b", s, flags=re.IGNORECASE):
+            out[norm] = disp
+    return out
+
+
+def collect_report_terms(
+    *,
+    title: str,
+    motivation: str | None,
+    selected_metrics: list[str],
+    config_keys: list[str],
+    base_config: dict[str, str],
+    runs: list[RunInfo],
+) -> dict[str, str]:
+    out: dict[str, str] = {}
+    for norm, disp in extract_term_candidates(title).items():
+        out.setdefault(norm, disp)
+    if motivation:
+        for norm, disp in extract_term_candidates(motivation).items():
+            out.setdefault(norm, disp)
+    for m in selected_metrics:
+        for norm, disp in extract_term_candidates(m).items():
+            out.setdefault(norm, disp)
+    for k in config_keys:
+        for norm, disp in extract_term_candidates(k).items():
+            out.setdefault(norm, disp)
+    for k, v in base_config.items():
+        for norm, disp in extract_term_candidates(k).items():
+            out.setdefault(norm, disp)
+        for norm, disp in extract_term_candidates(v).items():
+            out.setdefault(norm, disp)
+    for r in runs:
+        for k, v in r.overrides.items():
+            for norm, disp in extract_term_candidates(k).items():
+                out.setdefault(norm, disp)
+            for norm, disp in extract_term_candidates(v).items():
+                out.setdefault(norm, disp)
+    return out
+
+
+def build_glossary_rows(
+    *,
+    terms: dict[str, str],
+    user_definitions: dict[str, tuple[str, str]],
+    allow_undefined: bool,
+) -> list[tuple[str, str]]:
+    # Returns [(display_term, definition), ...] sorted for rendering.
+    merged: dict[str, tuple[str, str]] = dict(_KNOWN_TERMS)
+    merged.update(user_definitions)
+
+    missing: list[str] = []
+    rows: list[tuple[str, str]] = []
+    for norm, disp in terms.items():
+        if norm in merged:
+            _, definition = merged[norm]
+            rows.append((disp, definition))
+        else:
+            missing.append(disp)
+            if allow_undefined:
+                rows.append((disp, "definition not provided"))
+
+    if missing and not allow_undefined:
+        missing_sorted = ", ".join(sorted(missing))
+        raise ValueError(
+            "undefined term(s) detected in report content: "
+            + missing_sorted
+            + ". Provide definitions via --define TERM=Definition (repeatable), or pass --allow-undefined-terms."
+        )
+
+    # Stable ordering.
+    rows.sort(key=lambda t: t[0].lower())
+    return rows
+
+
+def normalize_known_term_token(text: str) -> str:
+    # Normalize exact-token matches (e.g. "ppo" -> "PPO") for consistency with the glossary.
+    s = text.strip()
+    if not s:
+        return text
+    norm = s.lower()
+    if norm in _KNOWN_TERMS:
+        disp, _ = _KNOWN_TERMS[norm]
+        return disp
+    return text
 
 
 def slugify(text: str) -> str:
@@ -1045,7 +1183,7 @@ def copy_run_images(
             continue
         copied.append(CopiedImage(src_name=src.name, dst=f"images/{dst_name}"))
     if candidates_sorted and not copied:
-        warnings.append("found images but copied none (permissions/IO issues)")
+        warnings.append("found images but copied none (permissions/read errors)")
     return copied, warnings
 
 
@@ -1130,13 +1268,14 @@ def embed_run_images(
             img.src_name = src.name
             embedded.append(img)
     if candidates_sorted and not embedded:
-        warnings.append("found images but embedded none (skipped/IO issues)")
+        warnings.append("found images but embedded none (skipped/read errors)")
     return embedded, warnings
 
 
 def render_markdown_report(
     *,
     motivation: str | None,
+    glossary: list[tuple[str, str]],
     runs: list[RunInfo],
     base_run_name: str | None,
     base_config: dict[str, str],
@@ -1155,8 +1294,16 @@ def render_markdown_report(
     lines.append(f"- scope: {len(runs)} run(s) included; this report describes only these runs.")
     if base_run_name and config_keys:
         lines.append(f"- config baseline: {base_run_name}")
-    lines.append(f"- report generated (UTC): {now.isoformat(timespec='seconds')}")
+    lines.append(f"- report generated (Coordinated Universal Time, UTC): {now.isoformat(timespec='seconds')}")
     lines.append("")
+
+    if glossary:
+        lines.append("## Terms and abbreviations")
+        lines.append("| term | definition |")
+        lines.append("| --- | --- |")
+        for term, definition in glossary:
+            lines.append(f"| `{md_cell(term, max_len=40)}` | {md_cell(definition, max_len=140)} |")
+        lines.append("")
 
     lines.append("## What was run (inventory)")
     has_cfg_any = any(r.config_path for r in runs)
@@ -1179,7 +1326,7 @@ def render_markdown_report(
 
     if has_cfg_any:
         lines.append("## Run settings (condensed)")
-        lines.append("- configs are parsed from JSON/TOML when present.")
+        lines.append("- configs are parsed from JSON (JavaScript Object Notation) and TOML (Tom's Obvious, Minimal Language) when present.")
         lines.append("- path-like keys/values are omitted to avoid leaking local filesystem structure.")
         lines.append("")
         if base_run_name and config_keys:
@@ -1191,7 +1338,8 @@ def render_markdown_report(
                 v = base_config.get(k, "")
                 if not v:
                     continue
-                lines.append(f"| `{md_cell(k, max_len=72)}` | `{md_cell(v, max_len=96)}` |")
+                v_disp = normalize_known_term_token(v)
+                lines.append(f"| `{md_cell(k, max_len=72)}` | `{md_cell(v_disp, max_len=96)}` |")
             lines.append("")
 
             lines.append("### Overrides by run (vs baseline, shown keys only)")
@@ -1205,7 +1353,8 @@ def render_markdown_report(
                 for k in config_keys:
                     if k not in r.overrides:
                         continue
-                    parts.append(f"`{md_cell(k, max_len=48)}`=`{md_cell(r.overrides[k], max_len=72)}`")
+                    v_disp = normalize_known_term_token(r.overrides[k])
+                    parts.append(f"`{md_cell(k, max_len=48)}`=`{md_cell(v_disp, max_len=72)}`")
                 if parts:
                     lines.append(f"- {r.name}: " + "; ".join(parts))
             lines.append("")
@@ -1215,6 +1364,9 @@ def render_markdown_report(
 
     if selected_metrics:
         lines.append("## Metrics included")
+        lines.append("- metric names are taken from run artifacts. Common prefixes:")
+        lines.append("- `train/`: training")
+        lines.append("- `eval/`: evaluation")
         for m in selected_metrics:
             lines.append(f"- `{m}`")
         lines.append("")
@@ -1311,6 +1463,7 @@ def render_html_report(
     *,
     title: str,
     motivation: str | None,
+    glossary: list[tuple[str, str]],
     runs: list[RunInfo],
     base_run_name: str | None,
     base_config: dict[str, str],
@@ -1357,8 +1510,22 @@ def render_html_report(
     lines.append(f"<li>scope: {len(runs)} run(s) included; this report describes only these runs.</li>")
     if base_run_name and config_keys:
         lines.append(f"<li>config baseline: <code>{esc(base_run_name)}</code></li>")
-    lines.append(f"<li>report generated (UTC): <code>{esc(now.isoformat(timespec='seconds'))}</code></li>")
+    lines.append(
+        f"<li>report generated (Coordinated Universal Time, UTC): <code>{esc(now.isoformat(timespec='seconds'))}</code></li>"
+    )
     lines.append("</ul>")
+
+    if glossary:
+        lines.append("<h2>Terms and abbreviations</h2>")
+        lines.append("<table>")
+        lines.append("<thead><tr><th>term</th><th>definition</th></tr></thead>")
+        lines.append("<tbody>")
+        for term, definition in glossary:
+            lines.append("<tr>")
+            lines.append(f"<td><code>{esc(term)}</code></td>")
+            lines.append(f"<td>{esc(definition)}</td>")
+            lines.append("</tr>")
+        lines.append("</tbody></table>")
 
     lines.append("<h2>What was run (inventory)</h2>")
     has_cfg_any = any(r.config_path for r in runs)
@@ -1397,7 +1564,9 @@ def render_html_report(
     if has_cfg_any:
         lines.append("<h2>Run settings (condensed)</h2>")
         lines.append("<ul>")
-        lines.append("<li>configs are parsed from JSON/TOML when present.</li>")
+        lines.append(
+            "<li>configs are parsed from JSON (JavaScript Object Notation) and TOML (Tom's Obvious, Minimal Language) when present.</li>"
+        )
         lines.append("<li>path-like keys/values are omitted to avoid leaking local filesystem structure.</li>")
         lines.append("</ul>")
 
@@ -1411,9 +1580,10 @@ def render_html_report(
                 v = base_config.get(k, "")
                 if not v:
                     continue
+                v_disp = normalize_known_term_token(v)
                 lines.append("<tr>")
                 lines.append(f"<td><code>{esc(truncate_text(k, max_len=96))}</code></td>")
-                lines.append(f"<td><code>{esc(truncate_text(v, max_len=140))}</code></td>")
+                lines.append(f"<td><code>{esc(truncate_text(v_disp, max_len=140))}</code></td>")
                 lines.append("</tr>")
             lines.append("</tbody></table>")
 
@@ -1429,7 +1599,8 @@ def render_html_report(
                 for k in config_keys:
                     if k not in r.overrides:
                         continue
-                    parts.append(f"<code>{esc(truncate_text(k, max_len=64))}</code>=<code>{esc(truncate_text(r.overrides[k], max_len=96))}</code>")
+                    v_disp = normalize_known_term_token(r.overrides[k])
+                    parts.append(f"<code>{esc(truncate_text(k, max_len=64))}</code>=<code>{esc(truncate_text(v_disp, max_len=96))}</code>")
                 if parts:
                     lines.append(f"<li><code>{esc(r.name)}</code>: " + "; ".join(parts) + "</li>")
             lines.append("</ul>")
@@ -1438,6 +1609,7 @@ def render_html_report(
 
     if selected_metrics:
         lines.append("<h2>Metrics included</h2>")
+        lines.append("<p>Metric names are taken from run artifacts. Common prefixes: <code>train/</code>=training, <code>eval/</code>=evaluation.</p>")
         lines.append("<ul>")
         for m in selected_metrics:
             lines.append(f"<li><code>{esc(m)}</code></li>")
@@ -1598,6 +1770,19 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Generate a Notion-ready report from run artifacts.")
     p.add_argument("--title", required=True, help="Report title")
     p.add_argument("--motivation", help="1-2 sentence motivation for why these runs were executed")
+    p.add_argument(
+        "--define",
+        action="append",
+        default=[],
+        help="Define a term/acronym used in the report (repeatable), format: TERM=Definition. "
+        "Used to keep the report self-contained for readers unfamiliar with project-specific terminology.",
+    )
+    p.add_argument(
+        "--allow-undefined-terms",
+        action="store_true",
+        help="Allow undefined acronym-like terms in the report. When set, undefined terms are listed with 'definition not provided'. "
+        "By default, the script fails if it detects undefined terms.",
+    )
     p.add_argument(
         "--format",
         choices=["html", "zip", "dir"],
@@ -1839,6 +2024,32 @@ def main(argv: list[str]) -> int:
         max_metrics=max(0, int(args.max_metrics)),
     )
 
+    # Ensure the report is self-contained by defining acronym-like terms that appear
+    # in visible report content (title/motivation/metrics/config excerpts).
+    try:
+        user_defs = parse_term_definitions(list(getattr(args, "define", [])))
+    except ValueError as exc:
+        eprint(f"[ERROR] {exc}")
+        return 2
+
+    terms = collect_report_terms(
+        title=str(args.title),
+        motivation=args.motivation,
+        selected_metrics=selected_metrics,
+        config_keys=selected_config_keys,
+        base_config=base_config,
+        runs=runs,
+    )
+    try:
+        glossary = build_glossary_rows(
+            terms=terms,
+            user_definitions=user_defs,
+            allow_undefined=bool(getattr(args, "allow_undefined_terms", False)),
+        )
+    except ValueError as exc:
+        eprint(f"[ERROR] {exc}")
+        return 2
+
     if fmt == "html":
         plot_images: list[tuple[str, EmbeddedImage]] = []
         for metric in selected_metrics:
@@ -1875,6 +2086,7 @@ def main(argv: list[str]) -> int:
         report_html = render_html_report(
             title=args.title,
             motivation=args.motivation,
+            glossary=glossary,
             runs=runs,
             base_run_name=base_run_name,
             base_config=base_config,
@@ -1928,6 +2140,7 @@ def main(argv: list[str]) -> int:
 
     report_md = render_markdown_report(
         motivation=args.motivation,
+        glossary=glossary,
         runs=runs,
         base_run_name=base_run_name,
         base_config=base_config,
