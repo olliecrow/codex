@@ -1035,9 +1035,10 @@ def copy_run_images(
 
 
 def rank_image_candidates(files: list[Path]) -> list[Path]:
-    candidates: list[tuple[int, int, Path]] = []
+    candidates: list[tuple[int, int, int, Path]] = []
     for p in files:
-        if p.suffix.lower() not in IMAGE_EXTS:
+        ext = p.suffix.lower()
+        if ext not in IMAGE_EXTS:
             continue
         try:
             size = p.stat().st_size
@@ -1048,9 +1049,11 @@ def rank_image_candidates(files: list[Path]) -> list[Path]:
         priority = 0
         if any(tok in lower_parts for tok in ("plots", "figures", "images", "rollouts", "media", "videos")):
             priority -= 2
-        candidates.append((priority, size, p))
+        # Prefer raster images over svg for compatibility with some importers.
+        ext_priority = 1 if ext == ".svg" else 0
+        candidates.append((priority, ext_priority, size, p))
 
-    return [p for _, _, p in sorted(candidates, key=lambda t: (t[0], -t[1]))]
+    return [p for _, _, _, p in sorted(candidates, key=lambda t: (t[0], t[1], -t[2]))]
 
 
 def image_mime_type(path: Path) -> str | None:
