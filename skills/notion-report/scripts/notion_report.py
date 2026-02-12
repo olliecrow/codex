@@ -199,6 +199,89 @@ _KNOWN_TERMS: dict[str, tuple[str, str]] = {
 }
 
 
+def parse_metric_better(raw: list[str]) -> dict[str, str]:
+    # Returns metric_lower -> "high"|"low".
+    out: dict[str, str] = {}
+    for item in raw:
+        s = str(item).strip()
+        if not s:
+            continue
+        if "=" not in s:
+            raise ValueError(f"invalid --metric-better (expected METRIC=high|low): {s}")
+        metric, sense = s.split("=", 1)
+        metric = metric.strip()
+        sense = sense.strip().lower()
+        if not metric:
+            raise ValueError(f"invalid --metric-better (expected METRIC=high|low): {s}")
+        if sense in {"high", "higher", "maximize", "max", "up", "upward"}:
+            out[metric.lower()] = "high"
+            continue
+        if sense in {"low", "lower", "minimize", "min", "down", "downward"}:
+            out[metric.lower()] = "low"
+            continue
+        raise ValueError(f"invalid --metric-better sense (expected high|low): {s}")
+    return out
+
+
+def infer_metric_better(metric: str) -> str | None:
+    # Conservative heuristics; only returns a direction when it's likely unambiguous.
+    s = str(metric).strip().lower()
+    if not s:
+        return None
+    tokens = [t for t in re.split(r"[^a-z0-9]+", s) if t]
+
+    high_tokens = {
+        "return",
+        "reward",
+        "success",
+        "successrate",
+        "accuracy",
+        "acc",
+        "auc",
+        "score",
+        "throughput",
+        "fps",
+        "tps",
+        "sps",
+    }
+    low_tokens = {
+        "loss",
+        "error",
+        "mae",
+        "mse",
+        "rmse",
+        "kl",
+        "divergence",
+        "perplexity",
+        "ppl",
+        "latency",
+        "runtime",
+        "time",
+        "seconds",
+        "sec",
+        "ms",
+        "penalty",
+        "cost",
+        "regret",
+    }
+
+    high = any(t in high_tokens for t in tokens)
+    low = any(t in low_tokens for t in tokens)
+    if high and not low:
+        return "high"
+    if low and not high:
+        return "low"
+    return None
+
+
+def metric_better_phrase(better: str | None) -> str | None:
+    if better == "high":
+        return "higher is better"
+    if better == "low":
+        return "lower is better"
+    return None
+
+
 def parse_term_definitions(raw: list[str]) -> dict[str, tuple[str, str]]:
     out: dict[str, tuple[str, str]] = {}
     for item in raw:
@@ -1312,6 +1395,7 @@ def render_markdown_report(
     base_config: dict[str, str],
     config_keys: list[str],
     selected_metrics: list[str],
+    metric_better: dict[str, str],
     plots: list[tuple[str, str]],
 ) -> str:
     now = dt.datetime.now(dt.timezone.utc)
@@ -1441,16 +1525,18 @@ def render_markdown_report(
         lines.append("- prefixes: `train/`=training; `eval/`=evaluation")
         for m in selected_metrics:
             norm = m.strip().lower()
+            better_note = metric_better_phrase(metric_better.get(norm))
+            better_suffix = f" ({better_note})" if better_note else ""
             if norm in expander.defs:
                 disp, definition = expander.defs[norm]
                 if norm not in expander.seen and definition:
                     expander.seen.add(norm)
-                    lines.append(f"- `{disp}` ({definition})")
+                    lines.append(f"- `{disp}` ({definition}){better_suffix}")
                 else:
                     expander.seen.add(norm)
-                    lines.append(f"- `{disp}`")
+                    lines.append(f"- `{disp}`{better_suffix}")
             else:
-                lines.append(f"- `{m}`")
+                lines.append(f"- `{m}`{better_suffix}")
         lines.append("")
 
     lines.append("## Results overview (final values)")
@@ -1487,6 +1573,8 @@ def render_markdown_report(
             present = [(r.name, r.finals[m]) for r in runs if m in r.finals]
             if len(present) < 2:
                 continue
+            note = metric_better_phrase(metric_better.get(m.strip().lower()))
+            note_suffix = f" ({note})" if note else ""
             present_sorted = sorted(present, key=lambda t: t[1])
             min_run, min_val = present_sorted[0]
             max_run, max_val = present_sorted[-1]
@@ -1494,7 +1582,7 @@ def render_markdown_report(
             pct = None if min_val == 0 else (delta / abs(min_val)) * 100.0
             pct_str = f", {pct:.2f}%" if pct is not None else ""
             lines.append(
-                f"- `{m}`: final values span {format_float(min_val)} ({min_run}) to {format_float(max_val)} ({max_run}); delta {format_float(delta)}{pct_str}."
+                f"- `{m}`{note_suffix}: final values span {format_float(min_val)} ({min_run}) to {format_float(max_val)} ({max_run}); delta {format_float(delta)}{pct_str}."
             )
     lines.append("")
 
@@ -1551,6 +1639,7 @@ def render_html_report(
     base_config: dict[str, str],
     config_keys: list[str],
     selected_metrics: list[str],
+    metric_better: dict[str, str],
     plot_images: list[tuple[str, EmbeddedImage]],
 ) -> str:
     now = dt.datetime.now(dt.timezone.utc)
@@ -1730,16 +1819,18 @@ def render_html_report(
         lines.append("<li>prefixes: <code>train/</code>=training; <code>eval/</code>=evaluation</li>")
         for m in selected_metrics:
             norm = m.strip().lower()
+            better_note = metric_better_phrase(metric_better.get(norm))
+            better_suffix = f" ({esc(better_note)})" if better_note else ""
             if norm in expander.defs:
                 disp, definition = expander.defs[norm]
                 if norm not in expander.seen and definition:
                     expander.seen.add(norm)
-                    lines.append(f"<li><code>{esc(disp)}</code> ({esc(definition)})</li>")
+                    lines.append(f"<li><code>{esc(disp)}</code> ({esc(definition)}){better_suffix}</li>")
                 else:
                     expander.seen.add(norm)
-                    lines.append(f"<li><code>{esc(disp)}</code></li>")
+                    lines.append(f"<li><code>{esc(disp)}</code>{better_suffix}</li>")
             else:
-                lines.append(f"<li><code>{esc(m)}</code></li>")
+                lines.append(f"<li><code>{esc(m)}</code>{better_suffix}</li>")
         lines.append("</ul>")
 
     lines.append("<h2>Results overview (final values)</h2>")
@@ -1778,6 +1869,8 @@ def render_html_report(
             present = [(r.name, r.finals[m]) for r in runs if m in r.finals]
             if len(present) < 2:
                 continue
+            note = metric_better_phrase(metric_better.get(m.strip().lower()))
+            note_suffix = f" ({esc(note)})" if note else ""
             present_sorted = sorted(present, key=lambda t: t[1])
             min_run, min_val = present_sorted[0]
             max_run, max_val = present_sorted[-1]
@@ -1785,7 +1878,7 @@ def render_html_report(
             pct = None if min_val == 0 else (delta / abs(min_val)) * 100.0
             pct_str = f", {pct:.2f}%" if pct is not None else ""
             items.append(
-                f"<li><code>{esc(m)}</code>: final values span {esc(format_float(min_val))} ({esc(min_run)}) to "
+                f"<li><code>{esc(m)}</code>{note_suffix}: final values span {esc(format_float(min_val))} ({esc(min_run)}) to "
                 f"{esc(format_float(max_val))} ({esc(max_run)}); delta {esc(format_float(delta))}{esc(pct_str)}.</li>"
             )
         if items:
@@ -1927,6 +2020,13 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="DEPRECATED: Do not create a Notion import zip (equivalent to --format dir).",
     )
     p.add_argument("--metric", action="append", default=[], help="Metric name to include/plot (repeatable)")
+    p.add_argument(
+        "--metric-better",
+        action="append",
+        default=[],
+        help="Specify whether higher or lower is better for a metric (repeatable), format: METRIC=high|low. "
+        "If omitted, the script uses conservative name-based heuristics and may leave direction unspecified.",
+    )
     p.add_argument("--max-metrics", type=int, default=DEFAULT_MAX_METRICS)
     p.add_argument("--max-config-keys", type=int, default=DEFAULT_MAX_CONFIG_KEYS)
     p.add_argument("--max-config-bytes", type=int, default=DEFAULT_MAX_CONFIG_BYTES)
@@ -2151,6 +2251,19 @@ def main(argv: list[str]) -> int:
         max_metrics=max(0, int(args.max_metrics)),
     )
 
+    try:
+        metric_better_overrides = parse_metric_better(list(getattr(args, "metric_better", [])))
+    except ValueError as exc:
+        eprint(f"[ERROR] {exc}")
+        return 2
+
+    metric_better: dict[str, str] = {}
+    for m in selected_metrics:
+        norm = m.strip().lower()
+        better = metric_better_overrides.get(norm) or infer_metric_better(m)
+        if better in {"high", "low"}:
+            metric_better[norm] = better
+
     # Ensure the report is self-contained by defining acronym-like terms that appear
     # in visible report content (title/motivation/metrics/config excerpts/warnings).
     try:
@@ -2192,6 +2305,8 @@ def main(argv: list[str]) -> int:
     if fmt == "html":
         plot_images: list[tuple[str, EmbeddedImage]] = []
         for metric in selected_metrics:
+            better_note = metric_better_phrase(metric_better.get(metric.strip().lower()))
+            better_suffix = f" ({better_note})" if better_note else ""
             series_by_run: list[tuple[str, list[tuple[float, float]]]] = []
             for r in runs:
                 pts = r.series.get(metric)
@@ -2207,7 +2322,7 @@ def main(argv: list[str]) -> int:
                     label_base=f"plot_metric_{metric_slug}_overlay",
                 )
                 if img is not None:
-                    plot_images.append((f"{metric} vs step", img))
+                    plot_images.append((f"{metric} vs step{better_suffix}", img))
 
             values = [(r.name, r.finals[metric]) for r in runs if metric in r.finals]
             if values:
@@ -2219,7 +2334,7 @@ def main(argv: list[str]) -> int:
                     label_base=f"plot_metric_{metric_slug}_final",
                 )
                 if img is not None:
-                    plot_images.append((f"{metric} final values", img))
+                    plot_images.append((f"{metric} final values{better_suffix}", img))
 
         assert out_html is not None
         report_html = render_html_report(
@@ -2231,6 +2346,7 @@ def main(argv: list[str]) -> int:
             base_config=base_config,
             config_keys=selected_config_keys,
             selected_metrics=selected_metrics,
+            metric_better=metric_better,
             plot_images=plot_images,
         )
         out_html.write_text(report_html, encoding="utf-8")
@@ -2242,6 +2358,8 @@ def main(argv: list[str]) -> int:
 
     plots: list[tuple[str, str]] = []
     for metric in selected_metrics:
+        better_note = metric_better_phrase(metric_better.get(metric.strip().lower()))
+        better_suffix = f" ({better_note})" if better_note else ""
         # overlay line plot (requires series points)
         series_by_run: list[tuple[str, list[tuple[float, float]]]] = []
         for r in runs:
@@ -2260,7 +2378,7 @@ def main(argv: list[str]) -> int:
                 out_path=overlay_path,
             )
             if ok:
-                plots.append((f"{metric} vs step", f"images/{overlay_name}"))
+                plots.append((f"{metric} vs step{better_suffix}", f"images/{overlay_name}"))
 
         # final-value bar chart (requires finals)
         values = [(r.name, r.finals[metric]) for r in runs if metric in r.finals]
@@ -2275,7 +2393,7 @@ def main(argv: list[str]) -> int:
                 out_path=bar_path,
             )
             if ok:
-                plots.append((f"{metric} final values", f"images/{bar_name}"))
+                plots.append((f"{metric} final values{better_suffix}", f"images/{bar_name}"))
 
     report_md = render_markdown_report(
         title=args.title,
@@ -2286,6 +2404,7 @@ def main(argv: list[str]) -> int:
         base_config=base_config,
         config_keys=selected_config_keys,
         selected_metrics=selected_metrics,
+        metric_better=metric_better,
         plots=plots,
     )
 
