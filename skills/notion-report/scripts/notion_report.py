@@ -17,7 +17,8 @@ import os
 import re
 import shutil
 import sys
-from dataclasses import asdict, dataclass, field
+import zipfile
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -65,21 +66,51 @@ STEP_KEYS = [
     "time",
 ]
 
+SENSITIVE_CONFIG_KEY_TOKENS = (
+    "path",
+    "dir",
+    "file",
+    "output",
+    "log",
+    "logging",
+    "checkpoint",
+    "ckpt",
+    "save",
+    "load",
+    "resume",
+    "artifact",
+    "cache",
+    "wandb",
+    "tensorboard",
+    "tb",
+    "hostname",
+    "host",
+    "user",
+    "username",
+    "machine",
+    "node",
+    "slurm",
+    "job",
+)
+
 
 @dataclass
 class CopiedImage:
-    src: str
+    src_name: str
     dst: str
 
 
 @dataclass
 class RunInfo:
+    # Public label used in the report/zip. Avoid leaking local dir names.
     name: str
+    # Internal: used for IO only. Never include in the report/zip.
     path: str
+    source_dir_name: str
     config_path: str | None = None
-    command_path: str | None = None
-    command: str | None = None
+    config_type: str | None = None
     config_summary: dict[str, str] = field(default_factory=dict)
+    overrides: dict[str, str] = field(default_factory=dict)
     metrics_timeseries_path: str | None = None
     metrics_summary_path: str | None = None
     step_key: str | None = None
@@ -94,6 +125,19 @@ class RunInfo:
 
 def eprint(msg: str) -> None:
     print(msg, file=sys.stderr)
+
+
+def safe_exc_str(exc: BaseException) -> str:
+    # Avoid leaking local paths that may appear in exception stringification.
+    if isinstance(exc, OSError):
+        parts: list[str] = []
+        if getattr(exc, "errno", None) is not None:
+            parts.append(f"errno={exc.errno}")
+        if getattr(exc, "strerror", None):
+            parts.append(str(exc.strerror))
+        inner = ", ".join(parts)
+        return f"{exc.__class__.__name__}({inner})" if inner else exc.__class__.__name__
+    return exc.__class__.__name__
 
 
 def slugify(text: str) -> str:
@@ -132,6 +176,29 @@ def try_float(val: Any) -> float | None:
             return None
         return f
     return None
+
+
+def is_sensitive_config_key(key: str) -> bool:
+    lower = key.lower()
+    return any(tok in lower for tok in SENSITIVE_CONFIG_KEY_TOKENS)
+
+
+def looks_like_private_path_value(text: str) -> bool:
+    s = text.strip()
+    if not s:
+        return False
+    if "://" in s:
+        return True
+    if s.startswith(("~", "/")):
+        return True
+    if re.match(r"^[A-Za-z]:[\\\\/]", s):
+        return True
+    if "\\\\" in s:
+        return True
+    # Common macOS/Linux home patterns.
+    if "/users/" in s.lower() or "/home/" in s.lower():
+        return True
+    return False
 
 
 def flatten_dict(obj: Any, prefix: str = "") -> dict[str, Any]:
@@ -187,7 +254,7 @@ def read_jsonl(path: Path, *, max_records: int) -> tuple[list[dict[str, Any]], l
         with path.open("r", encoding="utf-8") as f:
             for idx, line in enumerate(f):
                 if idx >= max_records:
-                    warnings.append(f"metrics file truncated at {max_records} records: {path}")
+                    warnings.append(f"metrics file truncated at {max_records} records: {path.name}")
                     break
                 line = line.strip()
                 if not line:
@@ -199,7 +266,7 @@ def read_jsonl(path: Path, *, max_records: int) -> tuple[list[dict[str, Any]], l
                 if isinstance(obj, dict):
                     records.append(flatten_dict(obj))
     except OSError as exc:
-        warnings.append(f"failed to read metrics jsonl {path}: {exc}")
+        warnings.append(f"failed to read metrics jsonl '{path.name}': {safe_exc_str(exc)}")
     return records, warnings
 
 
@@ -211,11 +278,11 @@ def read_csv(path: Path, *, max_records: int) -> tuple[list[dict[str, Any]], lis
             reader = csv.DictReader(f)
             for idx, row in enumerate(reader):
                 if idx >= max_records:
-                    warnings.append(f"metrics file truncated at {max_records} records: {path}")
+                    warnings.append(f"metrics file truncated at {max_records} records: {path.name}")
                     break
                 records.append({k: v for k, v in row.items()})
     except OSError as exc:
-        warnings.append(f"failed to read metrics csv {path}: {exc}")
+        warnings.append(f"failed to read metrics csv '{path.name}': {safe_exc_str(exc)}")
     return records, warnings
 
 
@@ -322,67 +389,30 @@ def discover_config_file(run_dir: Path, files: list[Path]) -> Path | None:
     )
 
 
-def discover_command_file(run_dir: Path, files: list[Path]) -> Path | None:
-    candidates: list[Path] = []
-    for p in files:
-        name = p.name.lower()
-        if name in {
-            "command.txt",
-            "cmd.txt",
-            "argv.txt",
-            "run_command.txt",
-            "commandline.txt",
-        }:
-            candidates.append(p)
-
-    if not candidates:
-        return None
-    # Prefer files closest to the run root.
-    return sorted(candidates, key=lambda p: (len(p.relative_to(run_dir).parts), p.stat().st_size))[0]
-
-
-def read_first_line(path: Path, *, max_bytes: int) -> tuple[str | None, list[str]]:
-    warnings: list[str] = []
-    try:
-        with path.open("rb") as f:
-            data = f.read(max_bytes + 1)
-    except OSError as exc:
-        return None, [f"failed to read {path}: {exc}"]
-    if len(data) > max_bytes:
-        warnings.append(f"file truncated at {max_bytes} bytes: {path}")
-        data = data[:max_bytes]
-    try:
-        text = data.decode("utf-8", errors="replace")
-    except Exception as exc:  # pragma: no cover
-        return None, [f"failed to decode {path} as utf-8: {exc}"]
-    line = text.splitlines()[0].strip() if text.splitlines() else ""
-    return (line or None), warnings
-
-
 def read_config(path: Path, *, max_bytes: int) -> tuple[dict[str, Any], list[str]]:
     warnings: list[str] = []
     try:
         size = path.stat().st_size
     except OSError as exc:
-        return {}, [f"failed to stat config {path}: {exc}"]
+        return {}, [f"failed to stat config '{path.name}': {safe_exc_str(exc)}"]
     if size > max_bytes:
-        return {}, [f"skipped config >{max_bytes} bytes: {path} ({size} bytes)"]
+        return {}, [f"skipped config >{max_bytes} bytes: {path.name} ({size} bytes)"]
 
     try:
         raw = path.read_bytes()
     except OSError as exc:
-        return {}, [f"failed to read config {path}: {exc}"]
+        return {}, [f"failed to read config '{path.name}': {safe_exc_str(exc)}"]
 
     suffix = path.suffix.lower()
     if suffix == ".json":
         try:
             obj = json.loads(raw.decode("utf-8"))
         except UnicodeDecodeError as exc:
-            return {}, [f"failed to decode json config {path}: {exc}"]
+            return {}, [f"failed to decode json config '{path.name}': {safe_exc_str(exc)}"]
         except json.JSONDecodeError as exc:
-            return {}, [f"failed to parse json config {path}: {exc}"]
+            return {}, [f"failed to parse json config '{path.name}': {safe_exc_str(exc)}"]
         if not isinstance(obj, dict):
-            return {}, [f"json config is not an object/dict: {path}"]
+            return {}, [f"json config is not an object/dict: {path.name}"]
         return obj, warnings
 
     if suffix == ".toml":
@@ -391,14 +421,14 @@ def read_config(path: Path, *, max_bytes: int) -> tuple[dict[str, Any], list[str
         try:
             obj = tomllib.loads(raw.decode("utf-8"))
         except UnicodeDecodeError as exc:
-            return {}, [f"failed to decode toml config {path}: {exc}"]
+            return {}, [f"failed to decode toml config '{path.name}': {safe_exc_str(exc)}"]
         except Exception as exc:
-            return {}, [f"failed to parse toml config {path}: {exc}"]
+            return {}, [f"failed to parse toml config '{path.name}': {safe_exc_str(exc)}"]
         if not isinstance(obj, dict):
-            return {}, [f"toml config is not a dict: {path}"]
+            return {}, [f"toml config is not a dict: {path.name}"]
         return obj, warnings
 
-    return {}, [f"unsupported config type (expected .json or .toml): {path}"]
+    return {}, [f"unsupported config type (expected .json or .toml): {path.name}"]
 
 
 def config_value_to_str(val: Any) -> str | None:
@@ -408,6 +438,8 @@ def config_value_to_str(val: Any) -> str | None:
             return None
         if isinstance(val, str):
             s = val.strip().replace("\n", " ")
+            if looks_like_private_path_value(s):
+                return None
             return s if s else None
         if isinstance(val, float):
             return format_float(val)
@@ -465,15 +497,53 @@ def select_config_keys(
     return ranked[:max_keys]
 
 
+def select_config_keys_for_overrides(
+    configs_by_run: list[dict[str, str]],
+    *,
+    base_config: dict[str, str],
+    max_keys: int,
+) -> list[str]:
+    all_keys: set[str] = set()
+    for cfg in configs_by_run:
+        all_keys.update(cfg.keys())
+    if not all_keys or max_keys <= 0:
+        return []
+
+    diff_counts: dict[str, int] = {}
+    for k in all_keys:
+        base_v = base_config.get(k)
+        diff = 0
+        for cfg in configs_by_run:
+            v = cfg.get(k)
+            if v is None:
+                continue
+            if base_v is None:
+                diff += 1
+            elif v != base_v:
+                diff += 1
+        diff_counts[k] = diff
+
+    ranked = sorted(
+        all_keys,
+        key=lambda k: (
+            1 if diff_counts.get(k, 0) > 0 else 0,
+            diff_counts.get(k, 0),
+            score_config_key(k),
+        ),
+        reverse=True,
+    )
+    return ranked[:max_keys]
+
+
 def read_summary_json(path: Path) -> tuple[dict[str, float], list[str]]:
     warnings: list[str] = []
     out: dict[str, float] = {}
     try:
         obj = json.loads(path.read_text(encoding="utf-8"))
     except OSError as exc:
-        return {}, [f"failed to read summary json {path}: {exc}"]
+        return {}, [f"failed to read summary json '{path.name}': {safe_exc_str(exc)}"]
     except json.JSONDecodeError as exc:
-        return {}, [f"failed to parse summary json {path}: {exc}"]
+        return {}, [f"failed to parse summary json '{path.name}': {safe_exc_str(exc)}"]
 
     flat = flatten_dict(obj)
     for k, v in flat.items():
@@ -485,7 +555,7 @@ def read_summary_json(path: Path) -> tuple[dict[str, float], list[str]]:
         out[k] = f
 
     if not out:
-        warnings.append(f"no numeric fields found in summary json: {path}")
+        warnings.append(f"no numeric fields found in summary json: {path.name}")
     return out, warnings
 
 
@@ -539,13 +609,6 @@ def format_float(val: float | None) -> str:
     if abs(val) >= 100:
         return f"{val:.2f}"
     return f"{val:.4f}".rstrip("0").rstrip(".")
-
-
-def try_relpath(path: Path, *, base: Path) -> str:
-    try:
-        return str(path.relative_to(base))
-    except ValueError:
-        return str(path)
 
 
 def md_cell(text: str, *, max_len: int = 80) -> str:
@@ -772,11 +835,10 @@ def svg_bar_chart(
 def copy_run_images(
     *,
     run_dir: Path,
-    run_name: str,
+    run_label: str,
     files: list[Path],
     images_dir: Path,
     max_images: int,
-    base: Path,
 ) -> tuple[list[CopiedImage], list[str]]:
     warnings: list[str] = []
     candidates: list[tuple[int, int, Path]] = []
@@ -795,102 +857,46 @@ def copy_run_images(
     copied: list[CopiedImage] = []
     for idx, src in enumerate(selected, start=1):
         ext = src.suffix.lower()
-        dst_name = f"run_{sanitize_filename(run_name)}_image_{idx:02d}{ext}"
+        dst_name = f"{sanitize_filename(run_label)}_image_{idx:02d}{ext}"
         dst = images_dir / dst_name
         try:
             shutil.copy2(src, dst)
         except OSError as exc:
-            warnings.append(f"failed to copy image {src}: {exc}")
+            warnings.append(f"failed to copy image '{src.name}': {safe_exc_str(exc)}")
             continue
-        copied.append(CopiedImage(src=try_relpath(src, base=base), dst=f"images/{dst_name}"))
+        copied.append(CopiedImage(src_name=src.name, dst=f"images/{dst_name}"))
     if candidates_sorted and not copied:
-        warnings.append(f"found images but copied none (permissions/IO issues) for run: {run_dir}")
+        warnings.append("found images but copied none (permissions/IO issues)")
     return copied, warnings
 
 
 def render_markdown_report(
     *,
-    title: str,
     motivation: str | None,
-    out_dir: Path,
     runs: list[RunInfo],
-    selected_config_keys: list[str],
+    base_run_name: str | None,
+    base_config: dict[str, str],
+    config_keys: list[str],
     selected_metrics: list[str],
     plots: list[tuple[str, str]],
-    base: Path,
 ) -> str:
-    now = dt.datetime.now().astimezone()
-    out_rel = try_relpath(out_dir, base=base)
+    now = dt.datetime.now(dt.timezone.utc)
 
     lines: list[str] = []
-    lines.append(f"# {title}")
-    lines.append("")
+    # Note: the Notion page title typically comes from the Markdown filename on import.
+    # Avoid duplicating the title as an in-page H1.
     lines.append("## Purpose and scope")
     lines.append(f"- motivation: {motivation.strip() if motivation else 'not provided'}")
     lines.append(f"- scope: {len(runs)} run(s) included; this report describes only these runs.")
-    lines.append(f"- report artifacts: `{out_rel}`")
-    lines.append("")
-    lines.append("## Visual placeholders")
-    lines.append("- image placeholders are written as `[[INSERT IMAGE: path]]`.")
-    lines.append("- insert the referenced file from `images/` at that location in Notion.")
-    lines.append("")
-    lines.append("## What was run")
-    lines.append("| run | path | config | command | metrics source | records | copied visuals | warnings |")
-    lines.append("| --- | --- | --- | --- | --- | --- | --- | --- |")
-    for r in runs:
-        metrics_src = ""
-        if r.metrics_timeseries_path:
-            metrics_src = try_relpath(Path(r.metrics_timeseries_path), base=base)
-        elif r.metrics_summary_path:
-            metrics_src = try_relpath(Path(r.metrics_summary_path), base=base)
-        config_src = try_relpath(Path(r.config_path), base=base) if r.config_path else ""
-        cmd_src = try_relpath(Path(r.command_path), base=base) if r.command_path else ""
-        n_records = str(r.n_records) if r.n_records is not None else ""
-        visuals = str(len(r.copied_images))
-        warnings = md_cell("; ".join(r.warnings), max_len=120) if r.warnings else ""
-        config_cell = f"`{config_src}`" if config_src else ""
-        cmd_cell = f"`{cmd_src}`" if cmd_src else ""
-        metrics_cell = f"`{metrics_src}`" if metrics_src else ""
-        lines.append(
-            f"| {r.name} | `{try_relpath(Path(r.path), base=base)}` | {config_cell} | {cmd_cell} | {metrics_cell} | {n_records} | {visuals} | {warnings} |"
-        )
+    if base_run_name and config_keys:
+        lines.append(f"- config baseline: {base_run_name}")
+    lines.append(f"- report generated (UTC): {now.isoformat(timespec='seconds')}")
     lines.append("")
 
-    any_commands = any(r.command for r in runs)
-    any_config = any(r.config_summary for r in runs)
-    if any_commands or any_config:
-        lines.append("## Run settings (condensed)")
-        if any_commands:
-            lines.append("- commands (first line):")
-            for r in runs:
-                if not r.command:
-                    continue
-                lines.append(f"  - {r.name}: `{md_cell(r.command, max_len=200)}`")
-        if selected_config_keys and any_config:
-            if len(runs) <= 6:
-                header = ["key"] + [r.name for r in runs]
-                lines.append("")
-                lines.append("- key settings (from parsed JSON/TOML configs):")
-                lines.append("| " + " | ".join(header) + " |")
-                lines.append("| " + " | ".join(["---"] * len(header)) + " |")
-                for key in selected_config_keys:
-                    row = [f"`{md_cell(key, max_len=64)}`"]
-                    for r in runs:
-                        val = r.config_summary.get(key, "")
-                        row.append(f"`{md_cell(val, max_len=48)}`" if val else "")
-                    lines.append("| " + " | ".join(row) + " |")
-            else:
-                lines.append("")
-                lines.append("- key settings (from parsed JSON/TOML configs):")
-                for r in runs:
-                    if not r.config_summary:
-                        continue
-                    lines.append(f"  - {r.name}:")
-                    for k in selected_config_keys:
-                        v = r.config_summary.get(k)
-                        if v is None:
-                            continue
-                        lines.append(f"    - `{k}`: `{md_cell(v, max_len=80)}`")
+    if selected_metrics:
+        lines.append("## Metrics included")
+        for m in selected_metrics:
+            lines.append(f"- `{m}`")
         lines.append("")
 
     lines.append("## Results overview (final values)")
@@ -908,29 +914,69 @@ def render_markdown_report(
             lines.append("| " + " | ".join(row) + " |")
         lines.append("")
 
-    lines.append("## Comparisons (insert plots)")
+    lines.append("## What was run (inventory)")
+    has_cfg_any = any(r.config_path for r in runs)
+    has_cfg_baseline = bool(base_run_name and config_keys)
+    overrides_header = "overrides vs baseline" if has_cfg_baseline else "overrides"
+    lines.append(f"| run | config | {overrides_header} | records | selected metrics present | visuals | warnings |")
+    lines.append("| --- | --- | --- | --- | --- | --- | --- |")
+    for r in runs:
+        has_cfg = "yes" if r.config_path else "no"
+        overrides = str(len(r.overrides)) if has_cfg_baseline else ""
+        records = str(r.n_records) if r.n_records is not None else ""
+        present = ""
+        if selected_metrics:
+            present_n = sum(1 for m in selected_metrics if m in r.finals)
+            present = f"{present_n}/{len(selected_metrics)}"
+        visuals = str(len(r.copied_images))
+        warnings = md_cell("; ".join(r.warnings), max_len=120) if r.warnings else ""
+        lines.append(f"| {r.name} | {has_cfg} | {overrides} | {records} | {present} | {visuals} | {warnings} |")
+    lines.append("")
+
+    if has_cfg_any:
+        lines.append("## Run settings (condensed)")
+        lines.append("- configs are parsed from JSON/TOML when present.")
+        lines.append("- path-like keys/values are omitted to avoid leaking local filesystem structure.")
+        lines.append("")
+        if base_run_name and config_keys:
+            lines.append("### Baseline config (key subset)")
+            lines.append(f"- baseline run: {base_run_name}")
+            lines.append("| key | baseline |")
+            lines.append("| --- | --- |")
+            for k in config_keys:
+                v = base_config.get(k, "")
+                if not v:
+                    continue
+                lines.append(f"| `{md_cell(k, max_len=72)}` | `{md_cell(v, max_len=96)}` |")
+            lines.append("")
+
+            lines.append("### Overrides by run (vs baseline, shown keys only)")
+            for r in runs:
+                if not r.config_path:
+                    continue
+                if not r.overrides:
+                    lines.append(f"- {r.name}: no overrides vs baseline for shown keys.")
+                    continue
+                parts: list[str] = []
+                for k in config_keys:
+                    if k not in r.overrides:
+                        continue
+                    parts.append(f"`{md_cell(k, max_len=48)}`=`{md_cell(r.overrides[k], max_len=72)}`")
+                if parts:
+                    lines.append(f"- {r.name}: " + "; ".join(parts))
+            lines.append("")
+        else:
+            lines.append("- configs were present, but no baseline/overrides were computed.")
+            lines.append("")
+
+    lines.append("## Comparisons (plots)")
     if not plots:
         lines.append("- no plots were generated (no suitable timeseries/final metrics).")
         lines.append("")
     else:
         for caption, rel_path in plots:
-            lines.append(f"- [[INSERT IMAGE: {rel_path}]]")
-            lines.append(f"  - caption: {caption}")
-        lines.append("")
-
-    lines.append("## Per-run visuals (insert images)")
-    any_visuals = any(r.copied_images for r in runs)
-    if not any_visuals:
-        lines.append("- no run-provided images were copied into this report output.")
-        lines.append("")
-    else:
-        for r in runs:
-            if not r.copied_images:
-                continue
-            lines.append(f"### {r.name}")
-            for img in r.copied_images:
-                lines.append(f"- [[INSERT IMAGE: {img.dst}]]")
-                lines.append(f"  - source: `{img.src}`")
+            lines.append(f"### {caption}")
+            lines.append(f"![]({rel_path})")
             lines.append("")
 
     lines.append("## Insights and conclusions (objective)")
@@ -953,6 +999,20 @@ def render_markdown_report(
             )
     lines.append("")
 
+    lines.append("## Per-run visuals")
+    any_visuals = any(r.copied_images for r in runs)
+    if not any_visuals:
+        lines.append("- no run-provided images were copied into this report output.")
+        lines.append("")
+    else:
+        for r in runs:
+            if not r.copied_images:
+                continue
+            lines.append(f"### {r.name}")
+            for img in r.copied_images:
+                lines.append(f"![]({img.dst})")
+            lines.append("")
+
     lines.append("## Limitations / missing data")
     missing: list[str] = []
     if not motivation:
@@ -960,23 +1020,12 @@ def render_markdown_report(
     for r in runs:
         if not r.finals:
             missing.append(f"- {r.name}: no numeric metrics extracted.")
+        if has_cfg_any and not r.config_path:
+            missing.append(f"- {r.name}: no JSON/TOML config discovered.")
     if missing:
         lines.extend(missing)
     else:
         lines.append("- none identified from extracted artifacts.")
-    lines.append("")
-
-    lines.append("## Data sources (for reproducibility)")
-    lines.append(f"- report generated: {now.isoformat(timespec='seconds')}")
-    for r in runs:
-        if r.metrics_timeseries_path:
-            lines.append(f"- {r.name} timeseries: `{try_relpath(Path(r.metrics_timeseries_path), base=base)}`")
-        if r.metrics_summary_path:
-            lines.append(f"- {r.name} summary: `{try_relpath(Path(r.metrics_summary_path), base=base)}`")
-        if r.config_path:
-            lines.append(f"- {r.name} config: `{try_relpath(Path(r.config_path), base=base)}`")
-        if r.command_path:
-            lines.append(f"- {r.name} command file: `{try_relpath(Path(r.command_path), base=base)}`")
     lines.append("")
 
     return "\n".join(lines)
@@ -988,12 +1037,50 @@ def default_out_dir(*, title: str, base: Path) -> Path:
     return base / "plan" / "artifacts" / "notion-report" / f"{stamp}_{slug}"
 
 
+def notion_page_md_filename(title: str) -> str:
+    # Notion import uses the Markdown filename as the page title.
+    # Keep it readable and filesystem-safe.
+    s = title.strip()
+    s = s.replace("/", "-").replace("\\", "-")
+    s = re.sub(r"[\x00-\x1f]", " ", s)
+    s = re.sub(r"[<>:\"|?*]+", "-", s)
+    s = re.sub(r"\\s+", " ", s).strip()
+    if not s:
+        s = "notion-report"
+    if len(s) > 100:
+        s = s[:100].rstrip()
+    return f"{s}.md"
+
+
+def write_notion_import_zip(*, out_dir: Path, title: str, out_zip: Path | None) -> Path:
+    report_md = out_dir / "report.md"
+    images_dir = out_dir / "images"
+    if not report_md.exists():
+        raise FileNotFoundError(f"missing report.md in {out_dir}")
+    if not images_dir.exists():
+        raise FileNotFoundError(f"missing images/ in {out_dir}")
+
+    zip_path = out_zip.resolve() if out_zip else (out_dir.parent / f"{out_dir.name}.zip").resolve()
+    page_name = notion_page_md_filename(title)
+
+    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        zf.write(report_md, arcname=page_name)
+        for img in sorted(images_dir.iterdir()):
+            if not img.is_file():
+                continue
+            zf.write(img, arcname=f"images/{img.name}")
+
+    return zip_path
+
+
 def parse_args(argv: list[str]) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Generate a Notion-ready report from run artifacts.")
     p.add_argument("--title", required=True, help="Report title")
     p.add_argument("--motivation", help="1-2 sentence motivation for why these runs were executed")
     p.add_argument("--run", action="append", default=[], help="Run directory to include (repeatable)")
     p.add_argument("--out-dir", help="Output directory (default: plan/artifacts/notion-report/<timestamp>_<slug>)")
+    p.add_argument("--out-zip", help="Output zip path (default: <out-dir>.zip)")
+    p.add_argument("--no-zip", action="store_true", help="Do not create a Notion import zip (write directory only)")
     p.add_argument("--metric", action="append", default=[], help="Metric name to include/plot (repeatable)")
     p.add_argument("--max-metrics", type=int, default=DEFAULT_MAX_METRICS)
     p.add_argument("--max-config-keys", type=int, default=DEFAULT_MAX_CONFIG_KEYS)
@@ -1003,6 +1090,10 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     p.add_argument("--max-points", type=int, default=DEFAULT_MAX_POINTS_PER_SERIES)
     p.add_argument("--max-images-per-run", type=int, default=DEFAULT_MAX_IMAGES_PER_RUN)
     p.add_argument("--no-copy-images", action="store_true", help="Do not copy run-provided images into the report output")
+    p.add_argument(
+        "--base-run",
+        help="Baseline run for config overrides (1-based index or source dir name). Defaults to the first run with a config.",
+    )
     return p.parse_args(argv)
 
 
@@ -1023,41 +1114,39 @@ def main(argv: list[str]) -> int:
 
     runs: list[RunInfo] = []
     configs_by_run: list[dict[str, str]] = []
-    for raw in args.run:
+    for idx, raw in enumerate(args.run, start=1):
         run_dir = Path(raw).expanduser().resolve()
         if not run_dir.exists() or not run_dir.is_dir():
             eprint(f"[ERROR] Run path is not a directory: {run_dir}")
             return 2
 
-        run_name = run_dir.name
+        run_label = f"run_{idx:02d}"
         files = list(iter_files(run_dir, max_files=args.max_files))
         ts_path, sm_path = discover_metrics_files(run_dir, files)
         cfg_path = discover_config_file(run_dir, files)
-        cmd_path = discover_command_file(run_dir, files)
 
-        info = RunInfo(name=run_name, path=str(run_dir))
+        info = RunInfo(name=run_label, path=str(run_dir), source_dir_name=run_dir.name)
 
         # Condensed run settings (optional).
         run_cfg_values: dict[str, str] = {}
         if cfg_path is not None:
-            info.config_path = str(cfg_path)
+            info.config_path = cfg_path.name
+            info.config_type = cfg_path.suffix.lower().lstrip(".") or None
             cfg_obj, warns = read_config(cfg_path, max_bytes=int(args.max_config_bytes))
             info.warnings.extend(warns)
             flat_cfg = flatten_dict(cfg_obj)
             for k, v in flat_cfg.items():
+                k_str = str(k)
+                if is_sensitive_config_key(k_str):
+                    continue
                 s = config_value_to_str(v)
                 if s is None:
                     continue
-                run_cfg_values[str(k)] = s
-        if cmd_path is not None:
-            info.command_path = str(cmd_path)
-            cmd_line, warns = read_first_line(cmd_path, max_bytes=8192)
-            info.warnings.extend(warns)
-            info.command = cmd_line
+                run_cfg_values[k_str] = s
 
         # Timeseries metrics (preferred).
         if ts_path is not None:
-            info.metrics_timeseries_path = str(ts_path)
+            info.metrics_timeseries_path = ts_path.name
             if ts_path.suffix.lower() == ".jsonl":
                 records, warns = read_jsonl(ts_path, max_records=args.max_jsonl_records)
             else:
@@ -1073,11 +1162,11 @@ def main(argv: list[str]) -> int:
             info.step_key = step_key
             info.n_records = n_records
             if not info.finals:
-                info.warnings.append(f"no numeric metrics extracted from timeseries: {ts_path}")
+                info.warnings.append(f"no numeric metrics extracted from timeseries: {ts_path.name}")
 
         # Summary metrics (secondary).
         if sm_path is not None:
-            info.metrics_summary_path = str(sm_path)
+            info.metrics_summary_path = sm_path.name
             summary_metrics, warns = read_summary_json(sm_path)
             info.warnings.extend(warns)
             # Only add summary metrics that don't overwrite timeseries finals.
@@ -1090,11 +1179,10 @@ def main(argv: list[str]) -> int:
         else:
             copied, warns = copy_run_images(
                 run_dir=run_dir,
-                run_name=run_name,
+                run_label=run_label,
                 files=files,
                 images_dir=images_dir,
                 max_images=args.max_images_per_run,
-                base=base,
             )
             info.copied_images = copied
             info.warnings.extend(warns)
@@ -1105,14 +1193,59 @@ def main(argv: list[str]) -> int:
         runs.append(info)
         configs_by_run.append(run_cfg_values)
 
-    selected_config_keys = select_config_keys(
+    # Baseline config + per-run overrides.
+    base_idx: int | None = None
+    if args.base_run:
+        raw_base = str(args.base_run).strip()
+        if raw_base.isdigit():
+            candidate = int(raw_base) - 1
+            if not (0 <= candidate < len(runs)):
+                eprint(f"[ERROR] --base-run index out of range: {args.base_run}")
+                return 2
+            base_idx = candidate
+        else:
+            for i, r in enumerate(runs):
+                if r.source_dir_name == raw_base:
+                    base_idx = i
+                    break
+            if base_idx is None:
+                eprint(f"[ERROR] --base-run did not match any run dir name: {args.base_run}")
+                return 2
+    else:
+        for i, cfg in enumerate(configs_by_run):
+            if cfg:
+                base_idx = i
+                break
+
+    base_cfg: dict[str, str] = configs_by_run[base_idx] if base_idx is not None else {}
+    if not base_cfg:
+        base_idx = None
+        base_cfg = {}
+
+    base_run_name = runs[base_idx].name if base_idx is not None else None
+    selected_config_keys = select_config_keys_for_overrides(
         configs_by_run,
+        base_config=base_cfg,
         max_keys=max(0, int(args.max_config_keys)),
     )
-    for info, cfg in zip(runs, configs_by_run):
-        if not cfg or not selected_config_keys:
-            continue
-        info.config_summary = {k: cfg[k] for k in selected_config_keys if k in cfg}
+    base_config = {k: base_cfg.get(k, "") for k in selected_config_keys}
+
+    if selected_config_keys:
+        for info, cfg in zip(runs, configs_by_run):
+            if not cfg:
+                continue
+            info.config_summary = {k: cfg[k] for k in selected_config_keys if k in cfg}
+            if base_idx is None:
+                continue
+            overrides: dict[str, str] = {}
+            for k in selected_config_keys:
+                run_v = cfg.get(k)
+                if run_v is None:
+                    continue
+                base_v = base_cfg.get(k)
+                if base_v is None or run_v != base_v:
+                    overrides[k] = run_v
+            info.overrides = overrides
 
     selected_metrics = select_metrics(
         runs,
@@ -1158,29 +1291,54 @@ def main(argv: list[str]) -> int:
                 plots.append((f"{metric} final value by run", f"images/{bar_name}"))
 
     report_md = render_markdown_report(
-        title=args.title,
         motivation=args.motivation,
-        out_dir=out_dir,
         runs=runs,
-        selected_config_keys=selected_config_keys,
+        base_run_name=base_run_name,
+        base_config=base_config,
+        config_keys=selected_config_keys,
         selected_metrics=selected_metrics,
         plots=plots,
-        base=base,
     )
 
     (out_dir / "report.md").write_text(report_md + "\n", encoding="utf-8")
 
+    inventory_runs: list[dict[str, Any]] = []
+    for r in runs:
+        inventory_runs.append(
+            {
+                "run": r.name,
+                "source_dir_name": r.source_dir_name,
+                "config_file": r.config_path,
+                "config_type": r.config_type,
+                "metrics_timeseries_file": r.metrics_timeseries_path,
+                "metrics_summary_file": r.metrics_summary_path,
+                "n_records": r.n_records,
+                "selected_metrics_present": [m for m in selected_metrics if m in r.finals],
+                "finals": {m: r.finals.get(m) for m in selected_metrics if m in r.finals},
+                "config_baseline": (r.name == base_run_name) if base_run_name else False,
+                "config_overrides": r.overrides,
+                "warnings": r.warnings,
+                "images": [img.dst for img in r.copied_images],
+            }
+        )
+
     inventory = {
         "title": args.title,
         "motivation": args.motivation,
-        "runs": [asdict(r) for r in runs],
+        "runs": inventory_runs,
         "selected_config_keys": selected_config_keys,
         "selected_metrics": selected_metrics,
         "plots": [{"caption": c, "path": p} for c, p in plots],
     }
     (out_dir / "inventory.json").write_text(json.dumps(inventory, indent=2) + "\n", encoding="utf-8")
 
-    print(str(out_dir))
+    if args.no_zip:
+        print(str(out_dir))
+        return 0
+
+    out_zip = Path(args.out_zip).expanduser() if args.out_zip else None
+    zip_path = write_notion_import_zip(out_dir=out_dir, title=args.title, out_zip=out_zip)
+    print(str(zip_path))
     return 0
 
 
