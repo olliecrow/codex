@@ -1,22 +1,31 @@
 #!/usr/bin/env python3
 """
-Generate a Notion-ready experiment report (Markdown + image placeholders) plus
-optional plots/visuals, written to an ephemeral output directory.
+Generate a Notion-importable experiment report from local run artifacts.
 
-Standard library only. Output plots are SVG.
+Primary output: a single HTML file suitable for Notion import, with images
+embedded as data URIs (no external files required).
+
+Optional output: a Notion-importable zip (Markdown + images folder).
+
+Plots are generated as PNG via matplotlib when available; otherwise the script
+falls back to SVG plots.
 """
 
 from __future__ import annotations
 
 import argparse
+import base64
 import csv
 import datetime as dt
+import html
+import io
 import json
 import math
 import os
 import re
 import shutil
 import sys
+import tempfile
 import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -33,6 +42,7 @@ DEFAULT_MAX_JSONL_RECORDS = 200_000
 DEFAULT_MAX_POINTS_PER_SERIES = 2_000
 DEFAULT_MAX_METRICS = 8
 DEFAULT_MAX_IMAGES_PER_RUN = 12
+DEFAULT_MAX_IMAGE_BYTES = 6 * 1024 * 1024
 DEFAULT_MAX_CONFIG_BYTES = 512 * 1024
 DEFAULT_MAX_CONFIG_KEYS = 12
 
@@ -101,6 +111,14 @@ class CopiedImage:
 
 
 @dataclass
+class EmbeddedImage:
+    label: str
+    src_name: str
+    mime: str
+    data_uri: str
+
+
+@dataclass
 class RunInfo:
     # Public label used in the report/zip. Avoid leaking local dir names.
     name: str
@@ -120,6 +138,7 @@ class RunInfo:
     # metric -> final value
     finals: dict[str, float] = field(default_factory=dict)
     copied_images: list[CopiedImage] = field(default_factory=list)
+    embedded_images: list[EmbeddedImage] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
 
 
@@ -187,13 +206,17 @@ def looks_like_private_path_value(text: str) -> bool:
     s = text.strip()
     if not s:
         return False
+    # Avoid false positives on simple fractions.
+    if re.match(r"^\\d+/\\d+$", s):
+        return False
     if "://" in s:
         return True
-    if s.startswith(("~", "/")):
+    # Treat any path-ish values as private (absolute or relative).
+    if s.startswith(("~", "/", "./", "../")):
         return True
     if re.match(r"^[A-Za-z]:[\\\\/]", s):
         return True
-    if "\\\\" in s:
+    if "/" in s or "\\" in s:
         return True
     # Common macOS/Linux home patterns.
     if "/users/" in s.lower() or "/home/" in s.lower():
@@ -832,6 +855,148 @@ def svg_bar_chart(
     return True
 
 
+_MPL_AVAILABLE: bool | None = None
+_MPL_PLT: Any | None = None
+
+
+def get_mpl_pyplot():
+    global _MPL_AVAILABLE, _MPL_PLT
+    if _MPL_AVAILABLE is False:
+        return None
+    if _MPL_PLT is not None:
+        return _MPL_PLT
+    try:
+        import matplotlib
+
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt  # type: ignore[import-not-found]
+    except Exception:
+        _MPL_AVAILABLE = False
+        return None
+    _MPL_AVAILABLE = True
+    _MPL_PLT = plt
+    return plt
+
+
+def mpl_line_overlay_png(
+    *,
+    series_by_run: list[tuple[str, list[tuple[float, float]]]],
+    title: str,
+    x_label: str,
+    y_label: str,
+) -> bytes | None:
+    plt = get_mpl_pyplot()
+    if plt is None:
+        return None
+
+    fig, ax = plt.subplots(figsize=(10, 4.5), dpi=120)
+    for run_name, pts in series_by_run:
+        if len(pts) < 2:
+            continue
+        xs = [x for x, _ in pts]
+        ys = [y for _, y in pts]
+        ax.plot(xs, ys, label=run_name, linewidth=1.6)
+
+    ax.set_title(title)
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    ax.grid(True, alpha=0.25)
+    if 1 < len(series_by_run) <= 10:
+        ax.legend(loc="best", fontsize="small")
+
+    fig.tight_layout()
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png")
+    plt.close(fig)
+    return buf.getvalue()
+
+
+def mpl_bar_chart_png(
+    *,
+    values_by_run: list[tuple[str, float]],
+    title: str,
+    y_label: str,
+) -> bytes | None:
+    plt = get_mpl_pyplot()
+    if plt is None:
+        return None
+    if not values_by_run:
+        return None
+
+    names = [n for n, _ in values_by_run]
+    vals = [v for _, v in values_by_run]
+
+    fig, ax = plt.subplots(figsize=(10, 4.5), dpi=120)
+    xs = list(range(len(vals)))
+    ax.bar(xs, vals, color="#1f77b4", alpha=0.9)
+    ax.set_xticks(xs)
+    ax.set_xticklabels(names, rotation=45, ha="right")
+    ax.set_ylabel(y_label)
+    ax.set_title(title)
+    ax.grid(True, axis="y", alpha=0.25)
+
+    # Value labels.
+    y_min = min(vals)
+    y_max = max(vals)
+    span = (y_max - y_min) if y_max != y_min else 1.0
+    for i, v in enumerate(vals):
+        offset = 0.02 * span
+        y = v + offset if v >= 0 else v - offset
+        va = "bottom" if v >= 0 else "top"
+        ax.text(i, y, format_float(v), ha="center", va=va, fontsize=8)
+
+    fig.tight_layout()
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png")
+    plt.close(fig)
+    return buf.getvalue()
+
+
+def make_embedded_overlay_plot(
+    *,
+    series_by_run: list[tuple[str, list[tuple[float, float]]]],
+    title: str,
+    x_label: str,
+    y_label: str,
+    label_base: str,
+) -> EmbeddedImage | None:
+    png = mpl_line_overlay_png(series_by_run=series_by_run, title=title, x_label=x_label, y_label=y_label)
+    if png is not None:
+        return embed_image_bytes(label=f"{label_base}.png", mime="image/png", data=png)
+
+    with tempfile.TemporaryDirectory() as td:
+        out_path = Path(td) / f"{label_base}.svg"
+        ok = svg_line_plot(
+            series_by_run=series_by_run,
+            title=title,
+            x_label=x_label,
+            y_label=y_label,
+            out_path=out_path,
+        )
+        if not ok:
+            return None
+        return embed_image_bytes(label=f"{label_base}.svg", mime="image/svg+xml", data=out_path.read_bytes())
+
+
+def make_embedded_bar_chart(
+    *,
+    values_by_run: list[tuple[str, float]],
+    title: str,
+    y_label: str,
+    label_base: str,
+) -> EmbeddedImage | None:
+    png = mpl_bar_chart_png(values_by_run=values_by_run, title=title, y_label=y_label)
+    if png is not None:
+        return embed_image_bytes(label=f"{label_base}.png", mime="image/png", data=png)
+
+    with tempfile.TemporaryDirectory() as td:
+        out_path = Path(td) / f"{label_base}.svg"
+        ok = svg_bar_chart(values_by_run=values_by_run, title=title, y_label=y_label, out_path=out_path)
+        if not ok:
+            return None
+        return embed_image_bytes(label=f"{label_base}.svg", mime="image/svg+xml", data=out_path.read_bytes())
+
+
 def copy_run_images(
     *,
     run_dir: Path,
@@ -839,26 +1004,25 @@ def copy_run_images(
     files: list[Path],
     images_dir: Path,
     max_images: int,
+    max_image_bytes: int,
 ) -> tuple[list[CopiedImage], list[str]]:
     warnings: list[str] = []
-    candidates: list[tuple[int, int, Path]] = []
-    for p in files:
-        if p.suffix.lower() not in IMAGE_EXTS:
-            continue
-        lower_parts = [part.lower() for part in p.parts]
-        # Prefer likely-visual subdirs.
-        priority = 0
-        if any(tok in lower_parts for tok in ("plots", "figures", "images", "rollouts", "media", "videos")):
-            priority -= 2
-        candidates.append((priority, p.stat().st_size, p))
-
-    candidates_sorted = [p for _, _, p in sorted(candidates, key=lambda t: (t[0], -t[1]))]
-    selected = candidates_sorted[:max_images]
+    candidates_sorted = rank_image_candidates(files)
     copied: list[CopiedImage] = []
-    for idx, src in enumerate(selected, start=1):
+    for src in candidates_sorted:
+        if len(copied) >= max_images:
+            break
         ext = src.suffix.lower()
-        dst_name = f"{sanitize_filename(run_label)}_image_{idx:02d}{ext}"
+        dst_name = f"{sanitize_filename(run_label)}_image_{(len(copied) + 1):02d}{ext}"
         dst = images_dir / dst_name
+        try:
+            size = src.stat().st_size
+        except OSError as exc:
+            warnings.append(f"failed to stat image '{src.name}': {safe_exc_str(exc)}")
+            continue
+        if size > max_image_bytes:
+            warnings.append(f"skipped image >{max_image_bytes} bytes: {src.name} ({size} bytes)")
+            continue
         try:
             shutil.copy2(src, dst)
         except OSError as exc:
@@ -868,6 +1032,88 @@ def copy_run_images(
     if candidates_sorted and not copied:
         warnings.append("found images but copied none (permissions/IO issues)")
     return copied, warnings
+
+
+def rank_image_candidates(files: list[Path]) -> list[Path]:
+    candidates: list[tuple[int, int, Path]] = []
+    for p in files:
+        if p.suffix.lower() not in IMAGE_EXTS:
+            continue
+        try:
+            size = p.stat().st_size
+        except OSError:
+            continue
+        lower_parts = [part.lower() for part in p.parts]
+        # Prefer likely-visual subdirs.
+        priority = 0
+        if any(tok in lower_parts for tok in ("plots", "figures", "images", "rollouts", "media", "videos")):
+            priority -= 2
+        candidates.append((priority, size, p))
+
+    return [p for _, _, p in sorted(candidates, key=lambda t: (t[0], -t[1]))]
+
+
+def image_mime_type(path: Path) -> str | None:
+    ext = path.suffix.lower()
+    if ext == ".png":
+        return "image/png"
+    if ext in (".jpg", ".jpeg"):
+        return "image/jpeg"
+    if ext == ".gif":
+        return "image/gif"
+    if ext == ".svg":
+        return "image/svg+xml"
+    return None
+
+
+def embed_image_bytes(*, label: str, mime: str, data: bytes) -> EmbeddedImage:
+    b64 = base64.b64encode(data).decode("ascii")
+    return EmbeddedImage(label=label, src_name=label, mime=mime, data_uri=f"data:{mime};base64,{b64}")
+
+
+def embed_image_file(*, path: Path, label: str, max_bytes: int) -> tuple[EmbeddedImage | None, str | None]:
+    try:
+        size = path.stat().st_size
+    except OSError as exc:
+        return None, f"failed to stat image '{path.name}': {safe_exc_str(exc)}"
+    if size > max_bytes:
+        return None, f"skipped image >{max_bytes} bytes: {path.name} ({size} bytes)"
+    mime = image_mime_type(path)
+    if mime is None:
+        return None, f"unsupported image type for embedding: {path.name}"
+    try:
+        data = path.read_bytes()
+    except OSError as exc:
+        return None, f"failed to read image '{path.name}': {safe_exc_str(exc)}"
+    return embed_image_bytes(label=label, mime=mime, data=data), None
+
+
+def embed_run_images(
+    *,
+    run_label: str,
+    files: list[Path],
+    max_images: int,
+    max_image_bytes: int,
+) -> tuple[list[EmbeddedImage], list[str]]:
+    warnings: list[str] = []
+    candidates_sorted = rank_image_candidates(files)
+    embedded: list[EmbeddedImage] = []
+    for src in candidates_sorted:
+        if len(embedded) >= max_images:
+            break
+        ext = src.suffix.lower()
+        label = f"{sanitize_filename(run_label)}_image_{(len(embedded) + 1):02d}{ext}"
+        img, warn = embed_image_file(path=src, label=label, max_bytes=max_image_bytes)
+        if warn:
+            warnings.append(warn)
+            continue
+        if img is not None:
+            # Preserve original filename only in metadata; do not surface in report unless explicitly added.
+            img.src_name = src.name
+            embedded.append(img)
+    if candidates_sorted and not embedded:
+        warnings.append("found images but embedded none (skipped/IO issues)")
+    return embedded, warnings
 
 
 def render_markdown_report(
@@ -1031,10 +1277,250 @@ def render_markdown_report(
     return "\n".join(lines)
 
 
+def html_escape(text: str) -> str:
+    return html.escape(text, quote=True)
+
+
+def truncate_text(text: str, *, max_len: int) -> str:
+    s = text.replace("\n", " ").strip()
+    if len(s) <= max_len:
+        return s
+    return s[: max_len - 3] + "..."
+
+
+def render_html_report(
+    *,
+    title: str,
+    motivation: str | None,
+    runs: list[RunInfo],
+    base_run_name: str | None,
+    base_config: dict[str, str],
+    config_keys: list[str],
+    selected_metrics: list[str],
+    plot_images: list[tuple[str, EmbeddedImage]],
+) -> str:
+    now = dt.datetime.now(dt.timezone.utc)
+    esc = html_escape
+
+    css = (
+        "body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; "
+        "line-height: 1.45; color: #111; margin: 0; padding: 0; }\n"
+        ".container { max-width: 980px; margin: 0 auto; padding: 32px 28px; }\n"
+        "h1,h2,h3 { line-height: 1.2; }\n"
+        "h1 { margin-top: 0; }\n"
+        "code { background: #f6f8fa; padding: 2px 4px; border-radius: 4px; font-size: 0.95em; }\n"
+        "pre code { display: block; padding: 12px 14px; overflow-x: auto; }\n"
+        "table { border-collapse: collapse; width: 100%; margin: 12px 0 18px; }\n"
+        "th, td { border: 1px solid #e5e7eb; padding: 6px 8px; text-align: left; vertical-align: top; font-size: 0.95em; }\n"
+        "th { background: #f9fafb; }\n"
+        "img { max-width: 100%; height: auto; display: block; margin: 10px 0 18px; }\n"
+        "blockquote { margin: 12px 0; padding: 10px 14px; border-left: 4px solid #e5e7eb; background: #fafafa; }\n"
+    )
+
+    lines: list[str] = []
+    lines.append("<!doctype html>")
+    lines.append("<html>")
+    lines.append("<head>")
+    lines.append('  <meta charset="utf-8" />')
+    lines.append('  <meta name="viewport" content="width=device-width, initial-scale=1" />')
+    lines.append(f"  <title>{esc(title)}</title>")
+    lines.append(f"  <style>{css}</style>")
+    lines.append("</head>")
+    lines.append("<body>")
+    lines.append('  <div class="container">')
+    lines.append(f"  <h1>{esc(title)}</h1>")
+    lines.append("<p>This report is an objective summary of the runs included below.</p>")
+
+    lines.append("<ul>")
+    lines.append(f"<li>motivation: {esc(motivation.strip()) if motivation else 'not provided'}</li>")
+    lines.append(f"<li>scope: {len(runs)} run(s) included; this report describes only these runs.</li>")
+    if base_run_name and config_keys:
+        lines.append(f"<li>config baseline: <code>{esc(base_run_name)}</code></li>")
+    lines.append(f"<li>report generated (UTC): <code>{esc(now.isoformat(timespec='seconds'))}</code></li>")
+    lines.append("</ul>")
+
+    lines.append("<h2>What was run (inventory)</h2>")
+    has_cfg_any = any(r.config_path for r in runs)
+    has_cfg_baseline = bool(base_run_name and config_keys)
+    overrides_header = "overrides vs baseline" if has_cfg_baseline else "overrides"
+
+    headers = ["run", "config", overrides_header, "records", "selected metrics present", "visuals", "warnings"]
+    lines.append("<table>")
+    lines.append("<thead><tr>")
+    for h in headers:
+        lines.append(f"<th>{esc(h)}</th>")
+    lines.append("</tr></thead>")
+    lines.append("<tbody>")
+    for r in runs:
+        has_cfg = "yes" if r.config_path else "no"
+        overrides = str(len(r.overrides)) if has_cfg_baseline else ""
+        records = str(r.n_records) if r.n_records is not None else ""
+        present = ""
+        if selected_metrics:
+            present_n = sum(1 for m in selected_metrics if m in r.finals)
+            present = f"{present_n}/{len(selected_metrics)}"
+        visuals = str(len(r.embedded_images))
+        warn = truncate_text("; ".join(r.warnings), max_len=160) if r.warnings else ""
+        lines.append("<tr>")
+        lines.append(f"<td><code>{esc(r.name)}</code></td>")
+        lines.append(f"<td>{esc(has_cfg)}</td>")
+        lines.append(f"<td>{esc(overrides)}</td>")
+        lines.append(f"<td>{esc(records)}</td>")
+        lines.append(f"<td>{esc(present)}</td>")
+        lines.append(f"<td>{esc(visuals)}</td>")
+        lines.append(f"<td>{esc(warn)}</td>")
+        lines.append("</tr>")
+    lines.append("</tbody>")
+    lines.append("</table>")
+
+    if has_cfg_any:
+        lines.append("<h2>Run settings (condensed)</h2>")
+        lines.append("<ul>")
+        lines.append("<li>configs are parsed from JSON/TOML when present.</li>")
+        lines.append("<li>path-like keys/values are omitted to avoid leaking local filesystem structure.</li>")
+        lines.append("</ul>")
+
+        if base_run_name and config_keys:
+            lines.append("<h3>Baseline config (key subset)</h3>")
+            lines.append(f"<p>baseline run: <code>{esc(base_run_name)}</code></p>")
+            lines.append("<table>")
+            lines.append("<thead><tr><th>key</th><th>baseline</th></tr></thead>")
+            lines.append("<tbody>")
+            for k in config_keys:
+                v = base_config.get(k, "")
+                if not v:
+                    continue
+                lines.append("<tr>")
+                lines.append(f"<td><code>{esc(truncate_text(k, max_len=96))}</code></td>")
+                lines.append(f"<td><code>{esc(truncate_text(v, max_len=140))}</code></td>")
+                lines.append("</tr>")
+            lines.append("</tbody></table>")
+
+            lines.append("<h3>Overrides by run (vs baseline, shown keys only)</h3>")
+            lines.append("<ul>")
+            for r in runs:
+                if not r.config_path:
+                    continue
+                if not r.overrides:
+                    lines.append(f"<li><code>{esc(r.name)}</code>: no overrides vs baseline for shown keys.</li>")
+                    continue
+                parts: list[str] = []
+                for k in config_keys:
+                    if k not in r.overrides:
+                        continue
+                    parts.append(f"<code>{esc(truncate_text(k, max_len=64))}</code>=<code>{esc(truncate_text(r.overrides[k], max_len=96))}</code>")
+                if parts:
+                    lines.append(f"<li><code>{esc(r.name)}</code>: " + "; ".join(parts) + "</li>")
+            lines.append("</ul>")
+        else:
+            lines.append("<p>configs were present, but no baseline/overrides were computed.</p>")
+
+    if selected_metrics:
+        lines.append("<h2>Metrics included</h2>")
+        lines.append("<ul>")
+        for m in selected_metrics:
+            lines.append(f"<li><code>{esc(m)}</code></li>")
+        lines.append("</ul>")
+
+    lines.append("<h2>Results overview (final values)</h2>")
+    if not selected_metrics:
+        lines.append("<p>no numeric metrics were extracted from the provided runs.</p>")
+    else:
+        lines.append("<table>")
+        lines.append("<thead><tr>")
+        lines.append("<th>run</th>")
+        for m in selected_metrics:
+            lines.append(f"<th>{esc(m)}</th>")
+        lines.append("</tr></thead>")
+        lines.append("<tbody>")
+        for r in runs:
+            lines.append("<tr>")
+            lines.append(f"<td><code>{esc(r.name)}</code></td>")
+            for m in selected_metrics:
+                lines.append(f"<td>{esc(format_float(r.finals.get(m)))}</td>")
+            lines.append("</tr>")
+        lines.append("</tbody></table>")
+
+    lines.append("<h2>Comparisons (plots)</h2>")
+    if not plot_images:
+        lines.append("<p>no plots were generated (no suitable timeseries/final metrics).</p>")
+    else:
+        for caption, img in plot_images:
+            lines.append(f"<h3>{esc(caption)}</h3>")
+            lines.append(f'<img src="{esc(img.data_uri)}" alt="{esc(img.label)}" />')
+
+    lines.append("<h2>Insights and conclusions (objective)</h2>")
+    if not selected_metrics:
+        lines.append("<p>no numeric metrics were extracted; conclusions are limited to the artifact inventory above.</p>")
+    else:
+        items: list[str] = []
+        for m in selected_metrics:
+            present = [(r.name, r.finals[m]) for r in runs if m in r.finals]
+            if len(present) < 2:
+                continue
+            present_sorted = sorted(present, key=lambda t: t[1])
+            min_run, min_val = present_sorted[0]
+            max_run, max_val = present_sorted[-1]
+            delta = max_val - min_val
+            pct = None if min_val == 0 else (delta / abs(min_val)) * 100.0
+            pct_str = f", {pct:.2f}%" if pct is not None else ""
+            items.append(
+                f"<li><code>{esc(m)}</code>: final values span {esc(format_float(min_val))} ({esc(min_run)}) to "
+                f"{esc(format_float(max_val))} ({esc(max_run)}); delta {esc(format_float(delta))}{esc(pct_str)}.</li>"
+            )
+        if items:
+            lines.append("<ul>")
+            lines.extend(items)
+            lines.append("</ul>")
+        else:
+            lines.append("<p>insufficient metric coverage for cross-run comparisons.</p>")
+
+    lines.append("<h2>Per-run visuals</h2>")
+    any_visuals = any(r.embedded_images for r in runs)
+    if not any_visuals:
+        lines.append("<p>no run-provided images were embedded in this report.</p>")
+    else:
+        for r in runs:
+            if not r.embedded_images:
+                continue
+            lines.append(f"<h3>{esc(r.name)}</h3>")
+            for img in r.embedded_images:
+                lines.append(f"<p><code>{esc(img.label)}</code></p>")
+                lines.append(f'<img src="{esc(img.data_uri)}" alt="{esc(img.label)}" />')
+
+    lines.append("<h2>Limitations / missing data</h2>")
+    missing: list[str] = []
+    if not motivation:
+        missing.append("motivation was not provided.")
+    for r in runs:
+        if not r.finals:
+            missing.append(f"{r.name}: no numeric metrics extracted.")
+        if has_cfg_any and not r.config_path:
+            missing.append(f"{r.name}: no JSON/TOML config discovered.")
+    if missing:
+        lines.append("<ul>")
+        for m in missing:
+            lines.append(f"<li>{esc(m)}</li>")
+        lines.append("</ul>")
+    else:
+        lines.append("<p>none identified from extracted artifacts.</p>")
+
+    lines.append("  </div>")
+    lines.append("</body>")
+    lines.append("</html>")
+    return "\n".join(lines) + "\n"
+
+
 def default_out_dir(*, title: str, base: Path) -> Path:
     stamp = dt.datetime.now().astimezone().strftime("%Y%m%d_%H%M%S")
     slug = slugify(title)[:48]
     return base / "plan" / "artifacts" / "notion-report" / f"{stamp}_{slug}"
+
+
+def default_out_html(*, title: str, base: Path) -> Path:
+    stamp = dt.datetime.now().astimezone().strftime("%Y%m%d_%H%M%S")
+    slug = slugify(title)[:48]
+    return base / "plan" / "artifacts" / "notion-report" / f"{stamp}_{slug}.html"
 
 
 def notion_page_md_filename(title: str) -> str:
@@ -1050,6 +1536,20 @@ def notion_page_md_filename(title: str) -> str:
     if len(s) > 100:
         s = s[:100].rstrip()
     return f"{s}.md"
+
+
+def notion_page_html_filename(title: str) -> str:
+    # Keep it readable and filesystem-safe.
+    s = title.strip()
+    s = s.replace("/", "-").replace("\\", "-")
+    s = re.sub(r"[\x00-\x1f]", " ", s)
+    s = re.sub(r"[<>:\"|?*]+", "-", s)
+    s = re.sub(r"\\s+", " ", s).strip()
+    if not s:
+        s = "notion-report"
+    if len(s) > 100:
+        s = s[:100].rstrip()
+    return f"{s}.html"
 
 
 def write_notion_import_zip(*, out_dir: Path, title: str, out_zip: Path | None) -> Path:
@@ -1077,10 +1577,22 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Generate a Notion-ready report from run artifacts.")
     p.add_argument("--title", required=True, help="Report title")
     p.add_argument("--motivation", help="1-2 sentence motivation for why these runs were executed")
+    p.add_argument(
+        "--format",
+        choices=["html", "zip", "dir"],
+        default="html",
+        help="Output format (default: html). 'html' writes a single Notion-importable HTML file with embedded images. "
+        "'zip' writes a Notion-importable zip (Markdown + images). 'dir' writes the Markdown + images directory only.",
+    )
     p.add_argument("--run", action="append", default=[], help="Run directory to include (repeatable)")
+    p.add_argument("--out-html", help="Output HTML path (default: plan/artifacts/notion-report/<timestamp>_<slug>.html)")
     p.add_argument("--out-dir", help="Output directory (default: plan/artifacts/notion-report/<timestamp>_<slug>)")
     p.add_argument("--out-zip", help="Output zip path (default: <out-dir>.zip)")
-    p.add_argument("--no-zip", action="store_true", help="Do not create a Notion import zip (write directory only)")
+    p.add_argument(
+        "--no-zip",
+        action="store_true",
+        help="DEPRECATED: Do not create a Notion import zip (equivalent to --format dir).",
+    )
     p.add_argument("--metric", action="append", default=[], help="Metric name to include/plot (repeatable)")
     p.add_argument("--max-metrics", type=int, default=DEFAULT_MAX_METRICS)
     p.add_argument("--max-config-keys", type=int, default=DEFAULT_MAX_CONFIG_KEYS)
@@ -1089,7 +1601,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     p.add_argument("--max-jsonl-records", type=int, default=DEFAULT_MAX_JSONL_RECORDS)
     p.add_argument("--max-points", type=int, default=DEFAULT_MAX_POINTS_PER_SERIES)
     p.add_argument("--max-images-per-run", type=int, default=DEFAULT_MAX_IMAGES_PER_RUN)
-    p.add_argument("--no-copy-images", action="store_true", help="Do not copy run-provided images into the report output")
+    p.add_argument("--max-image-bytes", type=int, default=DEFAULT_MAX_IMAGE_BYTES)
+    p.add_argument("--no-copy-images", action="store_true", help="Do not include run-provided images in the report output")
     p.add_argument(
         "--base-run",
         help="Baseline run for config overrides (1-based index or source dir name). Defaults to the first run with a config.",
@@ -1105,19 +1618,55 @@ def main(argv: list[str]) -> int:
         return 2
 
     base = Path.cwd().resolve()
-    out_dir = Path(args.out_dir).expanduser() if args.out_dir else default_out_dir(title=args.title, base=base)
-    out_dir = out_dir.resolve()
-    images_dir = out_dir / "images"
+    fmt = str(getattr(args, "format", "html")).strip().lower()
+    if args.no_zip:
+        if fmt == "html":
+            eprint("[ERROR] --no-zip is not compatible with --format html.")
+            return 2
+        fmt = "dir"
 
-    out_dir.mkdir(parents=True, exist_ok=False)
-    images_dir.mkdir(parents=True, exist_ok=True)
+    if fmt not in {"html", "zip", "dir"}:
+        eprint(f"[ERROR] Unsupported --format: {fmt}")
+        return 2
+
+    out_dir: Path | None = None
+    images_dir: Path | None = None
+    out_html: Path | None = None
+
+    if fmt == "html":
+        if args.out_zip:
+            eprint("[ERROR] --out-zip is only valid for --format zip.")
+            return 2
+        if args.out_html:
+            out_html = Path(args.out_html).expanduser().resolve()
+            out_html.parent.mkdir(parents=True, exist_ok=True)
+        elif args.out_dir:
+            out_dir = Path(args.out_dir).expanduser().resolve()
+            out_dir.mkdir(parents=True, exist_ok=False)
+            out_html = out_dir / notion_page_html_filename(args.title)
+        else:
+            out_html = default_out_html(title=args.title, base=base).resolve()
+            out_html.parent.mkdir(parents=True, exist_ok=True)
+        if out_html.exists():
+            eprint(f"[ERROR] Output HTML already exists: {out_html.name}")
+            return 2
+    else:
+        if args.out_html:
+            eprint("[ERROR] --out-html is only valid for --format html.")
+            return 2
+        out_dir = Path(args.out_dir).expanduser() if args.out_dir else default_out_dir(title=args.title, base=base)
+        out_dir = out_dir.resolve()
+        images_dir = out_dir / "images"
+
+        out_dir.mkdir(parents=True, exist_ok=False)
+        images_dir.mkdir(parents=True, exist_ok=True)
 
     runs: list[RunInfo] = []
     configs_by_run: list[dict[str, str]] = []
     for idx, raw in enumerate(args.run, start=1):
         run_dir = Path(raw).expanduser().resolve()
         if not run_dir.exists() or not run_dir.is_dir():
-            eprint(f"[ERROR] Run path is not a directory: {run_dir}")
+            eprint(f"[ERROR] Run path is not a directory (run #{idx}).")
             return 2
 
         run_label = f"run_{idx:02d}"
@@ -1177,15 +1726,27 @@ def main(argv: list[str]) -> int:
         if args.no_copy_images:
             pass
         else:
-            copied, warns = copy_run_images(
-                run_dir=run_dir,
-                run_label=run_label,
-                files=files,
-                images_dir=images_dir,
-                max_images=args.max_images_per_run,
-            )
-            info.copied_images = copied
-            info.warnings.extend(warns)
+            if fmt == "html":
+                embedded, warns = embed_run_images(
+                    run_label=run_label,
+                    files=files,
+                    max_images=args.max_images_per_run,
+                    max_image_bytes=int(args.max_image_bytes),
+                )
+                info.embedded_images = embedded
+                info.warnings.extend(warns)
+            else:
+                assert images_dir is not None
+                copied, warns = copy_run_images(
+                    run_dir=run_dir,
+                    run_label=run_label,
+                    files=files,
+                    images_dir=images_dir,
+                    max_images=args.max_images_per_run,
+                    max_image_bytes=int(args.max_image_bytes),
+                )
+                info.copied_images = copied
+                info.warnings.extend(warns)
 
         if ts_path is None and sm_path is None:
             info.warnings.append("no metrics files discovered (expected metrics/history/progress jsonl/csv or summary/results/eval json)")
@@ -1253,6 +1814,56 @@ def main(argv: list[str]) -> int:
         max_metrics=max(0, int(args.max_metrics)),
     )
 
+    if fmt == "html":
+        plot_images: list[tuple[str, EmbeddedImage]] = []
+        for metric in selected_metrics:
+            series_by_run: list[tuple[str, list[tuple[float, float]]]] = []
+            for r in runs:
+                pts = r.series.get(metric)
+                if pts:
+                    series_by_run.append((r.name, pts))
+            if series_by_run:
+                metric_slug = sanitize_filename(metric)
+                img = make_embedded_overlay_plot(
+                    series_by_run=series_by_run,
+                    title=f"{metric} (overlay)",
+                    x_label=runs[0].step_key or "index",
+                    y_label=metric,
+                    label_base=f"plot_metric_{metric_slug}_overlay",
+                )
+                if img is not None:
+                    plot_images.append((f"{metric} vs step (overlay)", img))
+
+            values = [(r.name, r.finals[metric]) for r in runs if metric in r.finals]
+            if values:
+                metric_slug = sanitize_filename(metric)
+                img = make_embedded_bar_chart(
+                    values_by_run=values,
+                    title=f"{metric} (final value)",
+                    y_label=metric,
+                    label_base=f"plot_metric_{metric_slug}_final",
+                )
+                if img is not None:
+                    plot_images.append((f"{metric} final value by run", img))
+
+        assert out_html is not None
+        report_html = render_html_report(
+            title=args.title,
+            motivation=args.motivation,
+            runs=runs,
+            base_run_name=base_run_name,
+            base_config=base_config,
+            config_keys=selected_config_keys,
+            selected_metrics=selected_metrics,
+            plot_images=plot_images,
+        )
+        out_html.write_text(report_html, encoding="utf-8")
+        print(str(out_html))
+        return 0
+
+    assert out_dir is not None
+    assert images_dir is not None
+
     plots: list[tuple[str, str]] = []
     for metric in selected_metrics:
         # overlay line plot (requires series points)
@@ -1307,7 +1918,6 @@ def main(argv: list[str]) -> int:
         inventory_runs.append(
             {
                 "run": r.name,
-                "source_dir_name": r.source_dir_name,
                 "config_file": r.config_path,
                 "config_type": r.config_type,
                 "metrics_timeseries_file": r.metrics_timeseries_path,
@@ -1332,7 +1942,7 @@ def main(argv: list[str]) -> int:
     }
     (out_dir / "inventory.json").write_text(json.dumps(inventory, indent=2) + "\n", encoding="utf-8")
 
-    if args.no_zip:
+    if fmt == "dir":
         print(str(out_dir))
         return 0
 

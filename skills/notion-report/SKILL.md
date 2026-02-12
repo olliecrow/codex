@@ -1,11 +1,13 @@
 ---
 name: notion-report
-description: Generate a standalone, Notion-importable experiment report (single zip containing Markdown + images) from a specific set of experiment artifacts (local run folders, cluster job outputs). Use when the user asks for an objective experiment/cluster report with tables, comparisons, and plots, with redaction of local filesystem paths.
+description: Generate a standalone, Notion-importable experiment report (single HTML file with embedded tables and images) from a specific set of experiment artifacts (local run folders, cluster job outputs). Use when the user asks for an objective experiment/cluster report with tables, comparisons, and plots, with redaction of local filesystem paths.
 ---
 
 # Notion Report
 
-Create a self-contained experiment report suitable for Notion import, packaged as a single zip (Markdown + images) written to an ephemeral output directory (default: `plan/artifacts/notion-report/...`).
+Create a self-contained experiment report suitable for Notion import as a **single HTML file** with embedded images (default output under `plan/artifacts/notion-report/`).
+
+Optionally, produce a Notion-importable zip (Markdown + images) via `--format zip`.
 
 The report must be:
 - standalone: readable without external links or prior-run context
@@ -50,18 +52,18 @@ Do not include local filesystem paths, hostnames, or directory structures in the
 
 ## Output contract
 
-Write the following to a single, isolated output directory (prefer under `plan/artifacts/` so it stays ephemeral and gitignored):
-- `report.md`: Notion-importable Markdown that embeds images via relative paths (for example `![](images/foo.svg)`).
-- `images/`: generated plots (and any copied visuals) with stable filenames.
-- `inventory.json`: inputs discovered/used (redacted; no absolute filesystem paths).
-- `*.zip` (written next to the output directory by default): a single zip suitable for Notion import, containing exactly one Markdown file + `images/`.
+Default output:
+- one `*.html` file containing the full report, including embedded images (data URIs). This is directly importable into Notion as a single page.
 
-Always surface the final zip path at the end.
+Optional output (`--format zip`):
+- a single `*.zip` suitable for Notion import, containing exactly one Markdown file + `images/` (generated plots and copied visuals).
+
+Always surface the final output path at the end.
 
 ## Notion formatting rules
 
-- Prefer: headings, bullets, and Markdown tables.
-- Use Markdown image embeds with relative paths (for example `![](images/metric_reward_overlay.svg)`) so Notion imports images from the zip.
+- Prefer: headings, bullets, and tables.
+- For HTML imports: embed images as `<img src="data:image/...;base64,...">` so the report is single-file.
 - Do not paste full configs into the report. Prefer:
   - a single baseline config (key subset), and
   - per-run overrides (shown keys only).
@@ -88,6 +90,7 @@ Example (explicit run directories):
 
 ```bash
 python3 "$NOTION_REPORT_CLI" \\
+  --format html \\
   --title "Experiment report: <short name>" \\
   --motivation "<why this was run (1-2 sentences)>" \\
   --run /path/to/run_a \\
@@ -101,11 +104,11 @@ python3 "$NOTION_REPORT_CLI" \\
 - If configs exist, summarize only the small set of key parameters needed to interpret the runs; do not paste entire config files.
 
 5. Import into Notion.
-- Import the produced zip into Notion (single page). The images should import inline.
+- Import the produced HTML file into Notion (single page). Images should import inline.
 
 ## Script reference
 
 - CLI: `scripts/notion_report.py`
-- Standard library only (no required dependencies).
-- Generates SVG plots when timeseries/final metrics are available; otherwise it emits a tables-only report and records missing-data warnings in `inventory.json`.
+- Uses matplotlib for PNG plots when available; otherwise falls back to SVG plots.
+- Emits a tables-only report when timeseries/final metrics are unavailable.
 - Reads only JSON/TOML configs for condensed settings summaries (YAML is not parsed to keep dependencies minimal).
