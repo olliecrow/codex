@@ -14,7 +14,7 @@ The report must be:
 - scoped: only describe the runs/outputs explicitly included in this report
 - objective: state facts and evidence; avoid subjective tone and speculative future work
 - visual: prefer tables and plots over prose
-- self-contained terminology: do not use acronyms/project-specific terms without defining them
+- self-contained terminology: define acronyms/terms inline on first use (use `--define TERM=Definition`; fails on undefined terms unless `--allow-undefined-terms`)
 
 Do not include subjective commentary (for example “promising”, “good/bad”, “I think”, “we believe”).
 When comparing runs, use objective phrasing (for example “higher/lower”, “delta”, “rank”, “span”, “percent difference”).
