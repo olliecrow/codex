@@ -84,7 +84,7 @@ export NOTION_REPORT_CLI="$CODEX_HOME/skills/notion-report/scripts/notion_report
 2. Sync artifacts if needed.
 - If outputs live on a cluster or remote machine, sync them locally first (for example by running `cluster-check` before reporting).
 
-3. Render the report artifacts to an ephemeral directory.
+3. Render the report artifacts to an ephemeral location.
 
 Example (explicit run directories):
 
