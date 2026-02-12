@@ -893,27 +893,6 @@ def render_markdown_report(
     lines.append(f"- report generated (UTC): {now.isoformat(timespec='seconds')}")
     lines.append("")
 
-    if selected_metrics:
-        lines.append("## Metrics included")
-        for m in selected_metrics:
-            lines.append(f"- `{m}`")
-        lines.append("")
-
-    lines.append("## Results overview (final values)")
-    if not selected_metrics:
-        lines.append("- no numeric metrics were extracted from the provided runs.")
-        lines.append("")
-    else:
-        header = ["run"] + selected_metrics
-        lines.append("| " + " | ".join(header) + " |")
-        lines.append("| " + " | ".join(["---"] * len(header)) + " |")
-        for r in runs:
-            row = [r.name]
-            for m in selected_metrics:
-                row.append(format_float(r.finals.get(m)))
-            lines.append("| " + " | ".join(row) + " |")
-        lines.append("")
-
     lines.append("## What was run (inventory)")
     has_cfg_any = any(r.config_path for r in runs)
     has_cfg_baseline = bool(base_run_name and config_keys)
@@ -968,6 +947,27 @@ def render_markdown_report(
         else:
             lines.append("- configs were present, but no baseline/overrides were computed.")
             lines.append("")
+
+    if selected_metrics:
+        lines.append("## Metrics included")
+        for m in selected_metrics:
+            lines.append(f"- `{m}`")
+        lines.append("")
+
+    lines.append("## Results overview (final values)")
+    if not selected_metrics:
+        lines.append("- no numeric metrics were extracted from the provided runs.")
+        lines.append("")
+    else:
+        header = ["run"] + selected_metrics
+        lines.append("| " + " | ".join(header) + " |")
+        lines.append("| " + " | ".join(["---"] * len(header)) + " |")
+        for r in runs:
+            row = [r.name]
+            for m in selected_metrics:
+                row.append(format_float(r.finals.get(m)))
+            lines.append("| " + " | ".join(row) + " |")
+        lines.append("")
 
     lines.append("## Comparisons (plots)")
     if not plots:
