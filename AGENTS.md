@@ -36,6 +36,8 @@ This repository hosts the Codex CLI container, agent documentation, and reusable
 - Avoid time- or date-dependent language in `docs/`. Prefer updating existing entries over adding new ones unless clearly distinct.
 - `plan/` is short-lived and disposable. Keep it tidy, consolidate notes, and clean up artifacts as you go.
 - Decision capture policy lives in `docs/decisions.md`. Record important fixes and decisions in the smallest local place (code, tests, or docs) per that policy.
+- Operating workflow conventions (note routing, promotion, orchestration) live in `docs/workflows.md`.
+- Route active notes to `plan/current/notes.md`, keep a compact workstream index in `plan/current/notes-index.md`, and track parallel work in `plan/current/orchestrator-status.md`.
 - Skills should run proactively and autonomously on high-conviction, in-scope actions, complete work end-to-end with verification, and keep `docs/` accurate by promoting durable learnings/decisions from ongoing work.
 - For large or long tasks/plans, run recurring milestone checkpoints: use `git-commit` for small logical commits and `organise-docs` to promote durable learnings/decisions into `docs/`.
 
@@ -50,7 +52,7 @@ If `/plan/` does not exist, create it with the following subdirectories:
 - `/plan/handoffs/`: sequential workflow handoffs from `container/run_sequence_*` scripts.
 
 ## Skills
-- Current skills: `battletest`, `cleanup`, `cluster-check`, `consider`, `create-plan`, `danger-check`, `decisions`, `execute`, `familiarize`, `gh-address-comments`, `gh-fix-ci`, `git-commit`, `git-merge`, `git-review`, `git-summary`, `investigate`, `jupyter-notebook`, `learnings`, `openai-docs`, `organise-docs`, `plan`, `playwright`, `prime`, `review-branch`, `setup`, `summarize`, `tech-debt`, `verify`, `wait-for-job`, `yeet`.
+- Current skills: `battletest`, `cleanup`, `cluster-check`, `cluster-optimise`, `consider`, `create-plan`, `danger-check`, `decisions`, `execute`, `familiarize`, `gh-address-comments`, `gh-fix-ci`, `git-commit`, `git-merge`, `git-review`, `git-summary`, `investigate`, `jupyter-notebook`, `learnings`, `notion-report`, `openai-docs`, `organise-docs`, `plan`, `playwright`, `prime`, `review-branch`, `setup`, `summarize`, `tech-debt`, `verify`, `wait-for-job`, `yeet`.
 - System skills remain in `~/.codex/skills/.system` and are not versioned in this repo.
 - When adding/removing skills here, keep the `~/.codex/skills` symlinks in sync.
 
