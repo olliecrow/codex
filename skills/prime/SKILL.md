@@ -11,6 +11,8 @@ Prime the conversation before substantial execution so work stays proactive, aut
 
 Start with a fast familiarization sweep of docs and current repo state, then set a clear session operating contract, activate recurring loops (`organise-docs`, `git-commit`, `cleanup`, verification), and keep enforcing the contract for the rest of the conversation.
 
+Treat `organise-docs` and `git-commit` as an always-on cadence during multi-step work: after each substantial chunk, promote durable knowledge into `docs/`, and checkpoint with a small commit once verification is green.
+
 ## Multi-agent collaboration
 
 - Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
@@ -28,6 +30,7 @@ Start with a fast familiarization sweep of docs and current repo state, then set
 - On repeated invocations for the same objective, resume from prior findings/artifacts and prioritize net-new progress over rerunning identical work unless verification requires reruns.
 - Drive work to complete outcomes with verification, not partial handoffs.
 - Treat iterative execution as the default for non-trivial work; run adaptive loop passes until completion criteria are met.
+- Prefer a repeating mini-cycle throughout the conversation when work is multi-step: `work -> verify -> organise-docs -> git-commit (if eligible) -> continue`.
 - Compound knowledge aggressively over time: capture notes/findings continuously, then promote durable learnings/decisions into long-lived docs as soon as confidence is high.
 - Run `organise-docs` frequently during execution to capture durable decisions and learnings, not only at the end.
 - Create small checkpoint commits frequently with `git-commit` when changes are commit-eligible, checks are green, and repo policy permits commits.
@@ -109,9 +112,11 @@ After priming, the session should have all of the following:
 - `organise-docs` loop:
   - run after substantial findings, non-obvious decisions, or behavior changes.
   - promote durable knowledge from `plan/` to `docs/` during execution, not only at the end.
+  - do not let doc updates pile up; prefer small, frequent promotions over end-of-task dumps.
 - `git-commit` loop:
   - run at commit-eligible milestones and at least once per major phase when checks are green and policy permits.
   - keep commits small, logical, and easy to review.
+  - do not let a large uncommitted diff accumulate; checkpoint whenever there is a clean, verifiable unit of work.
 - `cleanup` loop:
   - run regular lightweight cleanup passes to remove redundant or dead additions introduced during work.
   - keep cleanup scoped; avoid speculative refactors unless clearly justified.
@@ -136,6 +141,7 @@ Then proceed directly into execution.
 
 - Re-apply the prime contract whenever drift appears (for example repeated low-value reruns, avoidable user questions, stale docs, or delayed checkpoint commits).
 - Continue from prior artifacts and logs when re-invoked; do not reset progress unless required.
+- If the `organise-docs` or `git-commit` cadence slips during a long task, pause to run the hygiene cycle before expanding scope further.
 - If there is nothing left to do, say so explicitly and stop.
 
 ## Guardrails
