@@ -310,6 +310,7 @@ plan/**
 !skills/plan/
 !skills/plan/**
 
+.claude/
 .codex/
 skills/.system/
 *claude*/
