@@ -24,7 +24,7 @@ This doc summarizes the version-controlled Codex skills that live in this repo a
 - On repeated invocations of the same objective, resume from prior artifacts and prioritize net-new progress over rerunning identical work unless reruns are required for verification.
 - Keep repository documentation accurate: promote durable learnings and decisions to `docs/` as part of normal skill execution.
 - Run `organise-docs` frequently during execution when durable learnings or decisions appear; do not defer all documentation to the end.
-- For any non-trivial task, run recurring milestone checkpoints instead of a single end wrap-up: use `git-commit` frequently for small logical commits and `organise-docs` to promote durable learnings, then prune stale `plan/` artifacts.
+- For any non-trivial task, run recurring milestone checkpoints throughout the conversation (not only at the end): use `git-commit` frequently for small logical commits and `organise-docs` to promote durable learnings, then prune stale `plan/` artifacts.
 - Never squash commits in skill workflows; preserve history and use merge commits when integrating branches.
 - Prefer simplification over added complexity in skill workflows: aggressively remove bloat, redundancy, and over-engineering while preserving correctness.
 - For git/PR workflows, always check active PR metadata at the end and update stale title/body when needed.
@@ -54,8 +54,8 @@ For decision framing, rationale capture, plan/docs robustness, git safety, and r
 
 ## Domain-Specific Framing
 
-- For quant/trading work where the user wants a trader-perspective explanation (PnL, risk, exposure, execution, liquidity, limits, failure modes) rather than ML/math framing, use `skills/explain-trader/SKILL.md`.
-- `explain-trader` is designed to preserve fidelity via a detail inventory, a topic-routing step (signal vs execution vs infra vs incident), a full book-impact pass, a structured term-mapping appendix, and a second-pass completeness gate (see its `references/` for checklists, translations, and examples).
+- For quant/trading work where the user wants a trader-perspective explanation (PnL, risk, exposure, execution, microstructure, latency, liquidity, limits, failure modes) rather than ML/math framing, use `skills/explain-trader/SKILL.md`.
+- `explain-trader` is designed to preserve fidelity via a detail inventory, a topic-routing step (including HFT/latency-critical live behavior), a full book-impact pass, a structured term-mapping appendix, and a second-pass completeness gate (see its `references/` for checklists, translations, and examples).
 
 ## Adding or Removing Skills
 - Add or remove skill directories under `skills/`.
