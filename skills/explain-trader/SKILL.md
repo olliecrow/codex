@@ -47,6 +47,19 @@ Before translating, extract a complete inventory of the source content:
 
 Use the inventory to ensure every item gets translated or explicitly marked as unmapped/unknown.
 
+### 0.1) Route the topic (pick the trader lens that preserves causality)
+
+Choose the primary topic type(s). This determines which parts of the book-impact pass must be most explicit.
+
+- signal/model/research result: prioritize alpha quality, decay, costs/turnover, and regime fragility
+- execution/microstructure: prioritize slippage/adverse selection, fill probability, and capacity constraints
+- risk/limits/sizing: prioritize exposures, tail scenarios, and limit consumption / breaches
+- data pipeline/backtest plumbing: prioritize fake-PnL risks (leakage, timestamps), staleness, and reproducibility
+- infra/reliability: prioritize operational failure modes (duplicate/stale orders, missing data) and kill-switch/monitoring
+- incident/postmortem: prioritize worst-case book impact, blast radius, detection, prevention controls, and recovery steps
+
+If multiple apply, say so and cover the union of required audits.
+
 ### 1) Lock the trading frame (state assumptions explicitly)
 
 If the user did not specify these, assume generic “systematic trading” and state the assumptions you chose.
@@ -86,6 +99,7 @@ If the topic includes “minor” implementation details, translate each into a 
 When helpful, consult:
 - `references/translations.md` for common ML/stat/infra term mappings
 - `references/checklist.md` for a second-pass trader completeness audit
+- `references/examples.md` for concrete translation patterns
 
 ### 4) Preserve fidelity with an explicit term-mapping appendix
 
@@ -95,6 +109,12 @@ Rules:
 - Keep the main explanation in trader terms.
 - The appendix can mention original terms, but must be a true correspondence (no hand-waving).
 - If something does not map cleanly, say so and describe the nearest trading analogue plus what is missing.
+
+Preferred appendix format (table is best when there are many terms):
+- original term / component
+- trader translation
+- book impact (PnL/risk/cost/ops)
+- failure mode if wrong
 
 ## Output Template
 
@@ -119,6 +139,8 @@ Use this structure unless the user asks otherwise:
 - Always call out hidden assumptions (e.g., stable borrow, stable correlations, continuous liquidity).
 - Avoid “math first” explanations; translate math into what it means for edge stability, limits, and failure modes.
 - Spend time thinking: consider multiple trader framings and choose the one that best preserves the true causal story.
+- When numbers exist, keep them: translate units into bps, dollars, risk units, participation, and limit usage (not “metric improved”).
+- If you have to speculate, label it and keep it bounded; never present unknowns as certain.
 
 ## Completeness Gate (Run a Second Pass)
 
