@@ -36,6 +36,17 @@ Optimize for fidelity: keep all the details, but frame them as a trader would ev
 
 ## Workflow (Always Follow)
 
+### 0) Build a detail inventory (do not lose information)
+
+Before translating, extract a complete inventory of the source content:
+- terms of art, variables, components, and claims
+- assumptions (explicit and implicit)
+- constraints and invariants
+- edge cases and failure modes mentioned
+- any numbers/thresholds/units that matter
+
+Use the inventory to ensure every item gets translated or explicitly marked as unmapped/unknown.
+
 ### 1) Lock the trading frame (state assumptions explicitly)
 
 If the user did not specify these, assume generic “systematic trading” and state the assumptions you chose.
@@ -72,6 +83,10 @@ Explain impact across the stack a trader cares about:
 
 If the topic includes “minor” implementation details, translate each into a trading implication, even if it is small (e.g., a timestamp bug is “stale signal risk”; a retry loop is “duplicate orders risk” unless idempotent).
 
+When helpful, consult:
+- `references/translations.md` for common ML/stat/infra term mappings
+- `references/checklist.md` for a second-pass trader completeness audit
+
 ### 4) Preserve fidelity with an explicit term-mapping appendix
 
 End with a short appendix that maps the original terms to trader terms so no detail is lost.
@@ -105,22 +120,9 @@ Use this structure unless the user asks otherwise:
 - Avoid “math first” explanations; translate math into what it means for edge stability, limits, and failure modes.
 - Spend time thinking: consider multiple trader framings and choose the one that best preserves the true causal story.
 
-## Common Translations (Non-Exhaustive)
+## Completeness Gate (Run a Second Pass)
 
-- model accuracy/AUC: “how well the signal separates good from bad trades”; relate to hit rate, payoff asymmetry, and turnover
-- regularization: “how much you distrust noisy edges”; reduces overfit “paper alpha” that won’t survive live
-- overfitting: “alpha that disappears when the tape changes”; leads to drawdowns when regime shifts
-- latency/throughput: “can we react before the price moves away”; impacts slippage and adverse selection
-- retries/timeouts: “duplicate orders / stale orders risk”; must be idempotent and bounded
-- data leakage: “knowing tomorrow’s close today”; creates fake backtest PnL
-- lookahead bias: same as leakage; “trading with unavailable information”
-- label shift/drift: “market changed; the edge decays”; shows up as rising drawdowns and hit-rate collapse
-- distribution shift: “regime change”; correlations and vol change; hedges stop working
-- calibration: “position sizing confidence”; whether predicted edge maps to realized PnL
-- precision/recall: “missed opportunities vs bad fills”; trade selection vs overtrading
-- false positives: “bad trades you take”; cost drag and drawdowns
-- false negatives: “good trades you skip”; opportunity cost, lower capacity usage
-- backtest: “paper trading”; must include costs, constraints, and realistic execution assumptions
-- online vs batch: “intra-day reaction vs end-of-day rebalance” and the execution constraints that follow
-
-If a requested explanation touches any of these concepts, translate them explicitly and tie them to book-level outcomes.
+After writing the first draft, run a second pass:
+- re-check the detail inventory and ensure every item is represented
+- audit with `references/checklist.md` to catch missing book-relevant impacts
+- tighten any vague mappings in the term-mapping appendix
