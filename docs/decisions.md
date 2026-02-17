@@ -40,7 +40,7 @@ Trade-offs: Additional execution cycles on complex tasks; mitigated by explicit 
 Enforcement: Shared principles in `docs/skills.md`, loop requirements in per-skill proactive sections, and explicit repeat-pass workflow steps in key skills.
 References: `docs/skills.md`, `skills/cleanup/SKILL.md`, `skills/git-review/SKILL.md`, `skills/battletest/SKILL.md`.
 
-Decision: For any non-trivial task, run recurring checkpoints with frequent `organise-docs` updates and small logical `git-commit` checkpoints.
+Decision: For any non-trivial task, run recurring checkpoints throughout the conversation (not only at the end) with frequent `organise-docs` updates and small logical `git-commit` checkpoints.
 Context: Durable rationale and reviewable progress were drifting when updates were deferred to end-of-task.
 Rationale: Frequent docs + commit checkpoints improve recoverability, reduce risk, and compound reusable knowledge while context is fresh.
 Trade-offs: Adds lightweight process overhead; mitigated by keeping checkpoints small and tied to meaningful milestones.
@@ -82,8 +82,8 @@ Trade-offs: More frequent cleanup can add incremental short-term effort; mitigat
 Enforcement: Shared policy text in `AGENTS.md`, `docs/skills.md`, and per-skill proactive sections; enforced by `lint_skill_policy.py` and `validate_skills.py`.
 References: `AGENTS.md`, `docs/skills.md`, `skills/lint_skill_policy.py`, `skills/validate_skills.py`, `skills/*/SKILL.md`.
 
-Decision: When translating technical work for quant/trading projects, prefer a trader framing that preserves full fidelity via explicit inventories, book-impact analysis, and a term-mapping appendix.
-Context: Non-trader explanations (ML/math/infra framing) can drop “minor” details that are material to live trading outcomes (fake backtest PnL, limit breaches, execution drag, operational failure modes).
+Decision: When translating technical work for quant/trading projects, prefer a trader framing that preserves full fidelity via explicit inventories, book-impact analysis, a term-mapping appendix, and (when latency matters) a step-by-step live timeline replay (acks/fills/cancels, inflight exposure).
+Context: Non-trader explanations (ML/math/infra framing) can drop “minor” details that are material to live trading outcomes (fake backtest PnL, limit breaches, execution/microstructure drag, operational failure modes).
 Rationale: A consistent trader lens keeps explanations anchored to what ultimately matters when running a book: PnL distribution, risk, costs, liquidity/capacity, execution, controls, and how the system fails.
 Trade-offs: Explanations become longer and more structured; mitigated by progressive disclosure (keep the main narrative trader-focused and use appendices/references for completeness).
 Enforcement: Use `skills/explain-trader/SKILL.md` workflow (detail inventory, topic routing, book-impact pass, second-pass completeness audit) and keep its references updated (`skills/explain-trader/references/*`).
