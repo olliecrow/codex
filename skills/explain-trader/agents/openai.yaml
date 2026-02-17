@@ -1,0 +1,4 @@
+interface:
+  display_name: "Explain Trader"
+  short_description: "Explain technical/quant work in trader terms."
+  default_prompt: "Explain what we're discussing in trader/trading terms (PnL, risk, exposure, execution, limits, failure modes). Preserve all details and nuances; avoid ML/math framing; include a term-mapping appendix so nothing is lost."
