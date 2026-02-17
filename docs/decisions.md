@@ -82,6 +82,13 @@ Trade-offs: More frequent cleanup can add incremental short-term effort; mitigat
 Enforcement: Shared policy text in `AGENTS.md`, `docs/skills.md`, and per-skill proactive sections; enforced by `lint_skill_policy.py` and `validate_skills.py`.
 References: `AGENTS.md`, `docs/skills.md`, `skills/lint_skill_policy.py`, `skills/validate_skills.py`, `skills/*/SKILL.md`.
 
+Decision: When translating technical work for quant/trading projects, prefer a trader framing that preserves full fidelity via explicit inventories, book-impact analysis, and a term-mapping appendix.
+Context: Non-trader explanations (ML/math/infra framing) can drop “minor” details that are material to live trading outcomes (fake backtest PnL, limit breaches, execution drag, operational failure modes).
+Rationale: A consistent trader lens keeps explanations anchored to what ultimately matters when running a book: PnL distribution, risk, costs, liquidity/capacity, execution, controls, and how the system fails.
+Trade-offs: Explanations become longer and more structured; mitigated by progressive disclosure (keep the main narrative trader-focused and use appendices/references for completeness).
+Enforcement: Use `skills/explain-trader/SKILL.md` workflow (detail inventory, topic routing, book-impact pass, second-pass completeness audit) and keep its references updated (`skills/explain-trader/references/*`).
+References: `skills/explain-trader/SKILL.md`, `skills/explain-trader/references/checklist.md`, `skills/explain-trader/references/translations.md`, `skills/explain-trader/references/examples.md`.
+
 ## Template
 ```
 Decision:

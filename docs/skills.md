@@ -52,6 +52,11 @@ For decision framing, rationale capture, plan/docs robustness, git safety, and r
 - Keep context small and avoid loading unrelated files.
 - If a skill is missing or blocked, say so briefly and continue with the closest safe fallback.
 
+## Domain-Specific Framing
+
+- For quant/trading work where the user wants a trader-perspective explanation (PnL, risk, exposure, execution, liquidity, limits, failure modes) rather than ML/math framing, use `skills/explain-trader/SKILL.md`.
+- `explain-trader` is designed to preserve fidelity via a detail inventory, a topic-routing step (signal vs execution vs infra vs incident), a full book-impact pass, a structured term-mapping appendix, and a second-pass completeness gate (see its `references/` for checklists, translations, and examples).
+
 ## Adding or Removing Skills
 - Add or remove skill directories under `skills/`.
 - Keep the `~/.codex/skills` symlinks in sync with this repo.
