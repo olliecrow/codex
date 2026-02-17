@@ -47,6 +47,12 @@ Do not force a mapping when it is not faithful. If unmapped, say so and explain 
 - "throughput" -> "can you keep up with the decision rate; missed trades / backpressure"
 - "retries" -> "duplicate orders risk unless idempotent"
 - "timeouts" -> "stale actions risk; cancel/replace storms; missed hedges"
+- "inflight" -> "orders/cancels in motion; exposure you may not fully see yet"
+- "ack" / "acknowledgement" -> "confirmation of order state; late acks create state divergence"
+- "fill" -> "real inventory change; can arrive before your local state updates"
+- "partial fill" -> "inventory drifts while you still have remaining exposure; impacts hedges/limits"
+- "cancel/replace race" -> "you think you pulled risk, but you can still get hit"
+- "idempotency key" -> "prevent duplicate orders during retries; limits duplicate-exposure risk"
 - "eventual consistency" -> "temporary position/account mismatch; limit breaches if not guarded"
 - "cache" -> "faster but can go stale; stale signal risk"
 - "backfill" -> "fix historical data; can silently change research conclusions"
@@ -60,4 +66,3 @@ Do not force a mapping when it is not faithful. If unmapped, say so and explain 
 - "ablation" -> "which info input actually drives the edge"
 - "robustness" -> "does it survive different regimes, venues, and cost assumptions"
 - "paper trading" -> "simulated live; check that execution + data pipeline behave"
-

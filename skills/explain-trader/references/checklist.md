@@ -75,6 +75,28 @@ Apply only the sections relevant to the topic; do not invent facts when inputs a
 - Partial fills / queue position / cancel-replace behavior considered (if relevant)?
 - Latency sensitivity stated (or explicitly not relevant)?
 
+## F.1) HFT / Latency-Critical Live Behavior (If Relevant)
+
+- Is there a step-by-step live timeline (data -> decision -> place -> ack -> fill -> cancel -> cancel ack)?
+- Are order-state races covered:
+  - fill arrives before cancel ack
+  - partial fill during cancel
+  - late ack or duplicate events
+  - cancel reject / post-only reject handling
+- Is “inflight” exposure accounted for:
+  - open orders + unacknowledged orders + pending cancels
+  - how risk/limits should treat inflight (worst-case fill assumptions)
+- Are the main latency distributions named (even qualitatively):
+  - market data latency
+  - decision latency
+  - gateway/router latency
+  - exchange ack/fill latency
+- Are the monitoring hooks specified:
+  - fill/ack latency percentiles
+  - order state divergence / reconcile loop health
+  - cancel reject rate / replace churn
+  - unexpected fill rate after cancel
+
 ## G) Operational Reality (Infra + Controls)
 
 - Data integrity risks translated:
@@ -101,4 +123,3 @@ Apply only the sections relevant to the topic; do not invent facts when inputs a
 - Detection: how would you notice live (PnL shape, exposure drift, fill anomalies)?
 - Prevention: which control would have prevented it (limit, idempotency, validation, monitoring)?
 - Recovery: how to unwind or freeze without making things worse?
-

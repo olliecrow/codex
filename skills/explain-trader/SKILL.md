@@ -1,6 +1,6 @@
 ---
 name: explain-trader
-description: Explain the current topic in trader/trading terms (PnL, risk, exposure, execution, liquidity, limits, failure modes) while preserving all important details and nuances. Use for quant/trading projects when the user wants a trader-perspective explanation of technical work (code, model/ML components, math/stats, infrastructure, incidents, experiments, research results, design decisions) or to translate non-trading terminology into what matters for running a book.
+description: Explain the current topic in HFT/quant/trader terms (PnL, risk, exposure, execution, microstructure, latency, liquidity, limits, failure modes) while preserving all important details and nuances. Use for quant/trading projects when the user wants a trader-perspective explanation of technical work (code, model/ML components, math/stats, infrastructure, incidents, experiments, research results, design decisions), especially when live-trading step-by-step behavior matters (inflight fills, cancel/replace races, queue position), or to translate non-trading terminology into what matters for running a book.
 ---
 
 # Explain Trader
@@ -53,6 +53,7 @@ Choose the primary topic type(s). This determines which parts of the book-impact
 
 - signal/model/research result: prioritize alpha quality, decay, costs/turnover, and regime fragility
 - execution/microstructure: prioritize slippage/adverse selection, fill probability, and capacity constraints
+- hft/latency-critical live behavior: prioritize event timelines, order-state races (ack/fill/cancel), inflight exposure, and matching-engine realities
 - risk/limits/sizing: prioritize exposures, tail scenarios, and limit consumption / breaches
 - data pipeline/backtest plumbing: prioritize fake-PnL risks (leakage, timestamps), staleness, and reproducibility
 - infra/reliability: prioritize operational failure modes (duplicate/stale orders, missing data) and kill-switch/monitoring
@@ -72,6 +73,23 @@ Cover, at minimum:
 - what “good” looks like: PnL distribution, drawdown tolerance, turnover and costs, tail behavior, stability across regimes
 
 Ask at most 3 clarifying questions only if the explanation would otherwise be materially wrong (e.g., the difference between HFT execution constraints vs daily rebal).
+
+### 1.1) If latency matters: do a live timeline replay (step-by-step)
+
+Trigger this step when any of the following are true:
+- the system is HFT-ish (sub-second decisions, market making, latency-sensitive execution), or
+- the topic mentions latency/throughput, order router behavior, cancels, partial fills, acks, or “inflight”.
+
+Write a concrete timeline as if running live. Include the order state transitions and the race conditions:
+- data arrival -> signal decision -> order placement -> exchange/broker ack -> fills (partial/full) -> cancels -> cancel acks
+- what can arrive out of order (fill before cancel ack, late acks, duplicate events)
+- what is “inflight” at each step (open orders + pending cancels + unacknowledged orders)
+- how exposure can temporarily exceed intent (partial fills during cancel, stale cancels, hedges lagging)
+
+Translate the implications:
+- PnL: adverse selection / slippage when you are late; phantom PnL when marks lag fills
+- risk: transient gross/net spikes, limit breaches, unhedged legs, inventory drift
+- ops: what monitoring catches it (fill/ack latency distributions, cancel reject rate, order state divergence)
 
 ### 2) Identify what the thing “is” in trading terms
 
@@ -141,6 +159,7 @@ Use this structure unless the user asks otherwise:
 - Spend time thinking: consider multiple trader framings and choose the one that best preserves the true causal story.
 - When numbers exist, keep them: translate units into bps, dollars, risk units, participation, and limit usage (not “metric improved”).
 - If you have to speculate, label it and keep it bounded; never present unknowns as certain.
+- For HFT/latency-sensitive topics, always include a live step-by-step replay with order-state races and inflight exposure; do not compress this into “execution risk”.
 
 ## Completeness Gate (Run a Second Pass)
 
