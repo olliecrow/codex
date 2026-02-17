@@ -50,6 +50,7 @@ Primary outcomes:
 - explicit routing from scratch notes to durable docs
 - clear multi-workstream tracking for orchestrated/subagent workflows
 - a spartan default setup that stays lightweight and maintainable (while supporting a deeply structured, interlinked `docs/` over time)
+- a default always-on hygiene cadence across conversations: use `organise-docs` and `git-commit` frequently throughout execution, not only at the end
 
 ## Behavioral guardrails (must follow)
 
@@ -84,6 +85,7 @@ Baseline model to install:
 - Notes are routed by purpose:
   - active notes and scratch logs in `plan/current/`
   - long-lived guidance in `docs/`
+- Recurring conversation hygiene is expected once setup is present: run `organise-docs` and `git-commit` frequently during multi-step work so durable knowledge and checkpoint commits do not pile up.
 - Parallel/subagent work has explicit status tracking and handoff conventions to prevent "lost work" across streams.
 
 ## Definition of "already set up"

@@ -11,7 +11,7 @@ Prime the conversation before substantial execution so work stays proactive, aut
 
 Start with a fast familiarization sweep of docs and current repo state, then set a clear session operating contract, activate recurring loops (`organise-docs`, `git-commit`, `cleanup`, verification), and keep enforcing the contract for the rest of the conversation.
 
-Treat `organise-docs` and `git-commit` as an always-on cadence during multi-step work: after each substantial chunk, promote durable knowledge into `docs/`, and checkpoint with a small commit once verification is green.
+Treat `organise-docs` and `git-commit` as an always-on cadence throughout the conversation: after each substantial chunk, promote durable knowledge into `docs/`, and checkpoint with a small commit once verification is green.
 
 ## Multi-agent collaboration
 
@@ -30,7 +30,7 @@ Treat `organise-docs` and `git-commit` as an always-on cadence during multi-step
 - On repeated invocations for the same objective, resume from prior findings/artifacts and prioritize net-new progress over rerunning identical work unless verification requires reruns.
 - Drive work to complete outcomes with verification, not partial handoffs.
 - Treat iterative execution as the default for non-trivial work; run adaptive loop passes until completion criteria are met.
-- Prefer a repeating mini-cycle throughout the conversation when work is multi-step: `work -> verify -> organise-docs -> git-commit (if eligible) -> continue`.
+- Prefer a repeating mini-cycle throughout the conversation: `work -> verify -> organise-docs -> git-commit (if eligible) -> continue`.
 - Compound knowledge aggressively over time: capture notes/findings continuously, then promote durable learnings/decisions into long-lived docs as soon as confidence is high.
 - Run `organise-docs` frequently during execution to capture durable decisions and learnings, not only at the end.
 - Create small checkpoint commits frequently with `git-commit` when changes are commit-eligible, checks are green, and repo policy permits commits.
