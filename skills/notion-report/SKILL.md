@@ -79,15 +79,21 @@ Avoid filesystem path leakage in report body. Use neutral labels like `input ima
 - If choosing a subpage (Reports/Experiments/etc.), use `mcp__notion__notion-search` with `page_url` scoped to the hub to find the best target subpage, then fetch it to get its `page_id`.
 
 3) Create the report page:
-- Use `mcp__notion__notion-create-pages` with `parent` set to the chosen parent `page_id`.
+- Default to a single canonical page per report. Before creating, always search for an existing matching Codex-managed report and update it in-place (see Update behavior).
+- Use `mcp__notion__notion-create-pages` with `parent` set to the chosen parent `page_id` only when you are sure no matching Codex-managed report exists (or the user explicitly asked for a new report).
 - Title pattern (match existing report pages when possible): `<YYYY-MM-DD> - <topic>`
 - Content should follow the quality checklist below.
 - Include the Codex marker callout at the end of the page content.
 
 4) Update behavior:
-- If asked to revise an existing report, first search for a matching page under the chosen parent location.
-- Fetch the candidate page(s) and only update a page if it contains the `codex-managed: true` marker.
-- If the only matching pages are not Codex-managed, create a new page instead (and optionally link/mention the prior page).
+- Refinement means improving the same page over time. Do not create new copies/versions like `v2`, `v3`, `copy`, or `final`.
+- Always prefer updating an existing Codex-managed report page in-place.
+- Matching algorithm (most to least preferred):
+- Exact title match within the chosen parent location (or its hub scope) for `<YYYY-MM-DD> - <topic>`.
+- If no exact match and the user did not specify a date, pick the single best match by topic among recent reports (prefer the most recent date in the title).
+- If multiple candidates remain, fetch each and pick the one that is Codex-managed and most semantically aligned to the user request (avoid splitting the narrative across pages).
+- Fetch the candidate page(s) and only update a page if it contains the `codex-managed: true` marker (and preserve that marker on every update).
+- If no matching Codex-managed page exists, create a new report page (and optionally link/mention the prior human-managed page without editing it).
 
 5) Output contract:
 - Return the created/updated Notion page URL (or ID) as the primary artifact.
