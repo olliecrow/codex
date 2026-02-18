@@ -8,7 +8,7 @@ description: Create an experiment/investigation report directly in Notion via th
 Create a report page directly in Notion (via MCP), filed under an appropriate project/workspace location.
 
 - no fixed input schema required
-- no Python tooling required
+- no fixed tooling required (Python optional for plots/visuals when available)
 - accept freeform inputs: notes, logs, tables, images, tables, artifacts, and run outputs
 - create a Notion page automatically by default (no HTML import)
 - hide local paths and hostnames in visible text
@@ -31,7 +31,10 @@ Choose a parent location in Notion. Prefer an explicit parent URL from the user;
 - prefer subpages named like: `Reports`, `Experiments`, `Research`, `Runs`, `Results`
 - if no obvious subpage exists, create the report directly under the hub page.
 
-Ask at most one clarification question only if you cannot determine which hub/location is correct.
+4) If the correct hub/location is still unclear, fallback to personal notes:
+- Ollie Notes (fallback): `https://www.notion.so/Ollie-Notes-21df1d57cab880e2af99fc37c6062b2e`
+
+Ask at most one clarification question only if you cannot determine whether this is GigaPlay vs Mercantile and the fallback is not acceptable for the user.
 
 ## Scope and input handling
 
@@ -60,7 +63,7 @@ Avoid filesystem path leakage in report body. Use neutral labels like `input ima
 ## Notion MCP workflow (must follow)
 
 1) Fetch the Notion markdown spec before writing content:
-- Read the MCP resource `notion://docs/enhanced-markdown-spec` so the generated page content uses valid Notion-flavored Markdown.
+- Use `read_mcp_resource` with `server: notion` and `uri: notion://docs/enhanced-markdown-spec` so the generated page content uses valid Notion-flavored Markdown.
 
 2) Resolve the parent page:
 - Use `mcp__notion__notion-fetch` on the chosen hub/parent URL to obtain a `page_id`.
@@ -78,9 +81,27 @@ Avoid filesystem path leakage in report body. Use neutral labels like `input ima
 ## Visuals and artifacts
 
 - Prefer embedding summary tables and key numeric outcomes over screenshots.
-- If you cannot include local images directly in Notion via the available markdown/API surface, do not block. Instead:
-  - include captions and what the image demonstrates
-  - include a short `Artifacts` section with neutral labels (no absolute paths) so a human can attach files later if desired
+
+Strive relentlessly to embed images/plots in the Notion page. Try (in this order), stopping only when you have exhausted the options:
+
+1) If an image already has a stable `https://...` URL:
+- Embed it directly using an `Image` block in Notion-flavored Markdown:
+  - `<image source="https://example.com/plot.png">caption</image>`
+
+2) If the image is local-only:
+- Attempt a data URL embed for small images:
+  - `<image source="data:image/png;base64,....">caption</image>`
+- If the page creation fails due to size/limits, retry with fewer images or smaller versions.
+
+3) If the image is too large:
+- Downscale/compress and retry (prefer preserving the information content over pixel-perfect fidelity).
+- If Python is available, it is acceptable to generate/resize plots as PNGs for embedding.
+
+4) If embedding is still not possible with the available MCP/API surface:
+- Do not block report creation.
+- Include a short `Artifacts to attach` section with neutral labels (no absolute paths) and a sentence for what each plot/image demonstrates, so a human can attach files later.
+
+Important: Notion API page creation generally needs an externally-resolvable URL to render images reliably. Do not upload images to a public host without explicit user approval; ask for a safe hosting destination if needed.
 
 ## Proactive autonomy and knowledge compounding
 
