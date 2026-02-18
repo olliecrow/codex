@@ -80,28 +80,26 @@ Avoid filesystem path leakage in report body. Use neutral labels like `input ima
 
 ## Visuals and artifacts
 
-- Prefer embedding summary tables and key numeric outcomes over screenshots.
+- Prefer embedding summary tables and key numeric outcomes over screenshots, but include plots/images whenever they materially improve understanding.
 
 Strive relentlessly to embed images/plots in the Notion page. Try (in this order), stopping only when you have exhausted the options:
 
 1) If an image already has a stable `https://...` URL:
-- Embed it directly using an `Image` block in Notion-flavored Markdown:
+- Embed it directly using an Image block:
   - `<image source="https://example.com/plot.png">caption</image>`
 
-2) If the image is local-only:
-- Attempt a data URL embed for small images:
-  - `<image source="data:image/png;base64,....">caption</image>`
-- If the page creation fails due to size/limits, retry with fewer images or smaller versions.
+2) If you can generate a plot as a URL-rendered chart (no file upload needed):
+- Use a URL-rendered chart provider (for example `quickchart.io`) to generate a plot image from a chart spec, then embed that `https://...` image URL via `<image ...>`.
+- Only use this when it preserves fidelity (do not distort results just to fit a chart spec).
 
-3) If the image is too large:
-- Downscale/compress and retry (prefer preserving the information content over pixel-perfect fidelity).
-- If Python is available, it is acceptable to generate/resize plots as PNGs for embedding.
+3) If the image is local-only (no existing URL):
+- Notion sanitizes `data:` URIs in `<image source="...">` (source may be blanked), so do not rely on base64 data URLs for images.
+- You need an externally-resolvable URL for Notion to render images reliably.
+- Do not upload images to a public host without explicit user approval. Ask for a safe hosting destination (preferred: a private artifact host or a pre-signed URL that Notion can fetch), then embed via `<image source="https://...">`.
 
 4) If embedding is still not possible with the available MCP/API surface:
 - Do not block report creation.
 - Include a short `Artifacts to attach` section with neutral labels (no absolute paths) and a sentence for what each plot/image demonstrates, so a human can attach files later.
-
-Important: Notion API page creation generally needs an externally-resolvable URL to render images reliably. Do not upload images to a public host without explicit user approval; ask for a safe hosting destination if needed.
 
 ## Proactive autonomy and knowledge compounding
 
