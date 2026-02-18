@@ -157,9 +157,23 @@ Strive relentlessly to embed images/plots in the Notion page. Try (in this order
 - For non-trivial report generation, use checkpoint cycles instead of single-pass handoffs.
 - At meaningful milestones, rerun quality checks and confirm the generated Notion page still matches source evidence and privacy constraints.
 
+## Reader-centric review loops (must follow)
+
+Refinement is the default. Put yourself in the shoes of a busy reader who did not run the work and is deciding what to believe and what to do next.
+
+Always do multiple rounds of review before considering a report "done":
+- Pass 1 (structure): ensure a crisp narrative arc: what question, what changed/was run, what evidence, what results, what conclusion.
+- Pass 2 (reader questions): re-read top-to-bottom and answer the questions a skeptical reader will have inline (assumptions, baselines, comparisons, caveats, definitions, what could be wrong).
+- Pass 3 (actionability): make it easy to act: explicit recommendations, next experiments, and decision points; highlight the single most important outcome up front.
+
+Mechanics:
+- After each pass, update the same canonical Codex-managed report page in-place (do not fork versions).
+- After updating, immediately re-fetch the page and re-read it as the reader to confirm the changes landed as intended (and that no paths/private details leaked).
+
 ## Quality checklist
 
 - include: scope, what was run, what varied, measured outcomes, tables, top visuals, conclusions
+- include an up-front summary of the single most important outcome when possible
 - include assumptions and limitations
 - include missing-data caveats
 - verify no explicit local paths appear in narrative text
