@@ -68,7 +68,7 @@ Avoid filesystem path leakage in report body. Use neutral labels like `input ima
 
 3) Create the report page:
 - Use `mcp__notion__notion-create-pages` with `parent` set to the chosen parent `page_id`.
-- Title pattern (adapt as needed): `<Project> report: <topic> (<YYYY-MM-DD>)`
+- Title pattern (match existing report pages when possible): `<YYYY-MM-DD> - <topic>`
 - Content should follow the quality checklist below.
 
 4) Output contract:
