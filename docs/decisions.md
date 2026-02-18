@@ -103,6 +103,34 @@ Trade-offs: Some edits will require creating a new report page instead of modify
 Enforcement: `skills/notion-report/SKILL.md` requires a marker block (`codex-managed: true`) on created pages and forbids editing pages without it.
 References: `skills/notion-report/SKILL.md`.
 
+Decision: Notion-report refinement should update a single canonical Codex-managed report page in place rather than creating copies/versions.
+Context: Repeated revisions were at risk of producing `v2`/`copy` style page sprawl and splitting the narrative across multiple pages.
+Rationale: In-place refinement preserves one source of truth, improves readability, and keeps historical context and links concentrated.
+Trade-offs: Ambiguous matching across similarly titled pages requires extra candidate checks; mitigated by title/topic matching plus marker verification before updates.
+Enforcement: `skills/notion-report/SKILL.md` requires searching for a matching Codex-managed report first and only creating a new page when no safe matching page exists (or user explicitly asks for a new report).
+References: `skills/notion-report/SKILL.md`, `docs/skills.md`.
+
+Decision: Notion reports should be refined via reader-centric multi-pass review loops before completion.
+Context: Single-pass report writes can miss reader-critical clarity issues even when facts are correct.
+Rationale: Structured review passes (structure, skeptical-reader questions, clarity pass) improve comprehension and reduce ambiguity for downstream readers.
+Trade-offs: Additional review/edit cycles add time; mitigated by keeping each pass targeted and updating the same canonical page in place.
+Enforcement: `skills/notion-report/SKILL.md` defines required reader-centric passes and requires re-fetch/re-read validation after updates.
+References: `skills/notion-report/SKILL.md`, `docs/skills.md`.
+
+Decision: Notion reports are descriptive-only and must not include recommended next steps or follow-up actions.
+Context: Recommendation sections can blur reporting with planning and introduce scope the user did not request.
+Rationale: Keeping reports strictly descriptive preserves objectivity and ensures the page reflects only what current evidence shows.
+Trade-offs: Readers who want action plans need a separate planning artifact; mitigated by making findings and caveats explicit in the report body.
+Enforcement: `skills/notion-report/SKILL.md` report behavior and reader-clarity pass explicitly remove recommendations, next experiments, follow-up tasks, and decision directives.
+References: `skills/notion-report/SKILL.md`, `docs/skills.md`.
+
+Decision: Notion-report image embedding should rely on externally fetchable `https://` image URLs and post-write fetch verification.
+Context: MCP round-trip tests showed Notion sanitizes non-supported image sources (notably `data:` URIs), causing images to disappear or refetch with blank sources.
+Rationale: Restricting to externally fetchable `https` sources plus immediate verification prevents silent image loss in published reports.
+Trade-offs: Local-only images require an additional safe hosting step (or manual attach fallback), and third-party render/hosting can raise data-sharing concerns.
+Enforcement: `skills/notion-report/SKILL.md` image policy requires `https` sources, forbids reliance on `data:` URLs, requires post-update `notion-fetch` checks, and defines fallback behavior when embedding cannot be confirmed.
+References: `skills/notion-report/SKILL.md`.
+
 ## Template
 ```
 Decision:
