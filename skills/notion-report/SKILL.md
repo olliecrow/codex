@@ -96,6 +96,18 @@ Avoid filesystem path leakage in report body. Use neutral labels like `input ima
 
 - Prefer embedding summary tables and key numeric outcomes over screenshots, but include plots/images whenever they materially improve understanding.
 
+### Images and plots (must follow)
+
+Hard constraints (learned empirically via Notion MCP fetch round-trips):
+- Notion requires an externally fetchable `https://...` URL for reliable image rendering in `<image source="...">`.
+- Notion sanitizes/strips `data:` URIs (for example base64 `data:image/png;base64,...`), and the image will not persist (on refetch the block becomes `<image source="">...`).
+- `file:`, `blob:`, and other non-`https` sources are not reliable for rendering/persistence.
+- URLs that require interactive auth (cookies, VPN-only, private repos) often will not render for Notion; prefer truly fetchable URLs.
+
+Verification rule:
+- After creating/updating a report that includes images, immediately `mcp__notion__notion-fetch` the page and confirm each intended image appears as `<image source="https://...">...`.
+- If any image refetches as `<image source="">...` (blank source) or disappears, treat it as a failed embedding attempt and fall back to the next option below.
+
 Strive relentlessly to embed images/plots in the Notion page. Try (in this order), stopping only when you have exhausted the options:
 
 1) If an image already has a stable `https://...` URL:
@@ -105,14 +117,20 @@ Strive relentlessly to embed images/plots in the Notion page. Try (in this order
 2) If you can generate a plot as a URL-rendered chart (no file upload needed):
 - Use a URL-rendered chart provider (for example `quickchart.io`) to generate a plot image from a chart spec, then embed that `https://...` image URL via `<image ...>`.
 - Only use this when it preserves fidelity (do not distort results just to fit a chart spec).
+- Treat third-party chart renderers as an explicit data-sharing decision: do not send real project data without explicit user approval.
 
 3) If the image is local-only (no existing URL):
-- Notion sanitizes `data:` URIs in `<image source="...">` (source may be blanked), so do not rely on base64 data URLs for images.
-- You need an externally-resolvable URL for Notion to render images reliably.
-- Do not upload images to a public host without explicit user approval. Ask for a safe hosting destination (preferred: a private artifact host or a pre-signed URL that Notion can fetch), then embed via `<image source="https://...">`.
-- Do not use third-party chart rendering or hosting with real project data without explicit user approval.
+- You need an externally-resolvable `https://...` URL for Notion to render images reliably.
+- Do not upload images to a public host without explicit user approval.
+- Preferred hosting options (ask the user for one if not already available): a private artifact host that serves `https://...` URLs; a pre-signed `https://...` URL (ensure its expiry is acceptable for the report's expected lifetime); or a company-internal static host that Notion can fetch from without cookies/VPN.
+- Then embed via `<image source="https://...">caption</image>` and re-fetch to verify persistence.
 
-4) If embedding is still not possible with the available MCP/API surface:
+4) Last resort (still "directly in Notion", but not via MCP-only image sources):
+- If Playwright/browser automation is available and you have access to the Notion UI, upload/attach the local image directly into the report page in Notion (so Notion hosts it).
+- Only do this on Codex-managed pages (marker present).
+- Re-fetch the page after upload to ensure the hosted image renders and persists.
+
+5) If embedding is still not possible with the available MCP/API surface:
 - Do not block report creation.
 - Include a short `Artifacts to attach` section with neutral labels (no absolute paths) and a sentence for what each plot/image demonstrates, so a human can attach files later.
 
