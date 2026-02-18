@@ -1,6 +1,6 @@
 ---
 name: notion-report
-description: Create an experiment/investigation report directly in Notion via the Notion MCP server (automatic page creation) from freeform inputs and artifacts. Use when the user wants a Notion report created and filed in the right workspace location (no HTML import step).
+description: Create and maintain experiment/investigation reports directly in Notion via the Notion MCP server (automatic page creation/updates) from freeform inputs and artifacts. Use when the user wants reports created/edited/organized in Notion (no HTML or intermediate report formats).
 ---
 
 # Notion Report
@@ -10,9 +10,18 @@ Create a report page directly in Notion (via MCP), filed under an appropriate pr
 - no fixed input schema required
 - no fixed tooling required (Python optional for plots/visuals when available)
 - accept freeform inputs: notes, logs, tables, images, tables, artifacts, and run outputs
-- create a Notion page automatically by default (no HTML import)
+- always work directly in Notion (create/add/edit pages); never generate HTML or other intermediate report formats
 - hide local paths and hostnames in visible text
 - define acronyms on first use in the report
+
+## Codex-owned pages only (must follow)
+
+Codex may only edit pages that Codex created. Never edit pages that were not created by Codex.
+
+Implementation rule:
+- Every page Codex creates MUST include a durable marker block near the end:
+  - `<callout icon="🤖" color="gray_bg">\n\tcodex-managed: true\n\tOnly edit this page if this marker is present.\n</callout>`
+- Before updating an existing page, fetch it and verify the marker is present. If missing, do not edit; create a new report page instead.
 
 ## Location routing (must follow)
 
@@ -73,10 +82,15 @@ Avoid filesystem path leakage in report body. Use neutral labels like `input ima
 - Use `mcp__notion__notion-create-pages` with `parent` set to the chosen parent `page_id`.
 - Title pattern (match existing report pages when possible): `<YYYY-MM-DD> - <topic>`
 - Content should follow the quality checklist below.
+- Include the Codex marker callout at the end of the page content.
 
-4) Output contract:
-- Return the created Notion page URL (or ID) as the primary artifact.
-- Do not generate an HTML file unless the user explicitly asks for an offline/importable report.
+4) Update behavior:
+- If asked to revise an existing report, first search for a matching page under the chosen parent location.
+- Fetch the candidate page(s) and only update a page if it contains the `codex-managed: true` marker.
+- If the only matching pages are not Codex-managed, create a new page instead (and optionally link/mention the prior page).
+
+5) Output contract:
+- Return the created/updated Notion page URL (or ID) as the primary artifact.
 
 ## Visuals and artifacts
 
@@ -96,6 +110,7 @@ Strive relentlessly to embed images/plots in the Notion page. Try (in this order
 - Notion sanitizes `data:` URIs in `<image source="...">` (source may be blanked), so do not rely on base64 data URLs for images.
 - You need an externally-resolvable URL for Notion to render images reliably.
 - Do not upload images to a public host without explicit user approval. Ask for a safe hosting destination (preferred: a private artifact host or a pre-signed URL that Notion can fetch), then embed via `<image source="https://...">`.
+- Do not use third-party chart rendering or hosting with real project data without explicit user approval.
 
 4) If embedding is still not possible with the available MCP/API surface:
 - Do not block report creation.
