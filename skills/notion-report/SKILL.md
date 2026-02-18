@@ -66,7 +66,7 @@ Take user inputs as the source of truth:
 - do not include recommended next steps, follow-up tasks, or action plans; keep the report descriptive-only
 
 Do not describe chart type unless needed.
-Direction cues (`higher is better`, etc.) are optional and should be used only when they materially improve clarity; they can be included in a caption or heading.
+Direction cues are strongly encouraged for key metrics. When applicable, include explicit cues like `(higher is better)` or `(lower is better)` in a title, axis label, legend label, or caption.
 
 Avoid filesystem path leakage in report body. Use neutral labels like `input image 1`, `input image 2`, etc.
 
@@ -110,7 +110,9 @@ Every plot and table must be self-explanatory to a reader with no external conte
 For plots:
 - include a clear title stating what is being measured (metric + cohort/strategy/slice when relevant)
 - label all axes with metric names and explicit units (for example `ms`, `s`, `%`, `bps`, `USD`, `contracts`)
-- include a clear legend whenever there is more than one series, with unambiguous series names
+- include a clear legend with unambiguous series names; for a single-series plot, include an explicit series label in either legend or caption
+- include a short caption/description stating what the plot shows and the key takeaway
+- include directional guidance for the primary metric when applicable (for example `(higher is better)` / `(lower is better)`)
 - for time-series, include the time basis/timezone and aggregation interval when relevant
 - avoid unlabeled dual-axis visuals; if dual-axis is necessary, both axes must be explicitly labeled with units
 
@@ -119,6 +121,8 @@ For tables:
 - use explicit column headers (no ambiguous abbreviations) and include units in header names where applicable
 - include units for all numeric columns (in headers or clearly stated note)
 - ensure derived fields/ratios are named clearly enough that a reader can infer what they represent
+- include a short caption/description stating what the table summarizes and the key takeaway
+- include directional guidance for key metrics when applicable (for example `lower is better` for latency/error columns)
 
 If any required label/unit is unknown, do not guess:
 - use a neutral placeholder like `unit unavailable` and call the gap out in limitations.
@@ -195,7 +199,9 @@ Mechanics:
 
 - include: scope, what was run, what varied, measured outcomes, tables, top visuals, conclusions
 - include an up-front summary of the single most important outcome when possible
-- verify every plot/table has clear title, labels, legends (when needed), and explicit units
+- verify every plot/table has clear title, axis/header labels, explicit units, and a short description
+- verify each plot has a clear legend or explicit single-series label
+- include directional cues (`higher is better`/`lower is better`) for key metrics when applicable
 - include assumptions and limitations
 - include missing-data caveats
 - verify no explicit local paths appear in narrative text

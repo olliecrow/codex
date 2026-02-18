@@ -131,11 +131,11 @@ Trade-offs: Local-only images require an additional safe hosting step (or manual
 Enforcement: `skills/notion-report/SKILL.md` image policy requires `https` sources, forbids reliance on `data:` URLs, requires post-update `notion-fetch` checks, and defines fallback behavior when embedding cannot be confirmed.
 References: `skills/notion-report/SKILL.md`.
 
-Decision: Notion reports must require clear labeling for all plots and tables (titles, axes/headers, legends where needed, and explicit units).
+Decision: Notion reports must require clear labeling for all plots and tables (titles, axes/headers, legends or explicit single-series labels, short descriptions, explicit units, and directional cues when applicable).
 Context: Unlabeled visuals/tables are hard to interpret and increase risk of misreading outcomes, especially when reports are consumed asynchronously by readers without local context.
 Rationale: Self-explanatory visuals/tables reduce ambiguity and make report conclusions auditable from the page alone.
 Trade-offs: Slightly more authoring overhead; mitigated by enforcing labeling as part of the standard quality checklist and review loops.
-Enforcement: `skills/notion-report/SKILL.md` defines mandatory visual/table labeling standards and checklist validation for titles, labels, legends, and units.
+Enforcement: `skills/notion-report/SKILL.md` defines mandatory visual/table labeling standards and checklist validation for titles, axis/header labels, legends/single-series labels, descriptions, units, and directional cues (`higher/lower is better`) when applicable.
 References: `skills/notion-report/SKILL.md`, `docs/skills.md`.
 
 ## Template
