@@ -58,15 +58,37 @@ Take user inputs as the source of truth:
 
 - one concise but information-dense Notion page
 - always start the page with a `Top Takeaways` section at the very top (before other sections)
+- for quantitative/search reports, follow with an `Executive Visual Snapshot` section immediately after `Top Takeaways` (compact, high-signal visuals first)
+- default to a distilled high-impact narrative: prioritize the most decision-relevant findings and remove low-signal sections/plots
 - include bullets, tables, and visuals where they improve understanding
+- default to plot-first presentation for quantitative results (tables are supporting detail, not the primary narrative)
 - prefer high-signal visuals over noisy plots
-- no hard visual cap, but normally keep to ~10 or fewer; if more than 10 are useful, prioritize top-value visuals
+- no hard visual cap, but normally keep to ~6-9 high-impact visuals; if more than 9 are useful, prioritize top-value visuals
 - include caveats for missing data, incomplete runs, or skipped comparisons
 - keep wording objective and fact-based
 - do not include any section that is only process-oriented; focus on what was run, what changed, and what happened
 - do not include recommended next steps, follow-up tasks, or action plans; keep the report descriptive-only
 - do not include a table of contents block (`<table_of_contents/>`)
 - when quantitative outcomes are available, include high-signal plots in the report (not tables-only) unless explicitly instructed otherwise
+- for hyperparameter/search reports, include plots with aggregated outcomes across important search dimensions (for example learning rate, batch size, regularization, model-size/probability knobs) when data is available
+- reliability emphasis must be proportional: if job failure rate is below the active concern threshold, mention it briefly under reliability/limitations rather than making it a central narrative point (unless evidence shows material bias)
+
+## Cross-project refinement defaults (must follow)
+
+These defaults apply across all projects using this skill:
+- optimize for reader impact density: concise wording, strongest findings first, and clear visual evidence
+- keep reports scannable for busy readers: avoid long low-signal sections and repetitive charts
+- maintain visual integration through the narrative (plot-first), but aggressively prune redundant visuals
+- if user feedback asks for shorter reports, compress first by removing low-impact sections before removing required metrics
+
+## Optional Claude-assisted drafting (when available and user wants it)
+
+When the user explicitly wants Claude-style wording/visual structure, use Claude Code headless as an optional drafting aid:
+- use non-interactive mode and high reasoning: `claude -p --model opus --effort high`
+- for non-trivial refinements, generate multiple concise variants and compare before applying
+- treat Claude output as a draft: validate all facts, units, and constraints before updating Notion
+- always apply changes to the same canonical Codex-managed page (no new versions)
+- after applying, immediately re-fetch the page and verify labels/units/legend requirements still hold
 
 ### Mercantile emphasis (must follow)
 
@@ -123,13 +145,19 @@ Avoid filesystem path leakage in report body. Use neutral labels like `input ima
 Every plot and table must be self-explanatory to a reader with no external context.
 
 For plots:
+- prefer plots over tables when both can communicate the same quantitative takeaway; keep tables for precision/detail support
 - include a clear title stating what is being measured (metric + cohort/strategy/slice when relevant)
 - label all axes with metric names and explicit units (for example `ms`, `s`, `%`, `bps`, `USD`, `contracts`)
+- axis labels must be embedded directly in the plot definition itself (for example the `x-axis` / `y-axis` label text inside the chart block), not only in surrounding prose, titles, or captions
 - include a clear legend with unambiguous series names; for a single-series plot, include an explicit series label in either legend or caption
 - include a short caption/description stating what the plot shows and the key takeaway
 - include directional guidance for the primary metric when applicable (for example `(higher is better)` / `(lower is better)`)
 - for time-series, include the time basis/timezone and aggregation interval when relevant
 - avoid unlabeled dual-axis visuals; if dual-axis is necessary, both axes must be explicitly labeled with units
+- Mermaid `xychart-beta` compatibility guards:
+  - do not use empty category labels in `x-axis` tick lists
+  - for signed/negative-valued series, use `line` charts instead of `bar`
+  - if category/bin density causes overlap, rebucket/reduce ticks and state that adjustment in the caption
 
 For tables:
 - include a clear table title
@@ -216,10 +244,14 @@ Mechanics:
 - include `Top Takeaways` at the top of the page
 - in Mercantile reports, ensure `Top Takeaways` has both trader/quant and ML/DL perspectives
 - include an up-front summary of the single most important outcome in `Top Takeaways`
+- for search-style reports, verify there are aggregated-dimension plots for important dimensions (or explicitly state why not available)
 - verify every plot/table has clear title, axis/header labels, explicit units, and a short description
+- verify axis labels are present directly in each plot block (not caption-only/title-only)
 - verify each plot has a clear legend or explicit single-series label
 - include directional cues (`higher is better`/`lower is better`) for key metrics when applicable
 - include assumptions and limitations
 - include missing-data caveats
+- ensure reliability/failure commentary is proportional to impact; below-threshold failure rates should be brief unless materially biasing conclusions
 - verify no explicit local paths appear in narrative text
-- keep content concise and dense
+- verify quantitative sections are plot-first, with tables used as supporting detail
+- keep content concise, dense, and focused on highest-impact findings
