@@ -23,7 +23,9 @@ Choose a parent location in Notion. Prefer an explicit parent URL from the user;
 
 2) Otherwise, try project hubs (known locations):
 - GigaPlay hub: `https://www.notion.so/GigaPlay-2edf1d57cab880209415f67e7c65414f`
+- GigaPlay reports (preferred when applicable): `https://www.notion.so/305f1d57cab8802eaac6d100dc242c5d`
 - Mercantile hub: `https://www.notion.so/Mercantile-306f1d57cab8802a8b5cc2b513780742`
+- Mercantile reports (preferred when applicable): `https://www.notion.so/306f1d57cab8808e9fafdbd0bb6c9d47`
 
 3) Within a hub, try to file under an existing subpage (if present), using Notion search scoped to the hub page:
 - prefer subpages named like: `Reports`, `Experiments`, `Research`, `Runs`, `Results`
