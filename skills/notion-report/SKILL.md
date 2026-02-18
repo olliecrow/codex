@@ -63,6 +63,7 @@ Take user inputs as the source of truth:
 - include caveats for missing data, incomplete runs, or skipped comparisons
 - keep wording objective and fact-based
 - do not include any section that is only process-oriented; focus on what was run, what changed, and what happened
+- do not include recommended next steps, follow-up tasks, or action plans; keep the report descriptive-only
 
 Do not describe chart type unless needed.
 Direction cues (`higher is better`, etc.) are optional and should be used only when they materially improve clarity; they can be included in a caption or heading.
@@ -164,7 +165,7 @@ Refinement is the default. Put yourself in the shoes of a busy reader who did no
 Always do multiple rounds of review before considering a report "done":
 - Pass 1 (structure): ensure a crisp narrative arc: what question, what changed/was run, what evidence, what results, what conclusion.
 - Pass 2 (reader questions): re-read top-to-bottom and answer the questions a skeptical reader will have inline (assumptions, baselines, comparisons, caveats, definitions, what could be wrong).
-- Pass 3 (actionability): make it easy to act: explicit recommendations, next experiments, and decision points; highlight the single most important outcome up front.
+- Pass 3 (reader clarity): ensure the report is maximally clear for a reader and strictly descriptive; remove recommendations, next experiments, follow-up tasks, and decision directives; highlight the single most important outcome up front.
 
 Mechanics:
 - After each pass, update the same canonical Codex-managed report page in-place (do not fork versions).
