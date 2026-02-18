@@ -1,3 +1,4 @@
 interface:
   display_name: "Notion Report"
-  short_description: "Create Notion-ready experiment reports with plots"
+  short_description: "Create and file reports directly in Notion"
+  default_prompt: "Create a report directly in Notion (via the Notion MCP tools), filed under the appropriate project hub. Preserve detail, include tables, avoid leaking local paths, and return the created page URL."
