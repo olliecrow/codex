@@ -89,6 +89,13 @@ Trade-offs: Explanations become longer and more structured; mitigated by progres
 Enforcement: Use `skills/explain-trader/SKILL.md` workflow (detail inventory, topic routing, book-impact pass, second-pass completeness audit) and keep its references updated (`skills/explain-trader/references/*`).
 References: `skills/explain-trader/SKILL.md`, `skills/explain-trader/references/checklist.md`, `skills/explain-trader/references/translations.md`, `skills/explain-trader/references/examples.md`.
 
+Decision: Notion reports should be created directly in Notion via MCP by default; offline HTML import is optional and only used on explicit request.
+Context: Importing HTML adds manual steps and makes report filing inconsistent across projects.
+Rationale: Creating pages via the Notion MCP tools makes reports automatic, linkable, and filed under the correct workspace location with less friction.
+Trade-offs: API-created pages may have limitations vs offline HTML (for example, embedding local image artifacts). Mitigate by prioritizing tables/text summaries and using neutral artifact labels when images must be attached later.
+Enforcement: `skills/notion-report/SKILL.md` resolves a Notion parent location and creates a report page via `mcp__notion__notion-create-pages`.
+References: `skills/notion-report/SKILL.md`, `skills/notion-report/agents/openai.yaml`.
+
 ## Template
 ```
 Decision:
