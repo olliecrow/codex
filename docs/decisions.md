@@ -138,6 +138,13 @@ Trade-offs: Slightly more authoring overhead; mitigated by enforcing labeling as
 Enforcement: `skills/notion-report/SKILL.md` defines mandatory visual/table labeling standards and checklist validation for titles, axis/header labels, legends/single-series labels, descriptions, units, and directional cues (`higher/lower is better`) when applicable.
 References: `skills/notion-report/SKILL.md`, `docs/skills.md`.
 
+Decision: Every Notion report must begin with a `Top Takeaways` section at the top of the page.
+Context: Readers often need the highest-signal summary immediately; burying outcomes lower in the report slows comprehension and increases misinterpretation risk.
+Rationale: A fixed top-of-page takeaways section improves scanability and gives a reliable entry point before deeper evidence sections.
+Trade-offs: Adds a small formatting requirement to every report; mitigated by enforcing it in review loops and quality checklist checks.
+Enforcement: `skills/notion-report/SKILL.md` report behavior and reader-structure pass require `Top Takeaways` first, and the quality checklist requires the section plus the single most important outcome summary.
+References: `skills/notion-report/SKILL.md`, `docs/skills.md`.
+
 ## Template
 ```
 Decision:

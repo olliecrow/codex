@@ -57,6 +57,7 @@ Take user inputs as the source of truth:
 ## Report behavior
 
 - one concise but information-dense Notion page
+- always start the page with a `Top Takeaways` section at the very top (before other sections)
 - include bullets, tables, and visuals where they improve understanding
 - prefer high-signal visuals over noisy plots
 - no hard visual cap, but normally keep to ~10 or fewer; if more than 10 are useful, prioritize top-value visuals
@@ -64,6 +65,18 @@ Take user inputs as the source of truth:
 - keep wording objective and fact-based
 - do not include any section that is only process-oriented; focus on what was run, what changed, and what happened
 - do not include recommended next steps, follow-up tasks, or action plans; keep the report descriptive-only
+- do not include a table of contents block (`<table_of_contents/>`)
+- when quantitative outcomes are available, include high-signal plots in the report (not tables-only) unless explicitly instructed otherwise
+
+### Mercantile emphasis (must follow)
+
+For Mercantile reports, `Top Takeaways` must explicitly cover both lenses:
+- trader/quant/trading perspective:
+  - implications for PnL, drawdown, risk, execution/runtime constraints, robustness, and deployability
+- machine learning/deep learning perspective:
+  - implications for generalization, model behavior, data/split effects, training/evaluation dynamics, and hyperparameter sensitivity
+
+Keep this section factual and descriptive-only (no recommendations or action plans).
 
 Do not describe chart type unless needed.
 Direction cues are strongly encouraged for key metrics. When applicable, include explicit cues like `(higher is better)` or `(lower is better)` in a title, axis label, legend label, or caption.
@@ -89,6 +102,8 @@ Avoid filesystem path leakage in report body. Use neutral labels like `input ima
 4) Update behavior:
 - Refinement means improving the same page over time. Do not create new copies/versions like `v2`, `v3`, `copy`, or `final`.
 - Always prefer updating an existing Codex-managed report page in-place.
+- Keep exactly one canonical report per topic/date in the target Reports location.
+- If duplicates/older versions exist for the same topic/date, retain one canonical page and move non-canonical duplicates out of the Reports location (or archive/trash only with explicit user approval).
 - Matching algorithm (most to least preferred):
 - Exact title match within the chosen parent location (or its hub scope) for `<YYYY-MM-DD> - <topic>`.
 - If no exact match and the user did not specify a date, pick the single best match by topic among recent reports (prefer the most recent date in the title).
@@ -187,7 +202,7 @@ Strive relentlessly to embed images/plots in the Notion page. Try (in this order
 Refinement is the default. Put yourself in the shoes of a busy reader who did not run the work and is deciding what to believe and what to do next.
 
 Always do multiple rounds of review before considering a report "done":
-- Pass 1 (structure): ensure a crisp narrative arc: what question, what changed/was run, what evidence, what results, what conclusion.
+- Pass 1 (structure): ensure `Top Takeaways` is the first section and then a crisp narrative arc: what question, what changed/was run, what evidence, what results, what conclusion.
 - Pass 2 (reader questions): re-read top-to-bottom and answer the questions a skeptical reader will have inline (assumptions, baselines, comparisons, caveats, definitions, what could be wrong).
 - Pass 3 (reader clarity): ensure the report is maximally clear for a reader and strictly descriptive; remove recommendations, next experiments, follow-up tasks, and decision directives; highlight the single most important outcome up front.
 
@@ -198,7 +213,9 @@ Mechanics:
 ## Quality checklist
 
 - include: scope, what was run, what varied, measured outcomes, tables, top visuals, conclusions
-- include an up-front summary of the single most important outcome when possible
+- include `Top Takeaways` at the top of the page
+- in Mercantile reports, ensure `Top Takeaways` has both trader/quant and ML/DL perspectives
+- include an up-front summary of the single most important outcome in `Top Takeaways`
 - verify every plot/table has clear title, axis/header labels, explicit units, and a short description
 - verify each plot has a clear legend or explicit single-series label
 - include directional cues (`higher is better`/`lower is better`) for key metrics when applicable
