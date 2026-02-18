@@ -1,19 +1,35 @@
 ---
 name: notion-report
-description: Generate a standalone, Notion-importable HTML report from freeform inputs and artifacts.
+description: Create an experiment/investigation report directly in Notion via the Notion MCP server (automatic page creation) from freeform inputs and artifacts. Use when the user wants a Notion report created and filed in the right workspace location (no HTML import step).
 ---
 
 # Notion Report
 
-Generate a single, self-contained HTML report that can be imported to Notion directly.
+Create a report page directly in Notion (via MCP), filed under an appropriate project/workspace location.
 
 - no fixed input schema required
 - no Python tooling required
 - accept freeform inputs: notes, logs, tables, images, tables, artifacts, and run outputs
-- output exactly one `.html` file by default
-- keep output out of git by default
+- create a Notion page automatically by default (no HTML import)
 - hide local paths and hostnames in visible text
 - define acronyms on first use in the report
+
+## Location routing (must follow)
+
+Choose a parent location in Notion. Prefer an explicit parent URL from the user; otherwise, infer from project context.
+
+1) If the user provides a Notion page/database URL or ID:
+- use it as the parent.
+
+2) Otherwise, try project hubs (known locations):
+- GigaPlay hub: `https://www.notion.so/GigaPlay-2edf1d57cab880209415f67e7c65414f`
+- Mercantile hub: `https://www.notion.so/Mercantile-306f1d57cab8802a8b5cc2b513780742`
+
+3) Within a hub, try to file under an existing subpage (if present), using Notion search scoped to the hub page:
+- prefer subpages named like: `Reports`, `Experiments`, `Research`, `Runs`, `Results`
+- if no obvious subpage exists, create the report directly under the hub page.
+
+Ask at most one clarification question only if you cannot determine which hub/location is correct.
 
 ## Scope and input handling
 
@@ -26,7 +42,7 @@ Take user inputs as the source of truth:
 
 ## Report behavior
 
-- one concise but information-dense Notion-ready HTML page
+- one concise but information-dense Notion page
 - include bullets, tables, and visuals where they improve understanding
 - prefer high-signal visuals over noisy plots
 - no hard visual cap, but normally keep to ~10 or fewer; if more than 10 are useful, prioritize top-value visuals
@@ -38,6 +54,31 @@ Do not describe chart type unless needed.
 Direction cues (`higher is better`, etc.) are optional and should be used only when they materially improve clarity; they can be included in a caption or heading.
 
 Avoid filesystem path leakage in report body. Use neutral labels like `input image 1`, `input image 2`, etc.
+
+## Notion MCP workflow (must follow)
+
+1) Fetch the Notion markdown spec before writing content:
+- Read the MCP resource `notion://docs/enhanced-markdown-spec` so the generated page content uses valid Notion-flavored Markdown.
+
+2) Resolve the parent page:
+- Use `mcp__notion__notion-fetch` on the chosen hub/parent URL to obtain a `page_id`.
+- If choosing a subpage (Reports/Experiments/etc.), use `mcp__notion__notion-search` with `page_url` scoped to the hub to find the best target subpage, then fetch it to get its `page_id`.
+
+3) Create the report page:
+- Use `mcp__notion__notion-create-pages` with `parent` set to the chosen parent `page_id`.
+- Title pattern (adapt as needed): `<Project> report: <topic> (<YYYY-MM-DD>)`
+- Content should follow the quality checklist below.
+
+4) Output contract:
+- Return the created Notion page URL (or ID) as the primary artifact.
+- Do not generate an HTML file unless the user explicitly asks for an offline/importable report.
+
+## Visuals and artifacts
+
+- Prefer embedding summary tables and key numeric outcomes over screenshots.
+- If you cannot include local images directly in Notion via the available markdown/API surface, do not block. Instead:
+  - include captions and what the image demonstrates
+  - include a short `Artifacts` section with neutral labels (no absolute paths) so a human can attach files later if desired
 
 ## Proactive autonomy and knowledge compounding
 
@@ -54,60 +95,7 @@ Avoid filesystem path leakage in report body. Use neutral labels like `input ima
 ## Long-task checkpoint cadence
 
 - For non-trivial report generation, use checkpoint cycles instead of single-pass handoffs.
-- At meaningful milestones, rerun quality checks and confirm the generated HTML still matches source evidence and privacy constraints.
-
-## Output contract
-
-- produce one `.html` file, single page, self-contained
-- use embedded images (`data:image/...;base64,...`) in the HTML
-- default path: `${HOME}/Downloads/notion-reports/notion_report_<timestamp>.html`
-- print the absolute output path at the end
-
-## Minimal template
-
-Use this shell flow to create the HTML:
-
-```bash
-OUT_DIR="${HOME}/Downloads/notion-reports"
-TS="$(date +%Y%m%d_%H%M%S)"
-OUT_HTML="$OUT_DIR/notion_report_${TS}.html"
-mkdir -p "$OUT_DIR"
-
-cat > "$OUT_HTML" <<'HTML'
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Notion Report</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; line-height: 1.45; color: #111; }
-    .page { max-width: 980px; margin: 0 auto; padding: 24px; }
-    h1, h2, h3 { line-height: 1.2; }
-    table { border-collapse: collapse; width: 100%; margin: 8px 0 16px; }
-    th, td { border: 1px solid #e5e7eb; padding: 6px 8px; text-align: left; font-size: 0.95rem; }
-    th { background: #f9fafb; }
-    img { max-width: 100%; height: auto; display: block; margin: 8px 0; }
-    p, li, td { white-space: pre-wrap; }
-  </style>
-</head>
-<body>
-  <div class="page">
-    <!-- generated content -->
-  </div>
-</body>
-</html>
-HTML
-
-printf '%s\n' "$OUT_HTML"
-```
-
-Base64 helper for a local image:
-
-```bash
-IMG_B64=$(base64 -w0 /path/to/image.png 2>/dev/null || base64 /path/to/image.png | tr -d '\n')
-echo "<img src=\"data:image/png;base64,${IMG_B64}\" alt=\"input image 1\" />"
-```
+- At meaningful milestones, rerun quality checks and confirm the generated Notion page still matches source evidence and privacy constraints.
 
 ## Quality checklist
 
