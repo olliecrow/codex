@@ -56,6 +56,7 @@ For decision framing, rationale capture, plan/docs robustness, git safety, and r
 
 - For quant/trading work where the user wants a trader-perspective explanation (PnL, risk, exposure, execution, microstructure, latency, liquidity, limits, failure modes) rather than ML/math framing, use `skills/explain-trader/SKILL.md`.
 - `explain-trader` is designed to preserve fidelity via a detail inventory, a topic-routing step (including HFT/latency-critical live behavior), a full book-impact pass, a structured term-mapping appendix, and a second-pass completeness gate (see its `references/` for checklists, translations, and examples).
+- For experiment/investigation reporting where the user wants the report created and filed automatically in Notion, use `skills/notion-report/SKILL.md` (creates pages via the Notion MCP tools; do not default to HTML import).
 
 ## Adding or Removing Skills
 - Add or remove skill directories under `skills/`.
