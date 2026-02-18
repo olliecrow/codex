@@ -103,6 +103,26 @@ Avoid filesystem path leakage in report body. Use neutral labels like `input ima
 
 - Prefer embedding summary tables and key numeric outcomes over screenshots, but include plots/images whenever they materially improve understanding.
 
+### Visual and table labeling standards (must follow)
+
+Every plot and table must be self-explanatory to a reader with no external context.
+
+For plots:
+- include a clear title stating what is being measured (metric + cohort/strategy/slice when relevant)
+- label all axes with metric names and explicit units (for example `ms`, `s`, `%`, `bps`, `USD`, `contracts`)
+- include a clear legend whenever there is more than one series, with unambiguous series names
+- for time-series, include the time basis/timezone and aggregation interval when relevant
+- avoid unlabeled dual-axis visuals; if dual-axis is necessary, both axes must be explicitly labeled with units
+
+For tables:
+- include a clear table title
+- use explicit column headers (no ambiguous abbreviations) and include units in header names where applicable
+- include units for all numeric columns (in headers or clearly stated note)
+- ensure derived fields/ratios are named clearly enough that a reader can infer what they represent
+
+If any required label/unit is unknown, do not guess:
+- use a neutral placeholder like `unit unavailable` and call the gap out in limitations.
+
 ### Images and plots (must follow)
 
 Hard constraints (learned empirically via Notion MCP fetch round-trips):
@@ -175,6 +195,7 @@ Mechanics:
 
 - include: scope, what was run, what varied, measured outcomes, tables, top visuals, conclusions
 - include an up-front summary of the single most important outcome when possible
+- verify every plot/table has clear title, labels, legends (when needed), and explicit units
 - include assumptions and limitations
 - include missing-data caveats
 - verify no explicit local paths appear in narrative text
