@@ -152,6 +152,13 @@ Trade-offs: Some failing jobs are allowed to continue below threshold, which can
 Enforcement: `skills/cluster-monitor/SKILL.md` defines queue-tolerant monitoring, watch/escalation/intervention thresholds (`>10%` similar failures escalates diagnosis, `>=15%` similar failures triggers intervention by default), a projected-learning-value gate, and a required diagnose-and-plan -> whole-affected-batch cancel (scoped) -> aggressive cleanup -> fix -> resubmit -> remonitor loop.
 References: `skills/cluster-monitor/SKILL.md`, `docs/skills.md`.
 
+Decision: Review workflows prioritize finding critical red flags and serious issues above all secondary concerns.
+Context: Review requests in this repository are primarily risk-focused gate checks before merge, and low-severity commentary can dilute attention from material correctness and safety risks.
+Rationale: Explicit severity-first prioritization improves merge safety by surfacing high-impact defects first and keeping review output decision-relevant.
+Trade-offs: Lower-severity maintainability/style feedback may receive less emphasis in early review passes; mitigated by continuing full-coverage review after critical-risk triage.
+Enforcement: `skills/git-review/SKILL.md` requires top-priority hunting of critical red flags and serious issues, and requires final findings to be ordered by severity with critical items first.
+References: `skills/git-review/SKILL.md`, `docs/skills.md`.
+
 ## Template
 ```
 Decision:
