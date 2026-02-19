@@ -1,6 +1,6 @@
 ---
 name: git-review
-description: Deep review of a branch vs main to find critical issues before merge. Use when asked to assess readiness to merge or to audit differences for red flags.
+description: Deep review of a branch vs main with top-priority focus on critical red flags and serious issues before merge. Use when asked to assess readiness to merge or to audit differences for red flags.
 ---
 
 # git-review
@@ -40,6 +40,7 @@ description: Deep review of a branch vs main to find critical issues before merg
 
 Compare the current branch against main, analyze each change's intent and risk, and hunt for critical red flags before merge. If the branch has an open PR, incorporate all PR comments and interactions into the review. PR comments are inputs, not gospel. Conduct a deep, thorough review that covers every change and decision end-to-end.
 When PR feedback surfaces high-confidence issues worth action, investigate deeply, add them to the plan, execute fixes, and verify outcomes before finalizing the verdict.
+Priority order for this skill is mandatory: identify and resolve critical red flags and serious issues first, then review secondary concerns.
 
 ## Behavioral guardrails (must follow)
 
@@ -48,6 +49,7 @@ When PR feedback surfaces high-confidence issues worth action, investigate deepl
 - Do not assume intent; if multiple interpretations exist, state them explicitly.
 - Prefer the simplest explanation for a change and verify it against evidence.
 - Keep review scope surgical: every comment should trace to a specific change.
+- Treat critical red flags and serious issues as the top review objective; investigate them first and report them first.
 - Define explicit readiness criteria and verify them before concluding.
 - If a PR exists, treat review comments and discussion as required inputs (not gospel); investigate each item deeply and determine whether it is addressed, out of scope, or worth action.
 - At the end of the review, check whether the branch has an active PR and update title/body when metadata no longer matches the branch delta.
@@ -110,6 +112,7 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - Flag unclear or unjustified changes for deeper scrutiny.
 
 5. Deep risk review:
+   - Top priority: aggressively hunt for critical red flags and serious issues (correctness, security, data loss, severe regressions) before anything else.
    - Look for critical red flags, regressions, security risks, data loss, perf issues, or correctness bugs.
    - Consider long-term maintainability and hidden coupling.
    - Ensure anything that worked on main still works here; flag removed or degraded functionality and verify intended parity.
@@ -143,6 +146,7 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - Summarize PR comment triage with dispositions and link each planned and executed item to the originating comment when applicable.
    - Distinguish executed-and-verified fixes from deferred items, and justify any deferrals.
    - Note required fixes before merge and provide a merge readiness assessment and next steps.
+   - In the final review output, present findings first and order them by severity with critical red flags and serious issues at the top.
    - Use a concise verdict template: Ready / Needs fixes / Blocked.
    - On repeated passes, continue deeper review and append net-new findings; avoid repeating prior summaries unless needed for traceability.
    - Write the report in plain, concise, and intuitive language with brief context so a new reader can follow it.
