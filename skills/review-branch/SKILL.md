@@ -39,6 +39,7 @@ description: Alias for `git-review`. Use when a user requests `$review-branch`; 
 ## Overview
 
 This is a thin alias for the `git-review` skill.
+It inherits `git-review` severity-first behavior: critical red flags and serious issues are the top priority in code review output.
 
 ## Workflow
 

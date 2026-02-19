@@ -156,8 +156,8 @@ Decision: Review workflows prioritize finding critical red flags and serious iss
 Context: Review requests in this repository are primarily risk-focused gate checks before merge, and low-severity commentary can dilute attention from material correctness and safety risks.
 Rationale: Explicit severity-first prioritization improves merge safety by surfacing high-impact defects first and keeping review output decision-relevant.
 Trade-offs: Lower-severity maintainability/style feedback may receive less emphasis in early review passes; mitigated by continuing full-coverage review after critical-risk triage.
-Enforcement: `skills/git-review/SKILL.md` requires top-priority hunting of critical red flags and serious issues, and requires final findings to be ordered by severity with critical items first.
-References: `skills/git-review/SKILL.md`, `docs/skills.md`.
+Enforcement: `skills/git-review/SKILL.md` requires top-priority hunting of critical red flags and serious issues and severity-ordered findings; `skills/review-branch/SKILL.md` inherits and reasserts that severity-first behavior; `AGENTS.md` requires review tasks to prioritize critical red flags and serious issues first.
+References: `skills/git-review/SKILL.md`, `skills/review-branch/SKILL.md`, `AGENTS.md`, `docs/skills.md`.
 
 ## Template
 ```
