@@ -87,6 +87,7 @@ Sanity checks after run:
 - Rewriting git history is not allowed (e.g., `git rebase`, `git commit --amend`, `git reset` on commits, `git filter-branch`).
 - Force pushes and other destructive git actions (e.g., `git push --force`, `git push --force-with-lease`, `git reset --hard`, `git clean -fdx`) are prohibited.
 - PRs: include purpose, key changes, how to build/run, and validation steps. Link issues when applicable. Add screenshots/terminal excerpts for UX changes.
+- For review tasks (especially code review), prioritize identifying critical red flags and serious issues first; present findings ordered by severity before secondary observations.
 
 ## Security & Configuration Tips
 - Host isolation: only mount the project directory and `~/.codex` (with an extra read-only bind for `.git` when present to prevent repo mutations).
