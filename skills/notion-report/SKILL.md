@@ -60,7 +60,8 @@ Take user inputs as the source of truth:
 - always start the page with a `Top Takeaways` section at the very top (before other sections)
 - in `Top Takeaways`, begin with a one-line `question + answer status` statement (what question this report answers, and whether the available evidence answers it for this batch)
 - for experiment/search reports, add an `Experiment Definition` section immediately after `Top Takeaways` and before visuals
-- `Experiment Definition` must state in plain language: what question is being tested, what was searched/varied (search space), and what was held fixed
+- `Experiment Definition` must state in plain language: what question is being tested, what was searched/varied (search space), what was held fixed, and whether this report answered the question for this batch (with a short why)
+- when DR on/off appears, define what each means in the report context (for example randomized training settings vs fixed control settings)
 - for quantitative/search reports, follow `Experiment Definition` with an `Executive Visual Snapshot` section (compact, high-signal visuals first)
 - in `Executive Visual Snapshot`, lead with primary performance comparisons first (for example DR on/off, return, profitable-episode share, and key OOD performance)
 - keep completion/failure information in the report, but de-emphasize it when reliability is not the central issue: prefer summary table + reliability section over the first/hero visual
@@ -295,6 +296,7 @@ Mechanics:
 - include: scope, what was run, what varied, measured outcomes, tables, top visuals, conclusions
 - include `Top Takeaways` at the top of the page
 - include an explicit `question + answer status` line near the top of `Top Takeaways`
+- include an explicit `question + answer status + why` statement in `Experiment Definition`
 - in Mercantile reports, ensure `Top Takeaways` has both trader/quant and ML/DL perspectives
 - include an up-front summary of the single most important outcome in `Top Takeaways`
 - for search-style reports, verify there are aggregated-dimension plots for important dimensions (or explicitly state why not available)
@@ -308,6 +310,7 @@ Mechanics:
 - verify completion/failure is not a hero visual unless reliability is central to interpretation
 - verify execution-intensity visuals use interpretable units (`turns/day`, optionally `USD/day`) rather than only raw fill counts
 - verify the top of the report clearly states what the experiment/search is testing and what dimensions were searched
+- verify DR on/off meaning is explicitly defined when used in comparisons
 - verify methodology is explicit for derived metrics (for example uplift definitions/sign conventions and weighted means)
 - if OOD or similar domain terms are used, verify they are defined concretely for the specific evaluation setup in this report
 - verify no explicit local paths appear in narrative text
