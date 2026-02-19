@@ -58,7 +58,11 @@ Take user inputs as the source of truth:
 
 - one concise but information-dense Notion page
 - always start the page with a `Top Takeaways` section at the very top (before other sections)
-- for quantitative/search reports, follow with an `Executive Visual Snapshot` section immediately after `Top Takeaways` (compact, high-signal visuals first)
+- for experiment/search reports, add an `Experiment Definition` section immediately after `Top Takeaways` and before visuals
+- `Experiment Definition` must state in plain language: what question is being tested, what was searched/varied (search space), and what was held fixed
+- for quantitative/search reports, follow `Experiment Definition` with an `Executive Visual Snapshot` section (compact, high-signal visuals first)
+- include a `Definitions and Methodology` section for quantitative reports so metric meanings and calculations are explicit
+- in `Definitions and Methodology`, define domain terms (for example OOD) specifically for the report context and include formulas for derived metrics (for example uplift)
 - default to a distilled high-impact narrative: prioritize the most decision-relevant findings and remove low-signal sections/plots
 - include bullets, tables, and visuals where they improve understanding
 - default to plot-first presentation for quantitative results (tables are supporting detail, not the primary narrative)
@@ -87,6 +91,7 @@ When the user explicitly wants Claude-style wording/visual structure, use Claude
 - use non-interactive mode and high reasoning: `claude -p --model opus --effort high`
 - for non-trivial refinements, generate multiple concise variants and compare before applying
 - treat Claude output as a draft: validate all facts, units, and constraints before updating Notion
+- when the user asks for clearer wording, prioritize plain-language definitions and explicit methodology/formulas over additional plot count
 - always apply changes to the same canonical Codex-managed page (no new versions)
 - after applying, immediately re-fetch the page and verify labels/units/legend requirements still hold
 
@@ -128,6 +133,8 @@ Avoid filesystem path leakage in report body. Use neutral labels like `input ima
 - Always prefer updating an existing Codex-managed report page in-place.
 - Keep exactly one canonical report per experiment or experiment batch in the target Reports location.
 - If duplicates/older versions exist for the same experiment/batch, retain one canonical page and move non-canonical duplicates out of the Reports location (or archive/trash only with explicit user approval).
+- If two pages reference the same underlying experiment batch/data, consolidate to one canonical report page and avoid splitting updates across both.
+- Before deduplicating, verify same-data identity using concrete evidence (for example run/search IDs, run directory names, budget, variant grid, and key aggregate counts). If evidence shows different batches, keep both pages.
 - Matching algorithm (most to least preferred):
 - Identity match: same experiment/search/run IDs or same explicit experiment batch scope (preferred over title matching).
 - Exact title match within the chosen parent location (or its hub scope) for `<YYYY-MM-DD> - <topic>`.
@@ -256,6 +263,9 @@ Mechanics:
 - include assumptions and limitations
 - include missing-data caveats
 - ensure reliability/failure commentary is proportional to impact; below-threshold failure rates should be brief unless materially biasing conclusions
+- verify the top of the report clearly states what the experiment/search is testing and what dimensions were searched
+- verify methodology is explicit for derived metrics (for example uplift definitions/sign conventions and weighted means)
+- if OOD or similar domain terms are used, verify they are defined concretely for the specific evaluation setup in this report
 - verify no explicit local paths appear in narrative text
 - verify quantitative sections are plot-first, with tables used as supporting detail
 - keep content concise, dense, and focused on highest-impact findings
