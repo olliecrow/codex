@@ -9,7 +9,7 @@ Create a report page directly in Notion (via MCP), filed under an appropriate pr
 
 - no fixed input schema required
 - no fixed tooling required (Python optional for plots/visuals when available)
-- accept freeform inputs: notes, logs, tables, images, tables, artifacts, and run outputs
+- accept freeform inputs: notes, logs, tables, images, artifacts, and run outputs
 - always work directly in Notion (create/add/edit pages); never generate HTML or other intermediate report formats
 - hide local paths and hostnames in visible text
 - define acronyms on first use in the report
@@ -58,11 +58,18 @@ Take user inputs as the source of truth:
 
 - one concise but information-dense Notion page
 - always start the page with a `Top Takeaways` section at the very top (before other sections)
+- in `Top Takeaways`, begin with a one-line `question + answer status` statement (what question this report answers, and whether the available evidence answers it for this batch)
 - for experiment/search reports, add an `Experiment Definition` section immediately after `Top Takeaways` and before visuals
 - `Experiment Definition` must state in plain language: what question is being tested, what was searched/varied (search space), and what was held fixed
 - for quantitative/search reports, follow `Experiment Definition` with an `Executive Visual Snapshot` section (compact, high-signal visuals first)
+- in `Executive Visual Snapshot`, lead with primary performance comparisons first (for example DR on/off, return, profitable-episode share, and key OOD performance)
+- keep completion/failure information in the report, but de-emphasize it when reliability is not the central issue: prefer summary table + reliability section over the first/hero visual
+- do not use completion/failure as a hero plot by default; only elevate failure visuals when reliability behavior materially changes interpretation
+- for execution-intensity interpretation, prefer turnover metrics (`turns/day` and `USD/day` when available) over raw fill-count visuals
+- if raw fill counts are included, keep them in supporting/appendix context unless the report is explicitly about fill mechanics
 - include a `Definitions and Methodology` section for quantitative reports so metric meanings and calculations are explicit
 - in `Definitions and Methodology`, define domain terms (for example OOD) specifically for the report context and include formulas for derived metrics (for example uplift)
+- if OOD appears in `Top Takeaways` or early visuals, add a plain-language one-sentence OOD definition in `Top Takeaways` and a specific setup definition in `Experiment Definition`
 - default to a distilled high-impact narrative: prioritize the most decision-relevant findings and remove low-signal sections/plots
 - include bullets, tables, and visuals where they improve understanding
 - default to plot-first presentation for quantitative results (tables are supporting detail, not the primary narrative)
@@ -76,6 +83,7 @@ Take user inputs as the source of truth:
 - when quantitative outcomes are available, include high-signal plots in the report (not tables-only) unless explicitly instructed otherwise
 - for hyperparameter/search reports, include plots with aggregated outcomes across important search dimensions (for example learning rate, batch size, regularization, model-size/probability knobs) when data is available
 - reliability emphasis must be proportional: if job failure rate is below the active concern threshold, mention it briefly under reliability/limitations rather than making it a central narrative point (unless evidence shows material bias)
+- only elevate completion/failure visuals into top prominence when failure behavior materially changes interpretation of core performance conclusions
 
 ## Cross-project refinement defaults (must follow)
 
@@ -87,13 +95,46 @@ These defaults apply across all projects using this skill:
 
 ## Optional Claude-assisted drafting (when available and user wants it)
 
-When the user explicitly wants Claude-style wording/visual structure, use Claude Code headless as an optional drafting aid:
+When the user explicitly wants Claude-style wording/visual structure, use Claude Code headless as a drafting aid, with Codex as final authority:
 - use non-interactive mode and high reasoning: `claude -p --model opus --effort high`
-- for non-trivial refinements, generate multiple concise variants and compare before applying
-- treat Claude output as a draft: validate all facts, units, and constraints before updating Notion
+- Codex owns data prep, tool calls, validation, and all Notion writes; Claude is draft-only
+- do not ask Claude to infer missing numbers or invent results; pass only explicit evidence
+- sanitize prompts before sending to Claude: remove local paths, hostnames, secrets, tokens, and private identifiers
+- for non-trivial refinements, generate 2-3 concise variants and compare before applying
 - when the user asks for clearer wording, prioritize plain-language definitions and explicit methodology/formulas over additional plot count
 - always apply changes to the same canonical Codex-managed page (no new versions)
 - after applying, immediately re-fetch the page and verify labels/units/legend requirements still hold
+
+### Claude protocol for multi-agent report refinement (must follow when Claude is used)
+
+1) Build an evidence packet first (before calling Claude):
+- include only facts to be used: key metrics with units, assumptions, caveats, and section constraints
+- include a compact claim map: `claim_id -> source artifact/table/line`
+
+2) Prompt Claude with strict output boundaries:
+- ask for wording/structure refinement only (not new analysis)
+- require output to stay descriptive-only (no recommendations, no action plan)
+- require it to preserve section order constraints (`Top Takeaways` first, then required sections)
+- ask for explicit placeholders when evidence is missing (for example `unit unavailable`)
+
+Suggested prompt scaffold (fill in with current report context):
+- role: "rewrite for clarity and impact density only; do not add new facts"
+- hard constraints: required sections/order, descriptive-only tone, no local paths/hostnames
+- evidence packet: compact fact list with units + claim map (`claim_id -> source`)
+- output contract:
+  - `variant_a`: concise rewrite
+  - `variant_b`: concise rewrite with stronger plain-language definitions
+  - `self_check`: list of any statements that may be unsupported by provided evidence
+
+3) Run a Codex verification gate before Notion update:
+- verify every quantitative claim in Claude output maps to evidence packet facts
+- reject any new ungrounded claims, unit changes, sign flips, or scope drift
+- verify no local paths/hostnames leaked
+- verify required labels, units, legend clarity, and directional cues still hold
+
+4) If Claude is unavailable or low quality:
+- do not block report delivery; continue with Codex-only drafting and validation
+- mention briefly in the final user update that Claude assistance was skipped or rejected
 
 ### Mercantile emphasis (must follow)
 
@@ -253,6 +294,7 @@ Mechanics:
 
 - include: scope, what was run, what varied, measured outcomes, tables, top visuals, conclusions
 - include `Top Takeaways` at the top of the page
+- include an explicit `question + answer status` line near the top of `Top Takeaways`
 - in Mercantile reports, ensure `Top Takeaways` has both trader/quant and ML/DL perspectives
 - include an up-front summary of the single most important outcome in `Top Takeaways`
 - for search-style reports, verify there are aggregated-dimension plots for important dimensions (or explicitly state why not available)
@@ -263,6 +305,8 @@ Mechanics:
 - include assumptions and limitations
 - include missing-data caveats
 - ensure reliability/failure commentary is proportional to impact; below-threshold failure rates should be brief unless materially biasing conclusions
+- verify completion/failure is not a hero visual unless reliability is central to interpretation
+- verify execution-intensity visuals use interpretable units (`turns/day`, optionally `USD/day`) rather than only raw fill counts
 - verify the top of the report clearly states what the experiment/search is testing and what dimensions were searched
 - verify methodology is explicit for derived metrics (for example uplift definitions/sign conventions and weighted means)
 - if OOD or similar domain terms are used, verify they are defined concretely for the specific evaluation setup in this report
