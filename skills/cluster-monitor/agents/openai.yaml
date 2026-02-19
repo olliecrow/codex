@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cluster Monitor"
+  short_description: "Monitor cluster jobs with patient intervention"
+  default_prompt: "Monitor current cluster jobs with patient, low-noise polling. Check queue state, logs, and outputs intermittently; avoid intervening unless failures become systemic or learning value collapses. If intervention is warranted, diagnose root cause, clean up thoroughly, apply high-confidence fixes, resubmit, and continue monitoring until completion; then sync and analyze results immediately."
