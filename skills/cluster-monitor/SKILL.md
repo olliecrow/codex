@@ -45,7 +45,7 @@ Monitor cluster jobs with patience and minimal intervention. Focus on protecting
 - Be patient by default. Expect long waits and monitor intermittently.
 - Do not intervene just because jobs are pending in queue with legitimate scheduler reasons.
 - Accept that some failures are natural in sweeps (for example large sequence length + large batch size causing OOM).
-- Intervene only when failure is systemic or expected learning value has collapsed.
+- Intervene only when failure is systemic or projected learning value has collapsed.
 - When intervention is required, intervene decisively: diagnose, kill scoped jobs, clean up aggressively, fix, resubmit, and continue monitoring.
 
 ## Scope and identity (must establish first)
@@ -68,10 +68,20 @@ Use these defaults unless user/project policy says otherwise:
 
 Interpret thresholds at batch/sweep level, not per single job.
 
+Projected learning value gate (use with failure thresholds):
+- Continue monitoring if expected remaining successful jobs will still produce meaningful coverage of the experiment space.
+- Trigger intervention if projected informative coverage has clearly collapsed (for example most remaining jobs share the same fatal pattern and results will be low-yield).
+- Prefer evidence-based projection from current state + config pattern, not guesswork.
+
 Intervene earlier than thresholds only if any hard-stop condition appears:
 - configuration bug affecting most jobs,
 - invalid outputs (NaNs/empty artifacts/corrupt metrics) across the batch,
 - deterministic crash pattern indicating the run cannot produce useful results.
+
+Expected-failure policy:
+- Treat isolated OOM/timeouts in aggressive sweep corners as expected unless they repeat systemically.
+- Do not kill a batch for a few natural failures.
+- When similar failures cross intervention band (`>=15%` by default), treat the batch as structurally misconfigured and intervene.
 
 ## Workflow
 
@@ -84,6 +94,10 @@ Intervene earlier than thresholds only if any hard-stop condition appears:
 - Choose the monitoring horizon (hours/day) and continue until completion or intervention decision.
 
 ### 2) Choose low-token waiting mechanism
+
+Use either approach and prefer the lower-token option for the current context:
+- direct intermittent monitoring loop (status + selective log/output checks), or
+- `wait-for-job` for bounded quiet waits between checkpoints.
 
 Prefer `wait-for-job` for long waits:
 - Use its poller in regex mode with `--quiet`.
@@ -99,6 +113,7 @@ To minimize token/command noise:
 - capture only state deltas and new failures since last poll,
 - tail logs only for jobs with state changes or failure signals,
 - avoid repeatedly printing unchanged queue tables.
+- keep a compact running state snapshot (counts, ratios, new anomalies, current decision state) and update it in-place.
 
 ### 3) Intermittent health checks during run
 
@@ -125,14 +140,18 @@ Intervene when:
 - batch shows strong low-learning outcome (for example widespread invalid outputs), or
 - repeated crashes indicate current configuration is fundamentally broken.
 
+Do not intervene on uncertainty alone:
+- if signals are mixed and learning value is still plausible, keep monitoring with tighter cadence until confidence increases.
+
 ### 5) Intervention workflow (when warranted)
 
 1. Diagnose first:
 - identify root cause and exact fix candidates,
-- verify intervention is justified by evidence, not single-job noise.
+- verify intervention is justified by evidence, not single-job noise,
+- define the fix plan before canceling the batch.
 
 2. Stop failing run cleanly:
-- cancel only scoped jobs for the affected batch/project/user.
+- cancel the whole affected batch (scoped to project/user) when systemic failure is confirmed.
 
 3. Clean up aggressively:
 - remove partial/broken artifacts for canceled/failed jobs,
@@ -151,8 +170,9 @@ Intervene when:
 
 As soon as monitored jobs finish:
 - sync all relevant outputs back to local,
-- analyze outcomes deeply (metrics, anomalies, failure patterns, surprising behavior),
+- analyze outcomes deeply (metrics, anomalies, failure patterns, surprising behavior, expected-vs-actual outcomes),
 - aggregate learnings across successful and failed jobs,
+- extract what was learned from every experiment segment (including failed segments where informative),
 - capture durable insights/decisions in docs,
 - prepare next-step experiment framing only if the user asked for it.
 

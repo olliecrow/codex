@@ -149,7 +149,7 @@ Decision: Cluster monitoring should be patience-first and low-intervention, with
 Context: Long-running Slurm experiments frequently include expected single-job failures (for example OOM in aggressive hyperparameter corners), and trigger-happy cancellation reduces learning throughput.
 Rationale: Waiting with intermittent polling preserves compute progress and learning signal, while explicit intervention thresholds prevent wasting cycles on clearly broken batches.
 Trade-offs: Some failing jobs are allowed to continue below threshold, which can consume extra compute; mitigated by escalation bands and decisive cleanup/fix/resubmit once systemic failure is clear.
-Enforcement: `skills/cluster-monitor/SKILL.md` defines queue-tolerant monitoring, watch/escalation/intervention thresholds (`>10%` similar failures escalates diagnosis, `>=15%` similar failures triggers intervention by default), and a required diagnose -> scoped cancel -> aggressive cleanup -> fix -> resubmit -> remonitor loop.
+Enforcement: `skills/cluster-monitor/SKILL.md` defines queue-tolerant monitoring, watch/escalation/intervention thresholds (`>10%` similar failures escalates diagnosis, `>=15%` similar failures triggers intervention by default), a projected-learning-value gate, and a required diagnose-and-plan -> whole-affected-batch cancel (scoped) -> aggressive cleanup -> fix -> resubmit -> remonitor loop.
 References: `skills/cluster-monitor/SKILL.md`, `docs/skills.md`.
 
 ## Template
