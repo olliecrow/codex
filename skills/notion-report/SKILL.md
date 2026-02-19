@@ -115,8 +115,10 @@ Avoid filesystem path leakage in report body. Use neutral labels like `input ima
 - If choosing a subpage (Reports/Experiments/etc.), use `mcp__notion__notion-search` with `page_url` scoped to the hub to find the best target subpage, then fetch it to get its `page_id`.
 
 3) Create the report page:
-- Default to a single canonical page per report. Before creating, always search for an existing matching Codex-managed report and update it in-place (see Update behavior).
-- Use `mcp__notion__notion-create-pages` with `parent` set to the chosen parent `page_id` only when you are sure no matching Codex-managed report exists (or the user explicitly asked for a new report).
+- Default to a single canonical page per experiment or experiment batch.
+- Before creating, always derive a report identity from available evidence (for example: experiment/search/run IDs, batch label, date window, method/variant) and search for an existing Codex-managed report with the same identity.
+- Use `mcp__notion__notion-create-pages` with `parent` set to the chosen parent `page_id` only when you are sure no matching Codex-managed report exists for that identity.
+- Do not create a new page just because the title wording changed; update the existing canonical page for the same experiment/batch.
 - Title pattern (match existing report pages when possible): `<YYYY-MM-DD> - <topic>`
 - Content should follow the quality checklist below.
 - Include the Codex marker callout at the end of the page content.
@@ -124,14 +126,16 @@ Avoid filesystem path leakage in report body. Use neutral labels like `input ima
 4) Update behavior:
 - Refinement means improving the same page over time. Do not create new copies/versions like `v2`, `v3`, `copy`, or `final`.
 - Always prefer updating an existing Codex-managed report page in-place.
-- Keep exactly one canonical report per topic/date in the target Reports location.
-- If duplicates/older versions exist for the same topic/date, retain one canonical page and move non-canonical duplicates out of the Reports location (or archive/trash only with explicit user approval).
+- Keep exactly one canonical report per experiment or experiment batch in the target Reports location.
+- If duplicates/older versions exist for the same experiment/batch, retain one canonical page and move non-canonical duplicates out of the Reports location (or archive/trash only with explicit user approval).
 - Matching algorithm (most to least preferred):
+- Identity match: same experiment/search/run IDs or same explicit experiment batch scope (preferred over title matching).
 - Exact title match within the chosen parent location (or its hub scope) for `<YYYY-MM-DD> - <topic>`.
 - If no exact match and the user did not specify a date, pick the single best match by topic among recent reports (prefer the most recent date in the title).
 - If multiple candidates remain, fetch each and pick the one that is Codex-managed and most semantically aligned to the user request (avoid splitting the narrative across pages).
 - Fetch the candidate page(s) and only update a page if it contains the `codex-managed: true` marker (and preserve that marker on every update).
 - If no matching Codex-managed page exists, create a new report page (and optionally link/mention the prior human-managed page without editing it).
+- If it is unclear whether the request is the same experiment/batch versus a genuinely new one, ask one short clarification question before creating a new page.
 
 5) Output contract:
 - Return the created/updated Notion page URL (or ID) as the primary artifact.
