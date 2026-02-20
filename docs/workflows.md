@@ -1,6 +1,6 @@
 # Operating Workflow
 
-This doc defines how work is tracked so progress compounds without bloating repo docs.
+This doc defines how work is tracked so progress compounds without bloating repo docs. Repo-wide rules live in `AGENTS.md`; this file focuses on routing and workflow mechanics.
 
 ## Core routing
 - Keep active, disposable notes in `plan/current/`.
@@ -27,4 +27,3 @@ This doc defines how work is tracked so progress compounds without bloating repo
 ## Stop conditions
 - Stop when acceptance checks pass, verification is green, risks are documented, and no unresolved blockers remain.
 - If no new evidence appears, avoid repeating identical probes; report completion instead.
-
