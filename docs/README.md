@@ -9,3 +9,6 @@ Docs principles (see `AGENTS.md` for full repo policy):
 Relationship to `/plan/`:
 - `/plan/` is a short-term, disposable scratch space for agents and is not committed to git.
 - `/docs/` is long-lived; only stable guidance should live here.
+
+Other docs:
+- `codex_docs.md` is a raw upstream snapshot for reference only and may conflict with repo policy. Treat `AGENTS.md` as authoritative.
