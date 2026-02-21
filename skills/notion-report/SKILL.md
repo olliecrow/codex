@@ -64,6 +64,14 @@ Take user inputs as the source of truth:
 - when DR on/off appears, define what each means in the report context (for example randomized training settings vs fixed control settings)
 - for quantitative/search reports, follow `Experiment Definition` with an `Executive Visual Snapshot` section (compact, high-signal visuals first)
 - in `Executive Visual Snapshot`, lead with primary performance comparisons first (for example DR on/off, return, profitable-episode share, and key OOD performance)
+- when per-run time-series artifacts are available, include a compact `Run Spotlight` subsection with 1-3 explicitly selected runs (best/most interesting), in addition to aggregate views
+- default run-spotlight selection order: highest out-of-sample Sharpe run; highest out-of-sample turnover run with positive out-of-sample PnL/return; one additional notable run (for example strongest return or unusual turnover/risk profile)
+- for each spotlighted run, include equity-growth and turnover-over-time plots:
+  - equity growth must be normalized to starting capital (`1.00x` at start; `2.00x` doubles capital; `0.50x` halves capital)
+  - turnover over time should use intuitive units: `turns/day` preferred, `USD/day` acceptable when relative turnover time-series is unavailable
+- use out-of-sample by default for run-spotlight charts; if in-sample is shown, label splits unambiguously
+- if run-level time-series artifacts are unavailable, explicitly call out the artifact gap in limitations instead of silently omitting spotlights
+- for Mercantile cluster-backed runs, verify run-level artifact availability by direct cluster access (read-only check/sync for the specific search ID) before declaring spotlight artifacts unavailable
 - keep completion/failure information in the report, but de-emphasize it when reliability is not the central issue: prefer summary table + reliability section over the first/hero visual
 - do not use completion/failure as a hero plot by default; only elevate failure visuals when reliability behavior materially changes interpretation
 - for execution-intensity interpretation, prefer turnover metrics (`turns/day` and `USD/day` when available) over raw fill-count visuals
@@ -302,6 +310,8 @@ Mechanics:
 - in Mercantile reports, ensure `Top Takeaways` has both trader/quant and ML/DL perspectives
 - include an up-front summary of the single most important outcome in `Top Takeaways`
 - for search-style reports, verify there are aggregated-dimension plots for important dimensions (or explicitly state why not available)
+- when per-run time-series artifacts exist, verify there is a `Run Spotlight` section with 1-3 selected runs and both normalized equity-growth + turnover-over-time plots
+- when run-level time-series artifacts are unavailable, verify that the limitations section explicitly states this gap
 - verify every plot/table has clear title, axis/header labels, explicit units, and a short description
 - verify axis labels are present directly in each plot block (not caption-only/title-only)
 - verify each plot has a clear legend or explicit single-series label
