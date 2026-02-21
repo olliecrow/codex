@@ -58,11 +58,17 @@ Take user inputs as the source of truth:
 
 - one concise but information-dense Notion page
 - always start the page with a `Top Takeaways` section at the very top (before other sections)
+- prefer using an explicit `## Top Takeaways` heading as the first line; top-level `#` may be normalized away in some create-page flows
 - in `Top Takeaways`, begin with a one-line `question + answer status` statement (what question this report answers, and whether the available evidence answers it for this batch)
 - for experiment/search reports, add an `Experiment Definition` section immediately after `Top Takeaways` and before visuals
 - `Experiment Definition` must state in plain language: what question is being tested, what was searched/varied (search space), what was held fixed, how the search/randomization was sampled or assigned, why this search design was used, what evaluation environment(s) were used (including env variants/config names plus eval-only overrides and OOD/stress regimes when applicable), and whether this report answered the question for this batch (with a short why)
+- when available from artifacts, explicitly report effective evaluation concurrency (for example `eval_num_learned_agents`) rather than inferring it from training/search settings
 - when DR on/off appears, define what each means in the report context (for example randomized training settings vs fixed control settings)
 - for quantitative/search reports, follow `Experiment Definition` with an `Executive Visual Snapshot` section (compact, high-signal visuals first)
+- when an interpretation depends on causal isolation (for example \"axis X caused uplift\"), include both campaign-level deltas and an axis-isolated slice within a shared search distribution when available, and label any sample-size limits explicitly
+- for paired mode comparisons, report pair-specific overlap counts for each comparison (not only the all-mode intersection) and bind each paired effect to its own overlap size
+- when compared variants have non-trivial failure counts, add a selection-bias stress check (failure-rate by key buckets plus a sensitivity re-estimate on a less failure-prone slice)
+- for 3+ mode comparisons, add an all-mode intersection robustness slice (for example triple-overlap) and confirm ranking/effect directions remain stable there
 - in `Executive Visual Snapshot`, lead with primary performance comparisons first (for example DR on/off, return, profitable-episode share, and key OOD performance)
 - keep completion/failure information in the report, but de-emphasize it when reliability is not the central issue: prefer summary table + reliability section over the first/hero visual
 - do not use completion/failure as a hero plot by default; only elevate failure visuals when reliability behavior materially changes interpretation
