@@ -51,6 +51,11 @@ This skill is cross-project by default. It is designed for scientific/empirical 
   - bold label-first opener
   - concise high-signal callouts
   - bold key metrics/status tokens only (no blanket bolding)
+- opener clarity is mandatory:
+  - first `Top Takeaways` line must contain the explicit report question and a direct answer
+  - opener wording must be self-contained plain language; a new reader should not need prior thread context
+  - use direct answer tokens (`yes`, `no`, `inconclusive`, or equivalent), not vague status-only wording
+  - avoid opener text like `Question + answer status: answered` without concrete question text
 - reports and report-generation helpers are ephemeral artifacts:
   - keep under `plan/`
   - never commit under tracked code paths (`tools/`, `src/`, `experiments/`, `docs/`)
@@ -60,7 +65,7 @@ This skill is cross-project by default. It is designed for scientific/empirical 
   - keep exactly one small attribution footer note at the end containing `Prepared with support from Codex and Claude. codex-managed: true`
   - if any extra Codex/Claude references are found during refinement, remove them before publish
 - if original numeric artifacts still exist, regenerate publication-grade plots from source data; do not use lightweight Notion-native chart specs (for example Mermaid `xychart-beta`) for quantitative findings
-- do not upload report artifacts to third-party public file hosts (for example catbox, imgur, file.io) unless the user explicitly approves
+- do not upload report artifacts to third-party public/temporary file hosts (for example tmpfiles.org, catbox, imgur, file.io) unless the user explicitly approves
 - default to Notion-managed file/image uploads for report visuals (prefer `notion-upload-local` when available); if upload is unavailable in the current toolchain, add `Artifacts to attach` placeholders rather than using unapproved external hosts
 - hide local paths, hostnames, tokens, and secrets in report body text
 - define acronyms on first use
@@ -125,7 +130,9 @@ Current known hubs in this environment (use when relevant):
 ### 1) `Top Takeaways` (must be first section)
 
 - use heading `## Top Takeaways` as first section
-- first line: `Question + answer status`
+- first line must include both the explicit question and direct answer status
+- required opener format: `Question + answer status: <explicit question>? <direct answer>.`
+- disallowed opener pattern: status-only wording such as `Question + answer status: answered`
 - include the most important outcome immediately
 - if there is a clear before/after baseline relation, include explicit delta line (`before -> after`, absolute + relative where available)
 - apply emphasis hierarchy:
@@ -142,6 +149,7 @@ Include:
 - how samples were assigned/swept/randomized
 - why this design was used
 - evaluation setup/environment(s)
+- answer wording that directly maps to the question terms (no implicit inference required)
 - explicit answer status for this batch (`yes/no/inconclusive` or equivalent) with brief evidence-backed why
 
 ### 3) `Executive Visual Snapshot`
@@ -301,6 +309,8 @@ Embedding sequence:
 - after each pass: update same canonical page and re-fetch to verify landing
 - done when:
   - required sections present
+  - opener includes explicit question text and direct answer status
+  - opener question and answer are unambiguous to a cold reader
   - claims are evidence-grounded
   - visual/table labeling standards met
   - no privacy leakage
@@ -310,6 +320,9 @@ Embedding sequence:
 
 - `Top Takeaways` is first
 - explicit `Question + answer status` opener exists
+- opener includes explicit question text (not implied) and direct answer (`yes`/`no`/`inconclusive` or equivalent)
+- opener question is self-contained plain language (no shorthand requiring external context)
+- no vague status-only opener wording (for example `answered`) without explicit question text
 - opener emphasis hierarchy is correct
 - `Experiment Definition` includes what varied/fixed/how/why/eval setup/answer
 - `Executive Visual Snapshot` is present for quantitative reports
