@@ -46,6 +46,17 @@ Use the findings to either:
 
 Prioritize maximizing learning and experiment throughput efficiency. If no clear follow-up experiments or fixes are justified, say so explicitly.
 
+## Quick-status mode (must support)
+
+When the user asks for a fast operational answer (for example: current cluster usage, node capacity, QoS values, queue snapshot, or whether jobs are finished), run quick-status mode first.
+
+Quick-status mode requirements:
+- Keep it read-only and fast; avoid deep log archaeology unless it is needed to answer the specific question.
+- Prefer live scheduler evidence (`squeue`, `sinfo`, `sacct`, `scontrol show qos`) scoped to project/user when applicable.
+- Return concrete timestamps and units (for example `CPU used/total`, `GPU used/total`, per-node percentages, job counts by state).
+- If access is blocked (SSH/auth/routing), report blocker evidence and provide the exact next command to unblock.
+- Stop after delivering the requested quick status unless the user explicitly asks for deeper diagnosis.
+
 ## When to use
 
 Use this skill when the user asks to:
@@ -91,6 +102,24 @@ If `.env` is missing:
 - If reconstruction confidence is not high, try additional local evidence (`ssh` config aliases, recent job artifacts/logs, wrapper defaults, and conservative read-only probes) before asking the user for only the minimal missing detail.
 
 ## Workflow
+
+### 0) Mode selection
+
+- Select `quick-status` mode if the prompt is operational status/capacity/QoS focused and does not request deep investigation.
+- Select `deep-check` mode for root-cause analysis, batch triage, sync reconciliation, fixes, or follow-up experiment design.
+- In ambiguous cases, start with quick-status, then escalate to deep-check only if evidence indicates unresolved issues.
+- If `quick-status` mode is selected, run only the quick-status workflow and report; do not run deep-check steps 2-8 unless the user asks for escalation.
+
+### 0.5) Quick-status workflow (quick-status mode only)
+
+- Run preflight/light wiring from step 1 (commands, identity, connectivity) without cancellation or cleanup actions.
+- Collect only the minimum scheduler data needed to answer the question:
+  - queue snapshot (`squeue`),
+  - recent states if relevant (`sacct`),
+  - node capacity/usage (`sinfo`/`scontrol`),
+  - QoS config (`scontrol show qos`) when requested.
+- Keep it read-only.
+- Return the quick-status short-form report and stop.
 
 ### 1) Preflight and project wiring
 
@@ -211,6 +240,13 @@ Always report with these sections in order:
 9. Durable findings updated in docs.
 10. Coverage gaps and unknowns.
 11. Evidence runbook (commands/artifacts).
+
+Quick-status mode report (short form):
+1. Snapshot timestamp and requested question.
+2. Scope and identity (project, cluster user, host).
+3. Direct status answer with concrete metrics/units.
+4. Blockers (if any) and exact unblock command.
+5. Evidence runbook (commands used).
 
 ## Strong defaults and practical heuristics
 
