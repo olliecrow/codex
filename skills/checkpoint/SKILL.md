@@ -1,6 +1,6 @@
 ---
 name: checkpoint
-description: Alias for a checkpoint cycle: run `organise-docs` then `git-commit` to keep docs and commits current during long tasks.
+description: "Alias for a checkpoint cycle: run `organise-docs` then `git-commit` to keep docs and commits current during long tasks."
 ---
 
 # checkpoint
