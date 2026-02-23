@@ -56,6 +56,8 @@ This skill is cross-project by default. It is designed for scientific/empirical 
   - opener wording must be self-contained plain language; a new reader should not need prior thread context
   - use direct answer tokens (`yes`, `no`, `inconclusive`, or equivalent), not vague status-only wording
   - avoid opener text like `Question + answer status: answered` without concrete question text
+- if user scope is a report collection/hub, audit every in-scope report page one-by-one (no sampling)
+- legacy-summary fallback rule: if the first summary section is not `Top Takeaways` (for example `Key Takeaways` or `Executive Summary`), enforce the same explicit question+answer opener in that section's first line
 - reports and report-generation helpers are ephemeral artifacts:
   - keep under `plan/`
   - never commit under tracked code paths (`tools/`, `src/`, `experiments/`, `docs/`)
@@ -125,6 +127,13 @@ Current known hubs in this environment (use when relevant):
 - if scope intent is ambiguous: ask one short clarification question
 - for remote content: use surfaced local copies, or ask for fetch/copy command
 
+## Collection audit mode (must follow when requested)
+
+- if the user asks to ensure quality across all reports in a hub/project, enumerate all report pages in scope first
+- verify opener clarity on each page individually and patch each non-compliant page
+- do not stop after spot-checks; completion requires all in-scope pages checked
+- re-fetch each updated page and confirm opener line now contains explicit question + direct answer
+
 ## Scientific/empirical report structure (default)
 
 ### 1) `Top Takeaways` (must be first section)
@@ -133,6 +142,7 @@ Current known hubs in this environment (use when relevant):
 - first line must include both the explicit question and direct answer status
 - required opener format: `Question + answer status: <explicit question>? <direct answer>.`
 - disallowed opener pattern: status-only wording such as `Question + answer status: answered`
+- legacy heading fallback: if first summary heading is `Key Takeaways`/`Executive Summary`, apply the same first-line opener rule there
 - include the most important outcome immediately
 - if there is a clear before/after baseline relation, include explicit delta line (`before -> after`, absolute + relative where available)
 - apply emphasis hierarchy:
@@ -315,6 +325,7 @@ Embedding sequence:
   - visual/table labeling standards met
   - no privacy leakage
   - no actionable quality gaps remain
+  - for collection-scope tasks, every in-scope report page was individually checked and opener clarity is verified
 
 ## Quality checklist (core)
 
@@ -323,6 +334,7 @@ Embedding sequence:
 - opener includes explicit question text (not implied) and direct answer (`yes`/`no`/`inconclusive` or equivalent)
 - opener question is self-contained plain language (no shorthand requiring external context)
 - no vague status-only opener wording (for example `answered`) without explicit question text
+- legacy first-summary sections (`Key Takeaways`/`Executive Summary`) apply the same explicit opener rule when `Top Takeaways` is absent
 - opener emphasis hierarchy is correct
 - `Experiment Definition` includes what varied/fixed/how/why/eval setup/answer
 - `Executive Visual Snapshot` is present for quantitative reports
@@ -339,6 +351,7 @@ Embedding sequence:
 - no third-party public file host usage unless explicitly approved by the user
 - image/file blocks are Notion-managed by default and resolve to non-empty payloads at verification time
 - if visuals are expected, upload capability is verified before publish (or placeholders are used when unavailable)
+- for collection-scope tasks, all in-scope report pages were audited one-by-one (no sampling)
 
 ## Quality checklist (optional overlays)
 
