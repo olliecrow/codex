@@ -61,7 +61,7 @@ This skill is cross-project by default. It is designed for scientific/empirical 
   - if any extra Codex/Claude references are found during refinement, remove them before publish
 - if original numeric artifacts still exist, regenerate publication-grade plots from source data; do not use lightweight Notion-native chart specs (for example Mermaid `xychart-beta`) for quantitative findings
 - do not upload report artifacts to third-party public file hosts (for example catbox, imgur, file.io) unless the user explicitly approves
-- default to Notion-managed file/image uploads for report visuals; if upload is unavailable in the current toolchain, add `Artifacts to attach` placeholders rather than using unapproved external hosts
+- default to Notion-managed file/image uploads for report visuals (prefer `notion-upload-local` when available); if upload is unavailable in the current toolchain, add `Artifacts to attach` placeholders rather than using unapproved external hosts
 - hide local paths, hostnames, tokens, and secrets in report body text
 - define acronyms on first use
 
@@ -246,16 +246,18 @@ Codex verification gate:
 
 ## Notion MCP workflow (must follow)
 
-Use `notion-local` MCP namespace.
+Use `notion-local` for page/database operations and `notion-upload-local` for direct image/file uploads.
 
 1) Connectivity check:
 - call `mcp__notion-local__API-get-self` once per task
 
-2) Resolve parent:
+2) If visuals are required, verify `notion-upload-local` upload capability before publishing image blocks.
+
+3) Resolve parent:
 - normalize/verify user-supplied URL/ID with `mcp__notion-local__API-retrieve-a-page`
 - otherwise enumerate/search candidate parents and validate
 
-3) Create/update canonical page:
+4) Create/update canonical page:
 - derive report identity from evidence (experiment/search/run IDs, batch label/date, variant)
 - search for existing matching Codex-managed page first
 - create only if no matching Codex-managed page exists
@@ -264,11 +266,15 @@ Use `notion-local` MCP namespace.
 - include one small footer attribution note at end with `Prepared with support from Codex and Claude. codex-managed: true`
   - before finalizing, confirm no other Codex/Claude references remain in title/body
 
-4) Deduplication behavior:
+5) Upload visuals:
+- prefer `notion-upload-local` tool path for direct Notion-managed uploads
+- if upload tooling is unavailable, add `Artifacts to attach` placeholders rather than external-host workarounds
+
+6) Deduplication behavior:
 - keep exactly one canonical page per report identity in target reports location
 - when duplicates exist for same data identity, retain one canonical page; move/archive others only with user approval
 
-5) Output contract:
+7) Output contract:
 - return created/updated Notion page URL (or ID)
 
 ## Image embedding constraints (Notion reality)
@@ -280,7 +286,7 @@ Use `notion-local` MCP namespace.
 - after write, re-fetch and verify image/file blocks still have non-empty URLs and non-zero payloads at verification time
 
 Embedding sequence:
-1. Notion API file/image upload (Notion-managed)
+1. `notion-upload-local` direct file/image upload (Notion-managed)
 2. browser upload fallback (if available) on Codex-managed page (Notion-managed)
 3. reuse existing Notion-managed file/image blocks when valid
 4. explicitly approved first-party/org-controlled `https://` hosting path
@@ -319,6 +325,7 @@ Embedding sequence:
 - exactly one footer attribution marker is present (`Prepared with support from Codex and Claude. codex-managed: true`) and there are no other Codex/Claude references in title/body
 - no third-party public file host usage unless explicitly approved by the user
 - image/file blocks are Notion-managed by default and resolve to non-empty payloads at verification time
+- if visuals are expected, upload capability is verified before publish (or placeholders are used when unavailable)
 
 ## Quality checklist (optional overlays)
 
