@@ -39,6 +39,7 @@ For decision framing, rationale capture, plan/docs robustness, git safety, and r
   - preferred all-skills check: `python3 "${CODEX_HOME:-$HOME/.codex}/skills/validate_skills.py"`
   - targeted policy check: `python3 "${CODEX_HOME:-$HOME/.codex}/skills/lint_skill_policy.py" <skill_directory>`
   - targeted frontmatter check: `python3 "${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator/scripts/quick_validate.py" <skill_directory>`
+- Keep `SKILL.md` YAML frontmatter parser-safe across tooling: quote string values that include YAML-significant punctuation (for example `:` in `description` text).
 - CI enforces the same checks on skill/doc changes via `.github/workflows/skills-validation.yml`.
 - Use `docs/prompt-cookbook.md` as the shared source for copy-paste prompt templates in this repo.
 - For high-frequency skills, keep `Trigger phrases` and `Prompt templates` sections inside each `SKILL.md` so intent mapping and usage examples stay local to the skill.

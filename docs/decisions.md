@@ -166,6 +166,13 @@ Trade-offs: Documentation can drift in two locations; mitigated by treating the 
 Enforcement: `docs/prompt-cookbook.md` as the shared template index; required `Trigger phrases` and `Prompt templates` sections in high-frequency skills (`git-sync`, `git-review`, `cluster-check`, `competition-submit-check`, `checkpoint`); references from `AGENTS.md` and `docs/README.md`.
 References: `docs/prompt-cookbook.md`, `AGENTS.md`, `docs/README.md`, `skills/git-sync/SKILL.md`, `skills/git-review/SKILL.md`, `skills/cluster-check/SKILL.md`, `skills/competition-submit-check/SKILL.md`, `skills/checkpoint/SKILL.md`.
 
+Decision: `SKILL.md` frontmatter must use parser-safe YAML, including quoting string values that contain YAML-significant punctuation such as `:`.
+Context: Codex skill loading skipped `skills/checkpoint/SKILL.md` after a YAML parse failure (`mapping values are not allowed in this context`) caused by an unquoted `description` containing `cycle: run ...`.
+Rationale: Different YAML parsers are not equally permissive for plain scalars; quoting ambiguous values removes parser variance and prevents startup-time skill drop.
+Trade-offs: Quoted frontmatter is slightly more verbose; mitigated by treating quoted strings as the default when punctuation could be interpreted structurally.
+Enforcement: Keep punctuation-bearing frontmatter values quoted in `skills/*/SKILL.md`; run `python3 "${CODEX_HOME:-$HOME/.codex}/skills/validate_skills.py"` after skill edits (or `python3 "${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator/scripts/quick_validate.py" <skill_directory>` for targeted checks).
+References: `skills/checkpoint/SKILL.md`, `docs/skills.md`, `skills/validate_skills.py`, `skills/.system/skill-creator/scripts/quick_validate.py`.
+
 ## Template
 ```
 Decision:
