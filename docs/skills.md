@@ -1,6 +1,6 @@
 # Skills
 
-This doc summarizes the version-controlled Codex skills that live in this repo and how agents should use them. It is agent-focused and meant to stay evergreen. The canonical skill list lives in `AGENTS.md` to avoid duplication; update both if a list must appear here.
+This doc summarizes the version-controlled Codex skills that live in this repo and how agents should use them. It is agent-focused and meant to stay evergreen. The canonical skill list lives in `AGENTS.md`; avoid duplicating full skill inventories here.
 
 ## What a Skill Is
 - A skill is a reusable workflow, defined by a `SKILL.md` file inside `skills/<name>/`.
@@ -52,7 +52,6 @@ For decision framing, rationale capture, plan/docs robustness, git safety, and r
 - Always open the skill's `SKILL.md` first and follow its steps; only read referenced files that you need.
 - Prefer existing scripts or templates in the skill over retyping large blocks.
 - Keep context small and avoid loading unrelated files.
-- If a skill is missing or blocked, say so briefly and continue with the closest safe fallback.
 
 ## Domain-Specific Framing
 
