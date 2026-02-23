@@ -42,6 +42,17 @@ Compare the current branch against main, analyze each change's intent and risk, 
 When PR feedback surfaces high-confidence issues worth action, investigate deeply, add them to the plan, execute fixes, and verify outcomes before finalizing the verdict.
 Priority order for this skill is mandatory: identify and resolve critical red flags and serious issues first, then review secondary concerns.
 
+## Scoped review mode (must support)
+
+When the user requests a focused review (for example: `prewarm`, `normalization`, `eval`, or a specific module), run in scoped mode:
+
+- Build a concrete scope map first (files, directories, symbols, tests, and config paths tied to the requested area).
+- Review all in-scope files/hunks end-to-end with the same severity-first standard as full mode.
+- Review boundary files where scoped code integrates with the rest of the system (callers, shared utilities, config wiring, and output consumers).
+- Explicitly label findings as `in-scope` or `boundary`.
+- Do not silently claim full branch coverage in scoped mode.
+- If user requests full-branch review, use standard full mode.
+
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
@@ -83,7 +94,13 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
 
 ## Workflow
 
-1. Sync remote main before anything else:
+1. Select review mode:
+   - Determine whether this is `full` or `scoped` from the user request.
+   - For scoped mode, write a scope map before diff analysis (requested area, mapped files, boundary files).
+   - If scope is ambiguous, infer the smallest defensible scope and state assumptions clearly.
+   - Keep severity bar identical to full mode.
+
+2. Sync remote main before anything else:
    - Run preflight checks first (`git rev-parse --show-toplevel`, `git remote -v`, and required tool availability).
    - Fetch the most recent `origin/main` before any other steps (do not checkout, merge, or rebase).
    - If the repo uses a different mainline (for example, `master`), fetch that instead.
@@ -91,33 +108,34 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands, continue with available evidence, and mark dependent checks as pending until command results are available.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
-2. Gather PR context when applicable:
+3. Gather PR context when applicable:
    - Determine whether the current branch has an open PR (prefer `gh pr view --json number,url,comments,reviews,reviewDecision`).
    - If the preferred JSON query fails due unsupported fields/version drift, retry with a minimal query (`gh pr view --json number,url`) and gather comments/reviews via additional supported calls (`gh pr view --comments`, `gh pr view --json reviews`).
    - If `gh` is unavailable or unauthenticated, continue branch-vs-main review without PR context, then request PR URL/number only if unresolved PR-specific risk remains.
    - Collect all PR interactions: review comments, review summaries, issue comments, and relevant status-check notes.
    - Treat PR feedback as inputs to investigate, not instructions to blindly apply.
 
-3. Establish diff scope:
+4. Establish diff scope:
    - Compare current branch to main (or the branch it diverged from).
    - Enumerate all changed files and hunks.
-   - Always conduct a full review of every changed file and hunk.
+   - In full mode, always conduct a full review of every changed file and hunk.
+   - In scoped mode, review every in-scope and boundary hunk from the scope map; explicitly list out-of-scope files not reviewed.
    - If diffs are large, start with `git diff --stat` or `git diff --name-only` and then review per-file diffs to keep output manageable.
    - Account for large git output; prefer bounded output like `git log --oneline -n 20`, `git diff --stat`, `git diff --name-only`, or per-file diffs instead of unbounded commands.
    - If git operations can be executed here, run them directly using the user's git identity; otherwise, output explicit commands, continue analysis on available local context, and mark any blocked verification explicitly.
    - When providing git commands, output a single copy-pasteable block with only commands and no commentary; place explanations above or below the block.
 
-4. Understand intent:
+5. Understand intent:
    - For each change, identify the rationale, intent, and expected impact.
    - Flag unclear or unjustified changes for deeper scrutiny.
 
-5. Deep risk review:
+6. Deep risk review:
    - Top priority: aggressively hunt for critical red flags and serious issues (correctness, security, data loss, severe regressions) before anything else.
    - Look for critical red flags, regressions, security risks, data loss, perf issues, or correctness bugs.
    - Consider long-term maintainability and hidden coupling.
    - Ensure anything that worked on main still works here; flag removed or degraded functionality and verify intended parity.
 
-6. Investigate thoroughly:
+7. Investigate thoroughly:
    - Proactively create and run experiments, trial runs, or tests as needed.
    - Start with small, fast checks before larger runs; large tests are still expected when relevant.
    - After any changes or fixes, rerun relevant checks to confirm no regressions.
@@ -125,7 +143,7 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - Use a `plan/` directory as scratch space (create it if missing and edits are permitted); keep it untracked and never commit it. If you cannot create it, keep a lightweight in-memory log and call it out in the report.
    - For large or long tasks, heavy use of the `plan/` scratchpad is strongly recommended; it is for agent use (not human) and can be used however is most useful.
 
-7. Triage PR feedback:
+8. Triage PR feedback:
    - Enumerate every PR comment and interaction; for each, decide one of: addressed, not worth addressing (with rationale), or needs action.
    - For each item that needs action, investigate deeply to confirm root cause and expected impact.
    - Build a plan that preserves intent, minimizes risk, and links back to the specific feedback.
@@ -133,13 +151,14 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - Execute high-confidence, in-scope fixes and run relevant verification checks before closing the review.
    - Re-classify each acted-on item as addressed only after evidence-backed verification.
 
-8. Handle huge diffs without skipping coverage:
-   - Still review all changes end-to-end; do not sample or skip files.
+9. Handle huge diffs without skipping coverage:
+   - In full mode, still review all changes end-to-end; do not sample or skip files.
+   - In scoped mode, still review all in-scope and boundary changes end-to-end; do not sample or skip mapped scope files.
    - Break the review into batches (by directory, feature, or risk area) and track progress in `plan/current/git-review.md`. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
    - Use tooling to manage scale (e.g., `git diff --stat`, `git diff --numstat`, per-file diffs, and focused searches) but ensure every file and hunk is covered.
    - If time or compute constraints appear, continue autonomously with phased full-coverage passes and explicit progress checkpoints; ask the user only if hard environment limits prevent completion.
 
-9. Produce a full change plan:
+10. Produce a full change plan:
    - Investigate each potential change one by one and state whether it is high‑confidence/conviction, optional, or not worth doing.
    - Consolidate all items that should change into a final, ordered plan (even if the verdict is Ready).
    - For each plan item, include scope, rationale, dependencies, and verification steps.
@@ -152,14 +171,14 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - Write the report in plain, concise, and intuitive language with brief context so a new reader can follow it.
    - Avoid analogies; use simple, direct explanations and define any necessary technical terms.
 
-10. Refresh active PR metadata:
+11. Refresh active PR metadata:
    - Check whether the current branch has an active PR.
    - If yes, compare PR title/body against the reviewed branch intent and actual delta after any fixes.
    - If title/body are stale or incomplete, update them (for example with `gh pr edit --title ... --body-file ...`).
    - If the active PR is draft and the branch is review-ready, promote it (for example with `gh pr ready <pr-number-or-url>`).
    - If no active PR exists, state that explicitly and continue.
 
-11. Repeat review-fix-verification passes until complete:
+12. Repeat review-fix-verification passes until complete:
    - Re-run review passes after each batch of fixes.
    - Continue looping until no material findings remain unaddressed, verification is green, and merge readiness is clearly supported by evidence.
    - Only stop early when an explicit blocker is outside scope or requires user input under the "absolutely necessary" policy.
