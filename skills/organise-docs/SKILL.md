@@ -24,6 +24,7 @@ description: Autonomously maintain repository documentation from the active conv
 - Treat iterative execution as the default for non-trivial work; run adaptive loop passes. Example loops (adapt as needed, not rigid): issue-resolution `investigate -> plan -> fix -> verify -> battletest -> organise-docs -> git-commit -> re-review`; cleanup `scan -> prioritize -> clean -> verify -> re-scan`; docs `audit -> update -> verify -> re-audit`.
 - Keep looping until actual completion criteria are met: no actionable in-scope items remain, verification is green, and confidence is high.
 - Run `organise-docs` frequently during execution to capture durable decisions and learnings, not only at the end.
+- When a durable workflow learning applies across projects (not just the current repo), update the relevant shared skill definition(s) under `$CODEX_HOME/skills` in the same pass.
 - Create small checkpoint commits frequently with `git-commit` when changes are commit-eligible, checks are green, and repo policy permits commits.
 - Never squash commits; always use merge commits when integrating branches.
 - Prefer simplification over added complexity: aggressively remove bloat, redundancy, and over-engineering while preserving correctness.
@@ -116,6 +117,7 @@ Apply documentation edits autonomously when confidence is high.
 
 8. Report what changed.
 - Summarize files updated and the durable knowledge captured.
+- If shared skill definitions were updated, list the skill files changed and the new reusable rule(s).
 - Call out removed or consolidated docs and where preserved content was moved.
 - Include a preservation map for destructive edits: `source_doc -> destination_doc/section`.
 - List remaining ambiguity only when confidence was not high enough to resolve it safely.

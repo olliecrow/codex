@@ -62,6 +62,7 @@ Take user inputs as the source of truth:
 - in `Top Takeaways`, begin with a one-line `question + answer status` statement (what question this report answers, and whether the available evidence answers it for this batch)
 - for experiment/search reports, add an `Experiment Definition` section immediately after `Top Takeaways` and before visuals
 - `Experiment Definition` must state in plain language: what question is being tested, what was searched/varied (search space), what was held fixed, how the search/randomization was sampled or assigned, why this search design was used, what evaluation environment(s) were used (including env variants/config names plus eval-only overrides and OOD/stress regimes when applicable), and whether this report answered the question for this batch (with a short why)
+- when rerun-corrected batches supersede earlier batches, add an explicit provenance-lock statement in `Experiment Definition` naming the exact corrected `search_id`s used for primary metrics; treat pre-correction batches as context-only unless the user explicitly asks for direct rerun-vs-prior analysis
 - when available from artifacts, explicitly report effective evaluation concurrency (for example `eval_num_learned_agents`) rather than inferring it from training/search settings
 - when DR on/off appears, define what each means in the report context (for example randomized training settings vs fixed control settings)
 - for quantitative/search reports, follow `Experiment Definition` with an `Executive Visual Snapshot` section (compact, high-signal visuals first)
@@ -85,12 +86,13 @@ Take user inputs as the source of truth:
 - include caveats for missing data, incomplete runs, or skipped comparisons
 - keep wording objective and fact-based
 - do not include any section that is only process-oriented; focus on what was run, what changed, and what happened
-- do not include recommended next steps, follow-up tasks, or action plans; keep the report descriptive-only
+- default to descriptive-only reporting (no recommendations/next-step plans). if the user explicitly requests prescriptive guidance, add a clearly labeled guidance section and keep every claim evidence-backed and numerically unchanged from verified artifacts
 - do not include a table of contents block (`<table_of_contents/>`)
 - when quantitative outcomes are available, include high-signal plots in the report (not tables-only) unless explicitly instructed otherwise
 - for hyperparameter/search reports, include plots with aggregated outcomes across important search dimensions (for example learning rate, batch size, regularization, model-size/probability knobs) when data is available
 - reliability emphasis must be proportional: if job failure rate is below the active concern threshold, mention it briefly under reliability/limitations rather than making it a central narrative point (unless evidence shows material bias)
 - only elevate completion/failure visuals into top prominence when failure behavior materially changes interpretation of core performance conclusions
+- for failure-mechanism claims, use retained forensics root-cause fields when available (for example `failed_run_forensics.json -> run_timing.error_type/error_message`) rather than artifact-wrapper labels alone
 
 ## Cross-project refinement defaults (must follow)
 
@@ -120,13 +122,13 @@ When the user explicitly wants Claude-style wording/visual structure, use Claude
 
 2) Prompt Claude with strict output boundaries:
 - ask for wording/structure refinement only (not new analysis)
-- require output to stay descriptive-only (no recommendations, no action plan)
+- require output to stay descriptive-only by default (no recommendations, no action plan) unless the user explicitly asked for prescriptive guidance
 - require it to preserve section order constraints (`Top Takeaways` first, then required sections)
 - ask for explicit placeholders when evidence is missing (for example `unit unavailable`)
 
 Suggested prompt scaffold (fill in with current report context):
 - role: "rewrite for clarity and impact density only; do not add new facts"
-- hard constraints: required sections/order, descriptive-only tone, no local paths/hostnames
+- hard constraints: required sections/order, descriptive-only default tone (unless explicitly overridden by user request), no local paths/hostnames
 - evidence packet: compact fact list with units + claim map (`claim_id -> source`)
 - output contract:
   - `variant_a`: concise rewrite
@@ -135,6 +137,7 @@ Suggested prompt scaffold (fill in with current report context):
 
 3) Run a Codex verification gate before Notion update:
 - verify every quantitative claim in Claude output maps to evidence packet facts
+- verify paired-difference direction/sign conventions explicitly (`A - B` labels match the computed sign)
 - reject any new ungrounded claims, unit changes, sign flips, or scope drift
 - verify no local paths/hostnames leaked
 - verify required labels, units, legend clarity, and directional cues still hold
@@ -151,7 +154,7 @@ For Mercantile reports, `Top Takeaways` must explicitly cover both lenses:
 - machine learning/deep learning perspective:
   - implications for generalization, model behavior, data/split effects, training/evaluation dynamics, and hyperparameter sensitivity
 
-Keep this section factual and descriptive-only (no recommendations or action plans).
+Keep this section factual and descriptive-only by default (no recommendations or action plans) unless the user explicitly requests prescriptive guidance.
 
 Do not describe chart type unless needed.
 Direction cues are strongly encouraged for key metrics. When applicable, include explicit cues like `(higher is better)` or `(lower is better)` in a title, axis label, legend label, or caption.
@@ -183,14 +186,15 @@ Avoid filesystem path leakage in report body. Use neutral labels like `input ima
 - If duplicates/older versions exist for the same experiment/batch, retain one canonical page and move non-canonical duplicates out of the Reports location (or archive/trash only with explicit user approval).
 - If two pages reference the same underlying experiment batch/data, consolidate to one canonical report page and avoid splitting updates across both.
 - Before deduplicating, verify same-data identity using concrete evidence (for example run/search IDs, run directory names, budget, variant grid, and key aggregate counts). If evidence shows different batches, keep both pages.
-- Matching algorithm (most to least preferred):
-- Identity match: same experiment/search/run IDs or same explicit experiment batch scope (preferred over title matching).
-- Exact title match within the chosen parent location (or its hub scope) for `<YYYY-MM-DD> - <topic>`.
-- If no exact match and the user did not specify a date, pick the single best match by topic among recent reports (prefer the most recent date in the title).
+- Matching algorithm precedence:
+1. Identity match: same experiment/search/run IDs or same explicit experiment batch scope (preferred over title matching).
+2. Exact title match within the chosen parent location (or its hub scope) for `<YYYY-MM-DD> - <topic>`.
+3. If no exact match and the user did not specify a date, pick the single best match by topic among recent reports (prefer the most recent date in the title).
 - If multiple candidates remain, fetch each and pick the one that is Codex-managed and most semantically aligned to the user request (avoid splitting the narrative across pages).
 - Fetch the candidate page(s) and only update a page if it contains the `codex-managed: true` marker (and preserve that marker on every update).
 - If no matching Codex-managed page exists, create a new report page (and optionally link/mention the prior human-managed page without editing it).
 - If it is unclear whether the request is the same experiment/batch versus a genuinely new one, ask one short clarification question before creating a new page.
+- For large section rewrites, prefer heading-to-heading range updates (for example `## Decision...## Submission Guidance`) over bullet-level snippet replacements, because Notion normalization can make heavily formatted bullet snippets unreliable to match.
 
 5) Output contract:
 - Return the created/updated Notion page URL (or ID) as the primary artifact.
@@ -291,7 +295,7 @@ Refinement is the default. Put yourself in the shoes of a busy reader who did no
 Always do multiple rounds of review before considering a report "done":
 - Pass 1 (structure): ensure `Top Takeaways` is the first section and then a crisp narrative arc: what question, what changed/was run, what evidence, what results, what conclusion.
 - Pass 2 (reader questions): re-read top-to-bottom and answer the questions a skeptical reader will have inline (assumptions, baselines, comparisons, caveats, definitions, what could be wrong).
-- Pass 3 (reader clarity): ensure the report is maximally clear for a reader and strictly descriptive; remove recommendations, next experiments, follow-up tasks, and decision directives; highlight the single most important outcome up front.
+- Pass 3 (reader clarity): ensure the report is maximally clear for a reader and descriptive by default; remove unsolicited recommendations, next experiments, follow-up tasks, and decision directives; highlight the single most important outcome up front.
 
 Mechanics:
 - After each pass, update the same canonical Codex-managed report page in-place (do not fork versions).

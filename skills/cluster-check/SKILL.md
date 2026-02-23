@@ -114,6 +114,7 @@ Collect both live and recent history for the current project/user.
   - `sacct` for recent jobs (state, exit code, elapsed, start/end, resources), filtered to project-relevant names/prefixes.
 - Batch segmentation:
   - identify the most recent batch(es) by shared prefix/search id/time window.
+  - when a project manifest exists (for example `runs/cluster/aggregates/search_manifest.jsonl`), resolve recency by manifest `submit_time_utc` instead of name suffix heuristics.
   - prefer the batch currently being discussed in this conversation when identifiable.
   - otherwise use the most recent run/completed batch on the cluster.
 
@@ -148,6 +149,7 @@ For each recent batch/job (prioritize failed/slow/anomalous jobs first):
   - stdout/stderr tails and targeted grep for `Traceback`, `ERROR`, `Exception`, OOM, timeout, cancellation, container/env failures.
 - Inspect produced outputs:
   - run directories, metrics files, summaries, checkpoints/manifests.
+- For failed runs, inspect both aggregate failure files and retained forensics; treat `failed_run_forensics.json -> run_timing.error_type/error_message` as root cause, and treat `failed_runs.json -> reason` as potentially wrapper-level artifact context.
 - Verify lifecycle completeness:
   - run execution,
   - aggregation,
@@ -227,6 +229,7 @@ Always report with these sections in order:
 - Fragile shell quoting in nested `ssh` commands.
 - Branch/worktree drift causing wrong code version on cluster.
 - Sync gaps between remote results and local runs directories.
+- `failed_runs.json` reason showing artifact wrappers (for example missing `eval_metrics.json`) while the real runtime failure is only visible in `failed_run_forensics.json`.
 
 ## Decision framing
 
