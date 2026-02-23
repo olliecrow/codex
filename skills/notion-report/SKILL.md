@@ -1,6 +1,6 @@
 ---
 name: notion-report
-description: Create and maintain experiment/investigation reports directly in Notion via the Notion MCP server (automatic page creation/updates) from freeform inputs and artifacts. Use when the user wants reports created/edited/organized in Notion (no HTML or intermediate report formats).
+description: Create and maintain experiment/investigation reports in Notion via the Notion MCP server from freeform inputs and artifacts. Default to direct Notion editing, but support local-first drafts (HTML/Markdown + plot assets) when the user explicitly asks for local QA before publishing.
 ---
 
 # Notion Report
@@ -10,9 +10,25 @@ Create a report page directly in Notion (via MCP), filed under an appropriate pr
 - no fixed input schema required
 - no fixed tooling required (Python optional for plots/visuals when available)
 - accept freeform inputs: notes, logs, tables, images, artifacts, and run outputs
-- always work directly in Notion (create/add/edit pages); never generate HTML or other intermediate report formats
+- default mode: work directly in Notion (create/add/edit pages)
+- when the user explicitly requests local-first report QA, generate local draft artifacts first (HTML/Markdown + plots), review quality locally, then publish/update Notion from the approved local draft
 - hide local paths and hostnames in visible text
 - define acronyms on first use in the report
+
+## Local-first mode (when explicitly requested)
+
+- Create a deterministic local report bundle before any Notion writes:
+  - report body (`.html` or `.md`)
+  - summary metrics payload (`.json`)
+  - high-resolution plots (`>=220 dpi`)
+- Use full artifact rows for aggregate/distribution visuals (do not rely on display-only downsampled subsets for the core distributions unless explicitly labeled as sampled).
+- Validate local output quality first:
+  - axis labels and units are explicit
+  - legends are readable
+  - no overlap/clipping
+  - key figures are decision-useful without zooming
+- Only after local quality is acceptable, create/update the Notion page.
+- Keep the local report bundle under `plan/artifacts/` for reproducibility and future edits.
 
 ## Codex-owned pages only (must follow)
 
