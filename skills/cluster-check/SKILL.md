@@ -57,6 +57,30 @@ Quick-status mode requirements:
 - If access is blocked (SSH/auth/routing), report blocker evidence and provide the exact next command to unblock.
 - Stop after delivering the requested quick status unless the user explicitly asks for deeper diagnosis.
 
+## Trigger phrases
+
+Use quick-status mode for prompts like:
+- `check current cluster usage`
+- `per-node cpu/gpu usage`
+- `what is the qos`
+- `are jobs finished`
+- `cluster configuration right now`
+
+Use deep-check mode for prompts like:
+- `analyze recent runs deeply`
+- `triage failures/root cause`
+- `sync outputs and investigate`
+- `what should we run next`
+- `apply fixes and resubmit`
+
+## Prompt templates
+
+Use these copy-paste templates:
+- `[$cluster-check] quick-status: per-node cpu/gpu usage, queue counts by state, and qos values with timestamp.`
+- `[$cluster-check] quick-status: are all jobs finished for current project/user? include running/pending/completed/failed counts.`
+- `[$cluster-check] deep-check: analyze recent batch end-to-end (logs, outputs, sync integrity, root causes).`
+- `[$cluster-check] deep-check: identify high-confidence fixes, apply them, verify, and submit follow-up experiments if warranted.`
+
 ## When to use
 
 Use this skill when the user asks to:

@@ -47,6 +47,25 @@ Primary targets:
 
 Default mode is a non-destructive capability check. Perform an irreversible submission only when the user explicitly asks to submit now.
 
+## Trigger phrases
+
+Use this skill when the user asks things like:
+- `can you submit entries yourself`
+- `confirm whether you can still submit`
+- `check submission capability`
+- `submit to ammchallenge/highload`
+- `verify playwright submission flow still works`
+
+If intent is submission capability or readiness (not general UI automation), prefer this skill over plain `playwright`.
+
+## Prompt templates
+
+Use these copy-paste templates:
+- `[$competition-submit-check] ammchallenge capability-check. verify auth and submit-flow readiness; stop before irreversible submit.`
+- `[$competition-submit-check] highload capability-check with evidence for each checkpoint and can-submit/blocked verdict.`
+- `[$competition-submit-check] ammchallenge submit-now using <artifact-path>; return submission receipt/id.`
+- `[$competition-submit-check] highload submit-now using <artifact-path>; if blocked, provide exact unblock commands.`
+
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.

@@ -42,6 +42,24 @@ This is a thin alias for the standard checkpoint cycle used in long or multi-ste
 1) run `organise-docs` to promote durable knowledge, then
 2) run `git-commit` to checkpoint verified changes.
 
+## Trigger phrases
+
+Use this skill when the user asks for:
+- `checkpoint`
+- `commit/docs checkpoint`
+- `organise docs and commit`
+- `run milestone checkpoint`
+- `do docs + commit now`
+
+If the request is the combined docs-promotion and commit cycle, prefer `checkpoint` over invoking both skills separately.
+
+## Prompt templates
+
+Use these copy-paste templates:
+- `[$checkpoint] run docs promotion + small logical commits for work completed so far.`
+- `[$checkpoint] milestone checkpoint now: organise durable findings, then commit verified changes.`
+- `[$checkpoint] run one checkpoint cycle and report what was documented and committed.`
+
 ## Workflow
 
 1. Load and follow `../organise-docs/SKILL.md`.

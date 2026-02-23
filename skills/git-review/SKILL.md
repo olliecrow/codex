@@ -53,6 +53,27 @@ When the user requests a focused review (for example: `prewarm`, `normalization`
 - Do not silently claim full branch coverage in scoped mode.
 - If user requests full-branch review, use standard full mode.
 
+## Trigger phrases
+
+Use this skill when the user asks for review intents like:
+- `review this branch`
+- `critical red flags`
+- `serious issues`
+- `is this ready to merge`
+- `review <area> specifically` (scoped mode)
+
+Mode hinting:
+- use `full` mode for whole-branch readiness.
+- use `scoped` mode for targeted areas (for example `prewarm`, `normalization`, `eval`, `multiagent`).
+
+## Prompt templates
+
+Use these copy-paste templates:
+- `[$git-review] full branch review vs main for critical red flags and serious issues. findings first by severity.`
+- `[$git-review] scoped review: prewarm + boundary files only. focus on critical red flags/serious issues first.`
+- `[$git-review] scoped review: normalization path + boundary wiring; explicitly list out-of-scope files not reviewed.`
+- `[$git-review] full review then fix high-confidence issues, verify, and re-review until no material findings remain.`
+
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
@@ -155,7 +176,7 @@ When you recommend or make a fix, or reach an important decision, ensure the "wh
    - In full mode, still review all changes end-to-end; do not sample or skip files.
    - In scoped mode, still review all in-scope and boundary changes end-to-end; do not sample or skip mapped scope files.
    - Break the review into batches (by directory, feature, or risk area) and track progress in `plan/current/git-review.md`. If `plan/` cannot be created, keep a lightweight in-memory log and call it out in the report.
-   - Use tooling to manage scale (e.g., `git diff --stat`, `git diff --numstat`, per-file diffs, and focused searches) but ensure every file and hunk is covered.
+   - Use tooling to manage scale (e.g., `git diff --stat`, `git diff --numstat`, per-file diffs, and focused searches) but ensure every file and hunk in the active review scope is covered.
    - If time or compute constraints appear, continue autonomously with phased full-coverage passes and explicit progress checkpoints; ask the user only if hard environment limits prevent completion.
 
 10. Produce a full change plan:

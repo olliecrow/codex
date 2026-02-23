@@ -45,6 +45,25 @@ Safely sync local git state with the most recent remote state for one of:
 
 Default behavior is fast-forward only. Do not introduce merge commits during sync.
 
+## Trigger phrases
+
+Use this skill when the user intent matches phrases like:
+- `git pull`
+- `pull branch`
+- `pull most recent remote main`
+- `sync with upstream`
+- `switch to most recent version of branch`
+
+If the request is only synchronization and branch-state verification, prefer `git-sync` over broader git skills.
+
+## Prompt templates
+
+Use these copy-paste templates:
+- `[$git-sync] sync current branch with upstream (ff-only) and verify branch/upstream/ahead-behind.`
+- `[$git-sync] pull most recent remote main (ff-only) and report new HEAD commit.`
+- `[$git-sync] sync explicit branch olliecrow/<branch-name> to latest remote state (ff-only).`
+- `[$git-sync] verify we are on most recent remote <branch-name>; if blocked, return exact unblock commands.`
+
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.

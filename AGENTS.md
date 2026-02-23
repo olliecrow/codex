@@ -40,6 +40,7 @@ This repository hosts the Codex CLI container, agent documentation, and reusable
 - Route active notes to `plan/current/notes.md`, keep a compact workstream index in `plan/current/notes-index.md`, and track parallel work in `plan/current/orchestrator-status.md`.
 - Skills should run proactively and autonomously on high-conviction, in-scope actions, complete work end-to-end with verification, and keep `docs/` accurate by promoting durable learnings/decisions from ongoing work.
 - For large or long tasks/plans, run recurring milestone checkpoints: use `git-commit` for small logical commits and `organise-docs` to promote durable learnings/decisions into `docs/`.
+- Reusable prompting templates for common skill workflows live in `docs/prompt-cookbook.md`.
 
 ## Plan Directory Structure (agent usage)
 If `/plan/` does not exist, create it with the following subdirectories:

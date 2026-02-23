@@ -5,6 +5,7 @@ This directory holds long-term, agent-focused documentation for this repo. It is
 Docs principles (see `AGENTS.md` for full repo policy):
 - Keep entries concise, evergreen, and aligned with the codebase.
 - Prefer updating existing docs over adding new files unless the content is clearly distinct.
+- Reusable skill prompt templates are documented in `prompt-cookbook.md`.
 
 Relationship to `/plan/`:
 - `/plan/` is a short-term, disposable scratch space for agents and is not committed to git.
