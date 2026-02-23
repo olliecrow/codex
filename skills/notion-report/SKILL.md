@@ -35,9 +35,10 @@ This skill is cross-project by default. It is designed for scientific/empirical 
   - high-resolution plots (`>=220 dpi`)
 - use full artifact rows for core aggregate/distribution visuals unless explicitly labeled sampled
 - do not downsample plotted data by default; this is especially required for time-series plots
+- preserve native time cadence for time-series plots by default (no implicit temporal aggregation/resampling, e.g. day->month)
 - prefer high-fidelity rendered images (PNG/SVG) generated from source artifacts over inline chart DSL blocks
 - use Mermaid/Notion-native charts only as an explicit fallback when source data is irretrievably unavailable
-- if downsampling is unavoidable for tooling/render limits, disclose it explicitly in both caption and methodology (method + factor + why)
+- if downsampling or temporal aggregation is unavoidable for tooling/render limits, disclose it explicitly in both caption and methodology (method + factor + why)
 - validate local quality before publishing:
   - explicit axis labels + units
   - readable legends
@@ -159,8 +160,17 @@ General:
 - plot-first for quantitative interpretation
 - prefer fewer high-signal visuals over many redundant ones
 - no downsampling by default, especially for time-series visuals
+- no implicit temporal aggregation for time-series visuals; keep native cadence unless explicitly justified
 - avoid Mermaid `xychart-beta` (or equivalent low-fidelity DSL charts) for empirical metric plots when source artifacts exist
-- if downsampling is unavoidable, disclose exact method/factor and expected visual impact
+- if downsampling or temporal aggregation is unavoidable, disclose exact method/factor and expected visual impact
+
+## Cross-project refinement loop (must follow)
+
+- keep the skill project-agnostic: domain specifics are overlays, not defaults
+- benchmark draft quality against the strongest prior report style available for the current project/domain
+- keep what improved readability/interpretability and remove low-signal sections/visuals
+- use selective emphasis only (bold key conclusions/metrics/status), not blanket formatting
+- ensure the final report remains descriptive-first unless recommendations were explicitly requested
 
 ## Optional domain overlays
 
@@ -259,6 +269,7 @@ Embedding sequence:
 - captions use `Takeaway:` lead-ins
 - axis labels/units/legends are explicit and readable
 - plotted series are not downsampled (or any unavoidable downsampling is explicitly disclosed with method/factor/why)
+- time-series plots keep native artifact cadence (or any aggregation is explicitly disclosed with method/factor/why)
 - empirical charts are regenerated from original artifacts (no low-fidelity Notion-native chart DSL when source data exists)
 - limitations/reliability caveats are present and proportional
 - report is descriptive-only unless user explicitly requested recommendations
