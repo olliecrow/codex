@@ -23,6 +23,7 @@ This skill is cross-project by default. It is designed for scientific/empirical 
 - reports and report-generation helpers are ephemeral artifacts:
   - keep under `plan/`
   - never commit under tracked code paths (`tools/`, `src/`, `experiments/`, `docs/`)
+- if original numeric artifacts still exist, regenerate publication-grade plots from source data; do not use lightweight Notion-native chart specs (for example Mermaid `xychart-beta`) for quantitative findings
 - hide local paths, hostnames, tokens, and secrets in report body text
 - define acronyms on first use
 
@@ -34,6 +35,8 @@ This skill is cross-project by default. It is designed for scientific/empirical 
   - high-resolution plots (`>=220 dpi`)
 - use full artifact rows for core aggregate/distribution visuals unless explicitly labeled sampled
 - do not downsample plotted data by default; this is especially required for time-series plots
+- prefer high-fidelity rendered images (PNG/SVG) generated from source artifacts over inline chart DSL blocks
+- use Mermaid/Notion-native charts only as an explicit fallback when source data is irretrievably unavailable
 - if downsampling is unavoidable for tooling/render limits, disclose it explicitly in both caption and methodology (method + factor + why)
 - validate local quality before publishing:
   - explicit axis labels + units
@@ -156,6 +159,7 @@ General:
 - plot-first for quantitative interpretation
 - prefer fewer high-signal visuals over many redundant ones
 - no downsampling by default, especially for time-series visuals
+- avoid Mermaid `xychart-beta` (or equivalent low-fidelity DSL charts) for empirical metric plots when source artifacts exist
 - if downsampling is unavoidable, disclose exact method/factor and expected visual impact
 
 ## Optional domain overlays
@@ -255,6 +259,7 @@ Embedding sequence:
 - captions use `Takeaway:` lead-ins
 - axis labels/units/legends are explicit and readable
 - plotted series are not downsampled (or any unavoidable downsampling is explicitly disclosed with method/factor/why)
+- empirical charts are regenerated from original artifacts (no low-fidelity Notion-native chart DSL when source data exists)
 - limitations/reliability caveats are present and proportional
 - report is descriptive-only unless user explicitly requested recommendations
 - no table-of-contents block
