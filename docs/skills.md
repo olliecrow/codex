@@ -40,6 +40,8 @@ For decision framing, rationale capture, plan/docs robustness, git safety, and r
   - targeted policy check: `python3 "${CODEX_HOME:-$HOME/.codex}/skills/lint_skill_policy.py" <skill_directory>`
   - targeted frontmatter check: `python3 "${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator/scripts/quick_validate.py" <skill_directory>`
 - CI enforces the same checks on skill/doc changes via `.github/workflows/skills-validation.yml`.
+- Use `docs/prompt-cookbook.md` as the shared source for copy-paste prompt templates in this repo.
+- For high-frequency skills, keep `Trigger phrases` and `Prompt templates` sections inside each `SKILL.md` so intent mapping and usage examples stay local to the skill.
 
 ### Repeat invocations (where present)
 - Continue from prior logs and avoid repeating identical probes unless verifying a fix.
@@ -57,7 +59,11 @@ For decision framing, rationale capture, plan/docs robustness, git safety, and r
 - For quant/trading work where the user wants a trader-perspective explanation (PnL, risk, exposure, execution, microstructure, latency, liquidity, limits, failure modes) rather than ML/math framing, use `skills/explain-trader/SKILL.md`.
 - `explain-trader` is designed to preserve fidelity via a detail inventory, a topic-routing step (including HFT/latency-critical live behavior), a full book-impact pass, a structured term-mapping appendix, and a second-pass completeness gate (see its `references/` for checklists, translations, and examples).
 - For branch/PR review requests (for example `git-review` / `review-branch`), prioritize finding critical red flags and serious issues first; present findings ordered by severity before secondary observations.
+- For git synchronization requests (for example `git pull`, `pull most recent remote main`, `sync branch`), use `skills/git-sync/SKILL.md` for safe fast-forward sync and explicit branch-state verification.
+- For competition submission-capability checks (for example AMMChallenge/Highload readiness), use `skills/competition-submit-check/SKILL.md` rather than plain browser automation.
+- For combined milestone hygiene (`organise-docs` + `git-commit`), use `skills/checkpoint/SKILL.md`.
 - For long-running Slurm monitoring where Codex should wait patiently, poll intermittently, and intervene only on systemic failure/low-learning conditions (for example repeated OOM rates crossing policy thresholds), use `skills/cluster-monitor/SKILL.md` (patient low-token monitoring loop, conservative thresholds with a projected-learning-value gate, diagnose-and-plan before cancellation, whole-batch intervention when systemic, decisive cleanup/fix/resubmit, and immediate post-completion sync/analysis).
+- For cluster status-only prompts (for example per-node CPU/GPU usage, QoS, queue snapshot), use `skills/cluster-check/SKILL.md` quick-status mode; escalate to deep-check mode only when deeper diagnosis is requested.
 - For experiment/investigation reporting where the user wants the report created/maintained in Notion, use `skills/notion-report/SKILL.md` (creates/updates pages via the Notion MCP tools; no HTML or intermediate formats; prefers a single canonical report page updated in-place; requires a `Top Takeaways` section at the top of every report; includes reader-centric multi-pass review loops; descriptive-only reporting with no next-step recommendations; enforces clear plot/table titles, axis/header labels, legends or single-series labels, short descriptions, explicit units, and directional cues when applicable; only edits Codex-managed pages).
 
 ## Adding or Removing Skills

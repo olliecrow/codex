@@ -23,6 +23,7 @@ This doc defines how work is tracked so progress compounds without bloating repo
 - During execution: write concise notes to `plan/current/notes.md`.
 - At milestones: consolidate and de-duplicate active notes; update `plan/current/notes-index.md`.
 - Before finishing: promote durable learnings to `docs/` and trim stale `plan/` artifacts.
+- When both documentation promotion and commit checkpointing are needed in the same milestone, use the `checkpoint` skill alias workflow.
 
 ## Stop conditions
 - Stop when acceptance checks pass, verification is green, risks are documented, and no unresolved blockers remain.

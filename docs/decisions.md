@@ -159,6 +159,13 @@ Trade-offs: Lower-severity maintainability/style feedback may receive less empha
 Enforcement: `skills/git-review/SKILL.md` requires top-priority hunting of critical red flags and serious issues and severity-ordered findings; `skills/review-branch/SKILL.md` inherits and reasserts that severity-first behavior; `AGENTS.md` requires review tasks to prioritize critical red flags and serious issues first.
 References: `skills/git-review/SKILL.md`, `skills/review-branch/SKILL.md`, `AGENTS.md`, `docs/skills.md`.
 
+Decision: High-frequency workflows should expose copy-paste templates both globally (`docs/prompt-cookbook.md`) and locally inside each relevant skill (`Trigger phrases` + `Prompt templates` sections).
+Context: Repeated sessions used the same intents (`git pull`, scoped reviews, cluster status checks, competition submit checks, docs+commit checkpoints) with inconsistent phrasing, which increased routing ambiguity and repeated clarification overhead.
+Rationale: Keeping templates in both places improves speed and consistency: global cookbook gives one quick reference, while local skill sections keep intent mapping and templates close to behavior contracts.
+Trade-offs: Documentation can drift in two locations; mitigated by treating the skill-local sections as authoritative for behavior and periodically reconciling cookbook entries during `organise-docs`.
+Enforcement: `docs/prompt-cookbook.md` as the shared template index; required `Trigger phrases` and `Prompt templates` sections in high-frequency skills (`git-sync`, `git-review`, `cluster-check`, `competition-submit-check`, `checkpoint`); references from `AGENTS.md` and `docs/README.md`.
+References: `docs/prompt-cookbook.md`, `AGENTS.md`, `docs/README.md`, `skills/git-sync/SKILL.md`, `skills/git-review/SKILL.md`, `skills/cluster-check/SKILL.md`, `skills/competition-submit-check/SKILL.md`, `skills/checkpoint/SKILL.md`.
+
 ## Template
 ```
 Decision:
