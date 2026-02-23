@@ -1,4 +1,4 @@
 interface:
   display_name: "Notion Report"
   short_description: "Create and file reports directly in Notion"
-  default_prompt: "Create a report directly in Notion using the local notion-local MCP API tools, filed under the appropriate project hub. Preserve detail, include tables, and strive relentlessly to embed plots/images using valid external image blocks. Avoid leaking local paths, and return the created page URL."
+  default_prompt: "Create a report directly in Notion using the local notion-local MCP API tools, filed under the appropriate project hub. Preserve detail, include tables, and embed plots/images using Notion-managed uploads by default. Do not use third-party public hosts (for example catbox/imgur/file.io) unless the user explicitly approves. If upload is unavailable in the current toolchain, add an Artifacts to attach section and return the page URL."

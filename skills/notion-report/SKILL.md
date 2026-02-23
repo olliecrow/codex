@@ -5,6 +5,37 @@ description: Create and maintain scientific/empirical experiment or investigatio
 
 # Notion Report
 
+## Multi-agent collaboration
+
+- Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
+- Split work into clear packets with owners, inputs, acceptance checks, and a synthesis step when parallelizing.
+- Use single-agent execution when scope is small or coordination overhead outweighs gains.
+
+## Proactive autonomy and knowledge compounding
+
+- Be proactive: immediately take the next highest-value in-scope action when it is clear.
+- Default to autonomous execution: do not pause for confirmation between normal in-scope steps.
+- Request user input only when absolutely necessary: ambiguous requirements, material risk tradeoffs, missing required data/access, or destructive/irreversible actions outside policy.
+- If blocked by command/tool/env failures, attempt high-confidence fallbacks autonomously before escalating (for example `rg` -> `find`/`grep`, `python` -> `python3`, alternate repo-native scripts).
+- When the workflow uses `plan/`, ensure required plan directories exist before reading/writing them (create when edits are allowed; otherwise use an in-memory fallback and call it out).
+- Treat transient external failures (network/SSH/remote APIs/timeouts) as retryable by default: run bounded retries with backoff and capture failure evidence before concluding blocked.
+- On repeated invocations for the same objective, resume from prior findings/artifacts and prioritize net-new progress over rerunning identical work unless verification requires reruns.
+- Drive work to complete outcomes with verification, not partial handoffs.
+- Treat iterative execution as the default for non-trivial work; run adaptive loop passes. Example loops (adapt as needed, not rigid): issue-resolution `investigate -> plan -> fix -> verify -> battletest -> organise-docs -> git-commit -> re-review`; cleanup `scan -> prioritize -> clean -> verify -> re-scan`; docs `audit -> update -> verify -> re-audit`.
+- Keep looping until actual completion criteria are met: no actionable in-scope items remain, verification is green, and confidence is high.
+- Run `organise-docs` frequently during execution to capture durable decisions and learnings, not only at the end.
+- Create small checkpoint commits frequently with `git-commit` when changes are commit-eligible, checks are green, and repo policy permits commits.
+- Never squash commits; always use merge commits when integrating branches.
+- Prefer simplification over added complexity: aggressively remove bloat, redundancy, and over-engineering while preserving correctness.
+- Compound knowledge continuously: keep `docs/` accurate and up to date, and promote durable learnings and decisions from work into docs.
+
+## Long-task checkpoint cadence
+
+- For any non-trivial task (including long efforts), run recurring checkpoint cycles instead of waiting for a single end-of-task wrap-up.
+- At each meaningful milestone with commit-eligible changes, and at least once per major phase, invoke `git-commit` to create a small logical checkpoint commit once relevant checks are green and repo policy permits commits.
+- At the same cadence, invoke `organise-docs` whenever durable learnings/decisions appear, and prune stale `plan/` scratch artifacts.
+- If either checkpoint is blocked (for example failing checks or low-confidence documentation), resolve or record the blocker immediately and retry before expanding scope.
+
 Create and refine a single canonical report page in Notion from evidence artifacts.
 
 This skill is cross-project by default. It is designed for scientific/empirical reports in any domain. Domain overlays (for example trading/market experiments) are optional and only apply when relevant.
@@ -23,7 +54,14 @@ This skill is cross-project by default. It is designed for scientific/empirical 
 - reports and report-generation helpers are ephemeral artifacts:
   - keep under `plan/`
   - never commit under tracked code paths (`tools/`, `src/`, `experiments/`, `docs/`)
+- keep report presentation human-facing:
+  - reports should read as human-authored and human-consumable
+  - do not add Codex/Claude labels in report titles or main body sections
+  - keep exactly one small attribution footer note at the end containing `Prepared with support from Codex and Claude. codex-managed: true`
+  - if any extra Codex/Claude references are found during refinement, remove them before publish
 - if original numeric artifacts still exist, regenerate publication-grade plots from source data; do not use lightweight Notion-native chart specs (for example Mermaid `xychart-beta`) for quantitative findings
+- do not upload report artifacts to third-party public file hosts (for example catbox, imgur, file.io) unless the user explicitly approves
+- default to Notion-managed file/image uploads for report visuals; if upload is unavailable in the current toolchain, add `Artifacts to attach` placeholders rather than using unapproved external hosts
 - hide local paths, hostnames, tokens, and secrets in report body text
 - define acronyms on first use
 
@@ -53,10 +91,10 @@ Codex may edit only pages created by Codex.
 
 Implementation:
 - every Codex-created report page must include a durable marker near the end:
-  - preferred: callout with `🤖` containing:
-    - `codex-managed: true`
-    - `Only edit this page if this marker is present.`
-  - fallback: paragraph containing `codex-managed: true`
+  - preferred: small footer callout containing:
+    - `Prepared with support from Codex and Claude. codex-managed: true`
+  - fallback: footer paragraph containing the same text
+- do not add title suffixes or body labels such as `(Codex-managed regenerated)` or `Only edit this page if this marker is present.`
 - before updating an existing page, fetch page blocks and verify marker exists
 - if marker is missing, do not edit that page; create a new Codex-managed page
 
@@ -223,7 +261,8 @@ Use `notion-local` MCP namespace.
 - create only if no matching Codex-managed page exists
 - update in place otherwise
 - avoid creating duplicates for title wording changes
-- include Codex marker callout at end
+- include one small footer attribution note at end with `Prepared with support from Codex and Claude. codex-managed: true`
+  - before finalizing, confirm no other Codex/Claude references remain in title/body
 
 4) Deduplication behavior:
 - keep exactly one canonical page per report identity in target reports location
@@ -234,16 +273,18 @@ Use `notion-local` MCP namespace.
 
 ## Image embedding constraints (Notion reality)
 
-- reliable rendering requires externally fetchable `https://...` URL
+- preferred rendering path is Notion-managed file/image uploads
+- do not use third-party public file hosting by default
+- external hosting is allowed only with explicit user approval and should prefer first-party/org-controlled infrastructure
 - `data:` URIs and local-only schemes are not durable in Notion
-- after write, re-fetch and verify image blocks still have non-empty external URLs
+- after write, re-fetch and verify image/file blocks still have non-empty URLs and non-zero payloads at verification time
 
 Embedding sequence:
-1. existing stable `https://` image URL
-2. URL-rendered chart image when fidelity is preserved
-3. approved private/public hosting path to get `https://` URL
-4. browser upload fallback (if available) on Codex-managed page
-5. if all fail, add `Artifacts to attach` section with neutral labels + meaning
+1. Notion API file/image upload (Notion-managed)
+2. browser upload fallback (if available) on Codex-managed page (Notion-managed)
+3. reuse existing Notion-managed file/image blocks when valid
+4. explicitly approved first-party/org-controlled `https://` hosting path
+5. if all fail, add `Artifacts to attach` section with neutral labels + meaning (do not use unapproved third-party hosts)
 
 ## Iteration loop and finish criteria
 
@@ -275,7 +316,9 @@ Embedding sequence:
 - report is descriptive-only unless user explicitly requested recommendations
 - no table-of-contents block
 - no local path/hostname leakage
-- canonical Codex-managed page marker present
+- exactly one footer attribution marker is present (`Prepared with support from Codex and Claude. codex-managed: true`) and there are no other Codex/Claude references in title/body
+- no third-party public file host usage unless explicitly approved by the user
+- image/file blocks are Notion-managed by default and resolve to non-empty payloads at verification time
 
 ## Quality checklist (optional overlays)
 
