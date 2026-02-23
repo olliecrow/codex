@@ -20,8 +20,11 @@ Codex may only edit pages that Codex created. Never edit pages that were not cre
 
 Implementation rule:
 - Every page Codex creates MUST include a durable marker block near the end:
-  - `<callout icon="🤖" color="gray_bg">\n\tcodex-managed: true\n\tOnly edit this page if this marker is present.\n</callout>`
-- Before updating an existing page, fetch it and verify the marker is present. If missing, do not edit; create a new report page instead.
+  - prefer a callout block (`icon: 🤖`) whose text includes:
+    - `codex-managed: true`
+    - `Only edit this page if this marker is present.`
+  - if callout creation is unavailable, include a paragraph block containing `codex-managed: true` near the end.
+- Before updating an existing page, fetch block children and verify the marker text is present. If missing, do not edit; create a new report page instead.
 
 ## Location routing (must follow)
 
@@ -36,7 +39,7 @@ Choose a parent location in Notion. Prefer an explicit parent URL from the user;
 - Mercantile hub: `https://www.notion.so/Mercantile-306f1d57cab8802a8b5cc2b513780742`
 - Mercantile reports (preferred when applicable): `https://www.notion.so/306f1d57cab8808e9fafdbd0bb6c9d47`
 
-3) Within a hub, try to file under an existing subpage (if present), using Notion search scoped to the hub page:
+3) Within a hub, try to file under an existing subpage (if present), using child-page enumeration and search + parent validation:
 - prefer subpages named like: `Reports`, `Experiments`, `Research`, `Runs`, `Results`
 - if no obvious subpage exists, create the report directly under the hub page.
 
@@ -171,17 +174,22 @@ Avoid filesystem path leakage in report body. Use neutral labels like `input ima
 
 ## Notion MCP workflow (must follow)
 
-1) Fetch the Notion markdown spec before writing content:
-- Use `read_mcp_resource` with `server: notion` and `uri: notion://docs/enhanced-markdown-spec` so the generated page content uses valid Notion-flavored Markdown.
+Use the local MCP server/tool namespace `notion-local` for all Notion operations.
+
+1) Connectivity check before writes:
+- Call `mcp__notion-local__API-get-self` once per task to confirm auth/workspace.
+- `list_mcp_resources` may return `Method not found` on this server; do not treat that as failure if Notion API calls succeed.
 
 2) Resolve the parent page:
-- Use `mcp__notion__notion-fetch` on the chosen hub/parent URL to obtain a `page_id`.
-- If choosing a subpage (Reports/Experiments/etc.), use `mcp__notion__notion-search` with `page_url` scoped to the hub to find the best target subpage, then fetch it to get its `page_id`.
+- If the user provides a Notion URL/ID, extract/normalize the page ID and verify it with `mcp__notion-local__API-retrieve-a-page`.
+- If choosing a subpage (Reports/Experiments/etc.), first list hub children with `mcp__notion-local__API-get-block-children` and prefer existing `child_page` entries.
+- If enumeration is not enough, use `mcp__notion-local__API-post-search` for candidate discovery, then validate parent/location with `mcp__notion-local__API-retrieve-a-page` (and parent-chain checks).
 
 3) Create the report page:
 - Default to a single canonical page per experiment or experiment batch.
 - Before creating, always derive a report identity from available evidence (for example: experiment/search/run IDs, batch label, date window, method/variant) and search for an existing Codex-managed report with the same identity.
-- Use `mcp__notion__notion-create-pages` with `parent` set to the chosen parent `page_id` only when you are sure no matching Codex-managed report exists for that identity.
+- Use `mcp__notion-local__API-post-page` with `parent` set to the chosen parent `page_id` only when you are sure no matching Codex-managed report exists for that identity.
+- Add/update body sections with `mcp__notion-local__API-patch-block-children` / `mcp__notion-local__API-update-a-block` as needed.
 - Do not create a new page just because the title wording changed; update the existing canonical page for the same experiment/batch.
 - Title pattern (match existing report pages when possible): `<YYYY-MM-DD> - <topic>`
 - Content should follow the quality checklist below.
@@ -199,7 +207,7 @@ Avoid filesystem path leakage in report body. Use neutral labels like `input ima
 2. Exact title match within the chosen parent location (or its hub scope) for `<YYYY-MM-DD> - <topic>`.
 3. If no exact match and the user did not specify a date, pick the single best match by topic among recent reports (prefer the most recent date in the title).
 - If multiple candidates remain, fetch each and pick the one that is Codex-managed and most semantically aligned to the user request (avoid splitting the narrative across pages).
-- Fetch the candidate page(s) and only update a page if it contains the `codex-managed: true` marker (and preserve that marker on every update).
+- Fetch candidate page blocks via `mcp__notion-local__API-get-block-children` and only update a page if it contains the `codex-managed: true` marker (and preserve that marker on every update).
 - If no matching Codex-managed page exists, create a new report page (and optionally link/mention the prior human-managed page without editing it).
 - If it is unclear whether the request is the same experiment/batch versus a genuinely new one, ask one short clarification question before creating a new page.
 - For large section rewrites, prefer heading-to-heading range updates (for example `## Decision...## Submission Guidance`) over bullet-level snippet replacements, because Notion normalization can make heavily formatted bullet snippets unreliable to match.
@@ -250,17 +258,17 @@ Hard constraints (learned empirically via Notion MCP fetch round-trips):
 - URLs that require interactive auth (cookies, VPN-only, private repos) often will not render for Notion; prefer truly fetchable URLs.
 
 Verification rule:
-- After creating/updating a report that includes images, immediately `mcp__notion__notion-fetch` the page and confirm each intended image appears as `<image source="https://...">...`.
+- After creating/updating a report that includes images, immediately fetch page blocks via `mcp__notion-local__API-get-block-children` and confirm each intended image block has a non-empty external `https://...` URL.
 - If any image refetches as `<image source="">...` (blank source) or disappears, treat it as a failed embedding attempt and fall back to the next option below.
 
 Strive relentlessly to embed images/plots in the Notion page. Try (in this order), stopping only when you have exhausted the options:
 
 1) If an image already has a stable `https://...` URL:
 - Embed it directly using an Image block:
-  - `<image source="https://example.com/plot.png">caption</image>`
+  - use a Notion image block with an external URL (for example `image.external.url = "https://example.com/plot.png"`).
 
 2) If you can generate a plot as a URL-rendered chart (no file upload needed):
-- Use a URL-rendered chart provider (for example `quickchart.io`) to generate a plot image from a chart spec, then embed that `https://...` image URL via `<image ...>`.
+- Use a URL-rendered chart provider (for example `quickchart.io`) to generate a plot image from a chart spec, then embed that `https://...` image URL as an external image block.
 - Only use this when it preserves fidelity (do not distort results just to fit a chart spec).
 - Treat third-party chart renderers as an explicit data-sharing decision: do not send real project data without explicit user approval.
 
@@ -268,7 +276,7 @@ Strive relentlessly to embed images/plots in the Notion page. Try (in this order
 - You need an externally-resolvable `https://...` URL for Notion to render images reliably.
 - Do not upload images to a public host without explicit user approval.
 - Preferred hosting options (ask the user for one if not already available): a private artifact host that serves `https://...` URLs; a pre-signed `https://...` URL (ensure its expiry is acceptable for the report's expected lifetime); or a company-internal static host that Notion can fetch from without cookies/VPN.
-- Then embed via `<image source="https://...">caption</image>` and re-fetch to verify persistence.
+- Then embed as an external image block and re-fetch to verify persistence.
 
 4) Last resort (still "directly in Notion", but not via MCP-only image sources):
 - If Playwright/browser automation is available and you have access to the Notion UI, upload/attach the local image directly into the report page in Notion (so Notion hosts it).
