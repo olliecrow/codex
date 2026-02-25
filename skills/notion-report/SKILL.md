@@ -45,8 +45,15 @@ This skill is cross-project by default. It is designed for scientific/empirical 
 - no fixed input schema required
 - accept freeform evidence inputs: notes, logs, tables, plots, artifacts, and run outputs
 - descriptive-first reporting by default: factual, evidence-backed, and non-prescriptive unless user explicitly requests guidance
+- for most experiment/investigation reports, make explicit `Question` -> `Answer` flow the narrative backbone
+- if a report type is not naturally question-driven (for example operational status output), explicitly state objective/outcome framing instead of forcing Q/A scaffolding
+- unless failure behavior is the explicit experiment question, do not make failure-rate metrics the primary headline; treat them as reliability context supporting core outcomes
 - one canonical page per report identity; refine in place (no `v2`/`final` forks)
+- when publishing into a reports hub, create report pages as direct children of that hub only (no nested/recursive report pages)
+- consolidation-first: keep the fewest report pages that still map cleanly to distinct report identities/questions
 - plot-first for quantitative reporting; tables are supporting precision
+- follow normal report naming convention used by recent reports: `YYYY-MM-DD - <clear human title>`
+- avoid opaque shorthand/acronym-heavy naming in titles/headings/captions (for example coded labels like `RB1200` or `B500`); prefer plain-language wording
 - explicit opener emphasis hierarchy for scanability:
   - bold label-first opener
   - concise high-signal callouts
@@ -55,7 +62,11 @@ This skill is cross-project by default. It is designed for scientific/empirical 
   - first `Top Takeaways` line must contain the explicit report question and a direct answer
   - opener wording must be self-contained plain language; a new reader should not need prior thread context
   - use direct answer tokens (`yes`, `no`, `inconclusive`, or equivalent), not vague status-only wording
+  - if outcome is mixed, map it to explicit direct-answer tokens in the opener (for example `runtime yes, performance no` or `inconclusive`)
   - avoid opener text like `Question + answer status: answered` without concrete question text
+- if more than one key question is covered, use numbered `Question n` / `Answer n` pairs with strict adjacency (each answer immediately follows its question)
+- for multi-question or mixed-certainty investigations, add a dedicated `Question Decomposition` section immediately after `Top Takeaways` using strict `Question n` -> `Answer n` -> `Status n` triples, with one concrete empirical evidence line in each answer
+- keep the opener focused on the true experiment objective; do not let reliability/failure-rate stats become the lead claim unless failure analysis is the stated question
 - if user scope is a report collection/hub, audit every in-scope report page one-by-one (no sampling)
 - legacy-summary fallback rule: if the first summary section is not `Top Takeaways` (for example `Key Takeaways` or `Executive Summary`), enforce the same explicit question+answer opener in that section's first line
 - reports and report-generation helpers are ephemeral artifacts:
@@ -112,6 +123,9 @@ Implementation:
 3. Prefer existing subpages named like `Reports`, `Experiments`, `Research`, `Runs`, `Results`.
 4. If still unclear, ask one short clarification question.
 
+Publishing constraint:
+- if user asks to add reports under a specific reports page, create report pages directly under that parent only; do not create nested report pages beneath newly created report pages
+
 Current known hubs in this environment (use when relevant):
 - GigaPlay hub: `https://www.notion.so/GigaPlay-2edf1d57cab880209415f67e7c65414f`
 - GigaPlay reports: `https://www.notion.so/305f1d57cab8802eaac6d100dc242c5d`
@@ -132,7 +146,7 @@ Current known hubs in this environment (use when relevant):
 - if the user asks to ensure quality across all reports in a hub/project, enumerate all report pages in scope first
 - verify opener clarity on each page individually and patch each non-compliant page
 - do not stop after spot-checks; completion requires all in-scope pages checked
-- re-fetch each updated page and confirm opener line now contains explicit question + direct answer
+- re-fetch each in-scope page and confirm opener line contains explicit question + direct answer after the pass
 
 ## Scientific/empirical report structure (default)
 
@@ -142,6 +156,8 @@ Current known hubs in this environment (use when relevant):
 - first line must include both the explicit question and direct answer status
 - required opener format: `Question + answer status: <explicit question>? <direct answer>.`
 - disallowed opener pattern: status-only wording such as `Question + answer status: answered`
+- for most empirical reports, use question/answer lines as the primary narrative driver in this section
+- only skip explicit Q/A scaffolding when the report is clearly non-question-driven; in that case state objective and outcome explicitly
 - legacy heading fallback: if first summary heading is `Key Takeaways`/`Executive Summary`, apply the same first-line opener rule there
 - include the most important outcome immediately
 - if there is a clear before/after baseline relation, include explicit delta line (`before -> after`, absolute + relative where available)
@@ -149,6 +165,8 @@ Current known hubs in this environment (use when relevant):
   - bold label-first opener
   - concise callouts for major win/loss tradeoff when both exist
   - selective bolding of key metrics/status only
+- if multiple questions are answered, list numbered `Question n` then `Answer n` lines directly under the opener, keeping each answer immediately after its paired question
+- when the report includes several sub-questions or mixed answer certainty, include a dedicated `Question Decomposition` section immediately after `Top Takeaways` with `Question n` -> `Answer n` -> `Status n` ordering and one empirical evidence line per answer
 
 ### 2) `Experiment Definition` (for experiment/search reports)
 
@@ -179,6 +197,7 @@ Include:
 - include missing data, incomplete runs, comparability gaps, and caveats
 - keep reliability emphasis proportional to impact
 - do not make completion/failure the hero narrative unless it materially changes conclusions
+- when failure rates are not the explicit research target, report them as reliability support (not the primary report focal point)
 
 ### 6) `Run Spotlight` (when run-level time-series artifacts exist)
 
@@ -281,6 +300,7 @@ Use `notion-local` for page/database operations and `notion-upload-local` for di
 - create only if no matching Codex-managed page exists
 - update in place otherwise
 - avoid creating duplicates for title wording changes
+- keep pages flat under the chosen reports parent; do not create nested report pages inside report pages
 - include one small footer attribution note at end with `Prepared with support from Codex and Claude. codex-managed: true`
   - before finalizing, confirm no other Codex/Claude references remain in title/body
 
@@ -290,6 +310,7 @@ Use `notion-local` for page/database operations and `notion-upload-local` for di
 
 6) Deduplication behavior:
 - keep exactly one canonical page per report identity in target reports location
+- prefer consolidation into fewer pages when multiple pages represent the same identity/question
 - when duplicates exist for same data identity, retain one canonical page; move/archive others only with user approval
 
 7) Output contract:
@@ -321,6 +342,8 @@ Embedding sequence:
   - required sections present
   - opener includes explicit question text and direct answer status
   - opener question and answer are unambiguous to a cold reader
+- when multiple questions are present, Q/A ordering is explicit and adjacent (`Question n` then `Answer n`)
+- when `Question Decomposition` is present, each `Question n` has adjacent `Answer n` and `Status n` lines, and each `Answer n` includes one concrete empirical evidence line
   - claims are evidence-grounded
   - visual/table labeling standards met
   - no privacy leakage
@@ -332,7 +355,12 @@ Embedding sequence:
 - `Top Takeaways` is first
 - explicit `Question + answer status` opener exists
 - opener includes explicit question text (not implied) and direct answer (`yes`/`no`/`inconclusive` or equivalent)
+- when `Question Decomposition` exists, it uses strict `Question n` -> `Answer n` -> `Status n` ordering with one empirical evidence line per answer
+- vague status-only opener answers (for example `mixed`, `answered`, `improved`) are non-compliant unless mapped to explicit direct-answer tokens
 - opener question is self-contained plain language (no shorthand requiring external context)
+- report naming is human-readable (`YYYY-MM-DD - <clear human title>`) and avoids opaque shorthand/acronym-heavy labels
+- report page is a direct child of the target reports hub (no nested/recursive report pages)
+- failure-rate metrics are present for reliability context but are not headline focal points unless failure behavior is the explicit research question
 - no vague status-only opener wording (for example `answered`) without explicit question text
 - legacy first-summary sections (`Key Takeaways`/`Executive Summary`) apply the same explicit opener rule when `Top Takeaways` is absent
 - opener emphasis hierarchy is correct
