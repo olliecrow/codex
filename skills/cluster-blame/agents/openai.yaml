@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cluster Blame"
+  short_description: "Flag Slurm jobs likely blocking shared capacity"
+  default_prompt: "Inspect current Slurm queue and node allocation in read-only mode, identify likely misconfigured jobs that strand CPU/GPU/memory capacity, separate policy-driven effects from probable submission misconfiguration, rank candidates by impact and confidence, and produce evidence plus a neutral outreach draft without modifying any job or cluster state."

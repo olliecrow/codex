@@ -24,6 +24,12 @@ Reusable copy-paste prompt templates for high-frequency workflows in this reposi
 - `[$cluster-check] quick-status: are all jobs finished for current project/user? include state counts.`
 - `[$cluster-check] deep-check: analyze recent batch end-to-end (logs, outputs, sync integrity, root causes).`
 
+## Cluster attribution
+
+- `[$cluster-blame] quick-scan: identify likely users/jobs currently stranding cpu/gpu/memory capacity, with impact and confidence.`
+- `[$cluster-blame] deep-attribution: explain why resources are idle despite pending jobs; separate scheduler policy effects from likely submission misconfiguration.`
+- `[$cluster-blame] deep-attribution: produce neutral outreach draft messages for the top high-confidence blocking candidates.`
+
 ## Competition submission checks
 
 - `[$competition-submit-check] ammchallenge capability-check. verify auth and submit-flow readiness; stop before irreversible submit.`
