@@ -152,6 +152,13 @@ Trade-offs: Some failing jobs are allowed to continue below threshold, which can
 Enforcement: `skills/cluster-monitor/SKILL.md` defines queue-tolerant monitoring, watch/escalation/intervention thresholds (`>10%` similar failures escalates diagnosis, `>=15%` similar failures triggers intervention by default), a projected-learning-value gate, and a required diagnose-and-plan -> whole-affected-batch cancel (scoped) -> aggressive cleanup -> fix -> resubmit -> remonitor loop.
 References: `skills/cluster-monitor/SKILL.md`, `docs/skills.md`.
 
+Decision: Slurm shared-capacity attribution must stay strictly read-only and must separate scheduler-policy effects from likely submission misconfiguration before naming blocking users/jobs.
+Context: Cluster triage questions often ask who is blocking compute when resources appear idle, but direct user blame is error-prone when priority policy, defaults, and fit fragmentation can create the same symptoms.
+Rationale: A read-only, evidence-first attribution workflow protects cluster safety and reduces false blame by requiring fit/fragmentation proof, policy checks, and explicit confidence scoring before outreach.
+Trade-offs: More investigative overhead and more `mixed/unknown` outcomes; mitigated by a quick-scan mode for fast status answers and a deep-attribution mode when higher confidence is needed.
+Enforcement: `skills/cluster-blame/SKILL.md` enforces no-mutation commands, quick-scan/deep-attribution mode split, falsification checks, policy-vs-submission classification (`submission-likely`, `policy-likely`, `mixed`), confidence rubric, source-ledger reporting, and neutral outreach language.
+References: `skills/cluster-blame/SKILL.md`, `docs/skills.md`, `docs/prompt-cookbook.md`, `AGENTS.md`.
+
 Decision: Review workflows prioritize finding critical red flags and serious issues above all secondary concerns.
 Context: Review requests in this repository are primarily risk-focused gate checks before merge, and low-severity commentary can dilute attention from material correctness and safety risks.
 Rationale: Explicit severity-first prioritization improves merge safety by surfacing high-impact defects first and keeping review output decision-relevant.
@@ -160,11 +167,11 @@ Enforcement: `skills/git-review/SKILL.md` requires top-priority hunting of criti
 References: `skills/git-review/SKILL.md`, `skills/review-branch/SKILL.md`, `AGENTS.md`, `docs/skills.md`.
 
 Decision: High-frequency workflows should expose copy-paste templates both globally (`docs/prompt-cookbook.md`) and locally inside each relevant skill (`Trigger phrases` + `Prompt templates` sections).
-Context: Repeated sessions used the same intents (`git pull`, scoped reviews, cluster status checks, competition submit checks, docs+commit checkpoints) with inconsistent phrasing, which increased routing ambiguity and repeated clarification overhead.
+Context: Repeated sessions used the same intents (`git pull`, scoped reviews, cluster status/attribution checks, competition submit checks, docs+commit checkpoints) with inconsistent phrasing, which increased routing ambiguity and repeated clarification overhead.
 Rationale: Keeping templates in both places improves speed and consistency: global cookbook gives one quick reference, while local skill sections keep intent mapping and templates close to behavior contracts.
 Trade-offs: Documentation can drift in two locations; mitigated by treating the skill-local sections as authoritative for behavior and periodically reconciling cookbook entries during `organise-docs`.
-Enforcement: `docs/prompt-cookbook.md` as the shared template index; required `Trigger phrases` and `Prompt templates` sections in high-frequency skills (`git-sync`, `git-review`, `cluster-check`, `competition-submit-check`, `checkpoint`); references from `AGENTS.md` and `docs/README.md`.
-References: `docs/prompt-cookbook.md`, `AGENTS.md`, `docs/README.md`, `skills/git-sync/SKILL.md`, `skills/git-review/SKILL.md`, `skills/cluster-check/SKILL.md`, `skills/competition-submit-check/SKILL.md`, `skills/checkpoint/SKILL.md`.
+Enforcement: `docs/prompt-cookbook.md` as the shared template index; required `Trigger phrases` and `Prompt templates` sections in high-frequency skills (`git-sync`, `git-review`, `cluster-check`, `cluster-blame`, `competition-submit-check`, `checkpoint`); references from `AGENTS.md` and `docs/README.md`.
+References: `docs/prompt-cookbook.md`, `AGENTS.md`, `docs/README.md`, `skills/git-sync/SKILL.md`, `skills/git-review/SKILL.md`, `skills/cluster-check/SKILL.md`, `skills/cluster-blame/SKILL.md`, `skills/competition-submit-check/SKILL.md`, `skills/checkpoint/SKILL.md`.
 
 Decision: `SKILL.md` frontmatter must use parser-safe YAML, including quoting string values that contain YAML-significant punctuation such as `:`.
 Context: Codex skill loading skipped `skills/checkpoint/SKILL.md` after a YAML parse failure (`mapping values are not allowed in this context`) caused by an unquoted `description` containing `cycle: run ...`.
