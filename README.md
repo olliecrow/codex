@@ -76,3 +76,4 @@ Run with an interactive shell instead of the Codex TUI:
 - `docs/workflows.md`: workflow conventions
 - `docs/decisions.md`: durable rationale and decisions
 - `docs/skills.md`: skill maintenance and validation guidance
+- `docs/project-preferences.md`: durable project maintenance preferences
