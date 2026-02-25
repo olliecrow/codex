@@ -1,12 +1,11 @@
 # Codex Repository
 
-This repository hosts the Codex CLI container, agent documentation, and reusable skills that power automation workflows. This file serves as both the project README and the authoritative agent guidelines—keep it up to date without removing the sections below.
+This repository hosts the Codex CLI container, agent documentation, and reusable skills that power automation workflows. `README.md` is the human-facing project orientation; this file is the authoritative agent policy and repository guideline.
 
 ## Overview
 - Purpose: provide a reproducible Codex container, curated skills, and agent-focused docs for reliable automation.
 - Primary entrypoint: `container/` for building and running Codex against other projects.
-- Human + agent usage: humans can use this as the README; agents must follow the guidelines in later sections.
-- `README.md` and `CLAUDE.md` are symlinks to this file; edit `AGENTS.md` as the source of truth.
+- Human + agent usage: humans should start with `README.md`; agents must follow the guidelines in this file.
 
 ## Quick Start
 - Build the Codex image (fresh): `./container/build.sh`
@@ -19,7 +18,6 @@ This repository hosts the Codex CLI container, agent documentation, and reusable
 - Long-lived agent docs in `docs/`.
 - Short-lived scratch work in `plan/` (do not commit).
 - Versioned skills in `skills/` (symlinked into `~/.codex/skills`).
-- `README.md` and `CLAUDE.md` are symlinks to `AGENTS.md` to keep guidance in one place.
 
 # Repository Guidelines
 
