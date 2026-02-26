@@ -33,6 +33,45 @@ Run with an interactive shell.
 ./container/run.sh /path/to/project --shell
 ```
 
+Run a quick preflight check before long sessions.
+
+```bash
+./container/doctor.sh
+```
+
+Preview exactly what will run without starting Docker.
+
+```bash
+./container/dry_run.sh /path/to/project
+./container/dry_run.sh /path/to/project --shell
+```
+
+## Example output
+
+Doctor summary.
+
+```text
+codex container doctor
+[ok] tool docker: /usr/local/bin/docker
+[ok] host codex auth: /Users/you/.codex/auth.json
+doctor result: PASS
+```
+
+Dry-run summary.
+
+```text
+codex container dry-run
+repo: /path/to/project
+mode: codex tui
+planned sequence:
+1. Validate local prerequisites.
+2. Start detached container and mounts.
+3. Write container config.
+4. Launch Codex.
+5. Remove container on exit.
+dry-run only: no Docker commands were executed.
+```
+
 ## Requirements
 
 - Docker

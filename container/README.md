@@ -28,6 +28,19 @@ Get a shell in the container:
 ./container/run.sh /path/to/project --shell
 ```
 
+Run preflight checks:
+
+```
+./container/doctor.sh
+```
+
+Preview run steps without executing Docker:
+
+```
+./container/dry_run.sh /path/to/project
+./container/dry_run.sh /path/to/project --shell
+```
+
 Notes:
 - Ensure you have authenticated locally so that `~/.codex/auth.json` exists. The container mounts this directory only to copy auth.
 - `.git` is mounted read‑only to prevent repository mutations from inside the container.
