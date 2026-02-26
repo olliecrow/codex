@@ -1,78 +1,68 @@
 # codex
 
-`codex` is a working repository for a hardened Codex CLI container plus reusable skills and agent-oriented automation docs.
+`codex` is a working repository for a Codex CLI container plus reusable skills and automation docs.
 
-## Project Aim
+## What this project is trying to achieve
 
-Provide a reproducible local runtime for Codex-driven development loops:
+Give you a repeatable local runtime for Codex driven development.
 
-- run Codex in an isolated container against arbitrary project directories
-- keep reusable skills versioned and composable
-- maintain durable automation guidance in repo docs
+## What you experience as a user
 
-## What This Repository Does
+1. You build the Codex container once.
+2. You run it against any local project path.
+3. You reuse versioned skills for planning, verification, and git workflows.
+4. You use docs in this repo to keep workflows consistent.
 
-- builds and runs a Codex CLI container (`container/`)
-- ships reusable skills (`skills/`) for planning, verification, git workflows, investigations, and more
-- stores long-lived automation docs and decisions (`docs/`)
+## Quick start
 
-## Requirements
-
-- Docker
-- internet access for image build/package retrieval
-- local Codex authentication state (for example `~/.codex/auth.json`)
-
-## Authentication
-
-The container run scripts copy/use local Codex auth state. Ensure you are authenticated locally before first run.
-
-## Quick Start
-
-Build the container image:
+Build the container image.
 
 ```bash
 ./container/build.sh
 ```
 
-Run Codex against a target project:
+Run Codex against a target project.
 
 ```bash
 ./container/run.sh /path/to/project
 ```
 
-Run with an interactive shell instead of the Codex TUI:
+Run with an interactive shell.
 
 ```bash
 ./container/run.sh /path/to/project --shell
 ```
 
-## Getting Started
+## Requirements
 
-1. Build the image.
-2. Launch against a target repository/workspace.
-3. Validate container sanity (write access to `/workspace`, expected network behavior, git restrictions inside container).
-4. Iterate using repo skills and docs as workflow guidance.
+- Docker
+- internet access for image build and package retrieval
+- local Codex authentication state, for example `~/.codex/auth.json`
 
-## Local State and Directory Layout
+## Authentication
+
+Run scripts use your local Codex auth state.
+Authenticate locally before first run.
+
+## Helpful tips
+
+- Use `--shell` when you need to inspect the runtime environment directly.
+- Run local skill validation checks before publishing skill changes.
+
+## Directory layout
 
 - `container/`: Docker image, run scripts, and runtime helpers
-- `skills/`: versioned Codex skills loaded by user skill symlink setup
-- `docs/`: long-lived documentation and decision records
-- `plan/`: short-lived scratch space (not for commits)
-- `codex_docs.md`: local copy of Codex documentation
-- `AGENTS.md`: repository operating policy for agent workflows
+- `skills/`: versioned Codex skills
+- `docs/`: long-lived documentation and decisions
+- `plan/`: short lived scratch notes
+- `codex_docs.md`: local copy of Codex docs
+- `AGENTS.md`: repository operating policy
 
-## Logging and Debugging
-
-- container runtime output is emitted to terminal by run scripts
-- for runtime debugging, launch with `--shell` and inspect environment directly
-- for skills changes, run the local skills validator before publishing updates
-
-## Documentation Map
+## Documentation map
 
 - `README.md`: human-facing project orientation
-- `AGENTS.md`: agent operating guidelines and repository policy
-- `container/README.md`: container-specific behavior and security model
+- `AGENTS.md`: agent operating guidelines and repo policy
+- `container/README.md`: container behavior and security model
 - `docs/workflows.md`: workflow conventions
 - `docs/decisions.md`: durable rationale and decisions
 - `docs/skills.md`: skill maintenance and validation guidance
