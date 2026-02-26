@@ -1,6 +1,6 @@
 ---
 name: notion-report
-description: Create and maintain scientific/empirical experiment or investigation reports in Notion via MCP from freeform artifacts. Default to direct Notion editing; support local-first draft QA before publishing when explicitly requested.
+description: Create and maintain scientific/empirical experiment or investigation reports in Notion via MCP from freeform artifacts. Default to direct Notion editing with a Claude-assisted wording/structure pass when available; support local-first draft QA before publishing when explicitly requested.
 ---
 
 # Notion Report
@@ -53,6 +53,7 @@ This skill is cross-project by default. It is designed for scientific/empirical 
 - consolidation-first: keep the fewest report pages that still map cleanly to distinct report identities/questions
 - plot-first for quantitative reporting; tables are supporting precision
 - follow normal report naming convention used by recent reports: `YYYY-MM-DD - <clear human title>`
+- use `rerun` in titles only when the report explicitly links to the prior report/experiment being rerun
 - avoid opaque shorthand/acronym-heavy naming in titles/headings/captions (for example coded labels like `RB1200` or `B500`); prefer plain-language wording
 - explicit opener emphasis hierarchy for scanability:
   - bold label-first opener
@@ -211,6 +212,7 @@ Include:
 
 ### 6) `Limitations / Reliability`
 
+- use this heading text exactly: `Limitations / Reliability`
 - include missing data, incomplete runs, comparability gaps, and caveats
 - keep reliability emphasis proportional to impact
 - do not make completion/failure the hero narrative unless it materially changes conclusions
@@ -279,9 +281,9 @@ Use only when relevant to the current project/domain.
 - verify run-level artifact availability directly (read-only) before declaring missing
 - when available, use retained forensics/root-cause fields for failure attribution rather than wrapper labels only
 
-## Optional Claude-assisted drafting
+## Claude-assisted drafting
 
-Use only when user explicitly asks for Claude-style drafting/refinement.
+Default for report wording/structure refinement when Claude is available.
 
 - command: `claude -p --model opus --effort high`
 - Codex remains source-of-truth for data prep, validation, and Notion writes
@@ -290,6 +292,7 @@ Use only when user explicitly asks for Claude-style drafting/refinement.
 - sanitize prompts (paths/hosts/secrets/private IDs)
 - require structured output variants + self-check
 - run Codex verification gate before applying
+- if Claude is unavailable, continue with Codex-only refinement and note that constraint in the task summary
 
 Codex verification gate:
 - all claims trace to evidence
@@ -307,11 +310,16 @@ Use `notion-local` for page/database operations and `notion-upload-local` for di
 
 2) If visuals are required, verify `notion-upload-local` upload capability before publishing image blocks.
 
-3) Resolve parent:
+3) Run at least one Claude wording/structure pass when available, including prompt context for:
+- reader-first plain-English writing with minimal jargon
+- required section order (`Top Takeaways` -> `Experiment Definition` -> `Eval Setup` -> results)
+- explicit eval-time setup clarity and apples-to-apples statement for comparative reports
+
+4) Resolve parent:
 - normalize/verify user-supplied URL/ID with `mcp__notion-local__API-retrieve-a-page`
 - otherwise enumerate/search candidate parents and validate
 
-4) Create/update canonical page:
+5) Create/update canonical page:
 - derive report identity from evidence (experiment/search/run IDs, batch label/date, variant)
 - search for existing matching Codex-managed page first
 - create only if no matching Codex-managed page exists
@@ -322,16 +330,16 @@ Use `notion-local` for page/database operations and `notion-upload-local` for di
   - before finalizing, confirm no other Codex/Claude references remain in title/body
   - for experiment/comparison reports, verify eval-time configuration details against available experiment definitions/search spaces/results artifacts before claiming comparability
 
-5) Upload visuals:
+6) Upload visuals:
 - prefer `notion-upload-local` tool path for direct Notion-managed uploads
 - if upload tooling is unavailable, add `Artifacts to attach` placeholders rather than external-host workarounds
 
-6) Deduplication behavior:
+7) Deduplication behavior:
 - keep exactly one canonical page per report identity in target reports location
 - prefer consolidation into fewer pages when multiple pages represent the same identity/question
 - when duplicates exist for same data identity, retain one canonical page; move/archive others only with user approval
 
-7) Output contract:
+8) Output contract:
 - return created/updated Notion page URL (or ID)
 
 ## Image embedding constraints (Notion reality)
@@ -362,9 +370,11 @@ Embedding sequence:
   - opener question and answer are unambiguous to a cold reader
   - when multiple questions are present, Q/A ordering is explicit and adjacent (`Question n` then `Answer n`)
   - when `Question Decomposition` is present, each `Question n` has adjacent `Answer n` and `Status n` lines, and each `Answer n` includes one concrete empirical evidence line
-  - experiment/comparison reports include a dedicated `Eval Setup` section immediately after `Experiment Definition`
-  - `Eval Setup` includes explicit fixed-vs-randomized behavior and an apples-to-apples statement (or explicit mismatch caveat)
-  - claims are evidence-grounded
+- experiment/comparison reports include a dedicated `Eval Setup` section immediately after `Experiment Definition`
+- `Eval Setup` includes explicit fixed-vs-randomized behavior and an apples-to-apples statement (or explicit mismatch caveat)
+- empirical/comparison report section order is explicit and preserved:
+  `Top Takeaways -> Experiment Definition -> Eval Setup -> Executive Visual Snapshot -> Definitions and Methodology -> Limitations / Reliability` (+ `Run Spotlight` when applicable)
+- claims are evidence-grounded
   - visual/table labeling standards met
   - no privacy leakage
   - no actionable quality gaps remain
@@ -379,6 +389,7 @@ Embedding sequence:
 - vague status-only opener answers (for example `mixed`, `answered`, `improved`) are non-compliant unless mapped to explicit direct-answer tokens
 - opener question is self-contained plain language (no shorthand requiring external context)
 - report naming is human-readable (`YYYY-MM-DD - <clear human title>`) and avoids opaque shorthand/acronym-heavy labels
+- `rerun` appears in a title only when the report links to the prior report/experiment it reruns
 - report page is a direct child of the target reports hub (no nested/recursive report pages)
 - failure-rate metrics are present for reliability context but are not headline focal points unless failure behavior is the explicit research question
 - no vague status-only opener wording (for example `answered`) without explicit question text
