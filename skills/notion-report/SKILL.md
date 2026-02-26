@@ -63,13 +63,15 @@ This skill is cross-project by default. It is designed for scientific/empirical 
   - opener wording must be self-contained plain language; a new reader should not need prior thread context
   - use direct answer tokens (`yes`, `no`, `inconclusive`, or equivalent), not vague status-only wording
   - if outcome is mixed, map it to explicit direct-answer tokens in the opener (for example `runtime yes, performance no` or `inconclusive`)
-  - avoid opener text like `Question + answer status: answered` without concrete question text
+  - avoid opener text like `Question + direct answer: answered` without concrete question text
 - if more than one key question is covered, use numbered `Question n` / `Answer n` pairs with strict adjacency (each answer immediately follows its question)
 - for multi-question or mixed-certainty investigations, add a dedicated `Question Decomposition` section immediately after `Top Takeaways` using strict `Question n` -> `Answer n` -> `Status n` triples, with one concrete empirical evidence line in each answer
 - keep the opener focused on the true experiment objective; do not let reliability/failure-rate stats become the lead claim unless failure analysis is the stated question
 - if user scope is a report collection/hub, audit every in-scope report page one-by-one (no sampling)
 - legacy-summary fallback rule: if the first summary section is not `Top Takeaways` (for example `Key Takeaways` or `Executive Summary`), enforce the same explicit question+answer opener in that section's first line
-- for comparative experiment reports, explicitly describe eval-time behavior in plain English (what checkpoint is evaluated, what is fixed vs randomized, and why the comparison is or is not apples-to-apples)
+- for comparative experiment reports, include a dedicated `Eval Setup` section directly after `Experiment Definition`
+- `Eval Setup` must describe eval-time behavior in plain English (what checkpoint is evaluated, what is fixed vs randomized, and why the comparison is or is not apples-to-apples)
+- never use the heading `Eval Setup Clarified`; use `Eval Setup`
 - reports and report-generation helpers are ephemeral artifacts:
   - keep under `plan/`
   - never commit under tracked code paths (`tools/`, `src/`, `experiments/`, `docs/`)
@@ -154,9 +156,9 @@ Current known hubs in this environment (use when relevant):
 ### 1) `Top Takeaways` (must be first section)
 
 - use heading `## Top Takeaways` as first section
-- first line must include both the explicit question and direct answer status
-- required opener format: `Question + answer status: <explicit question>? <direct answer>.`
-- disallowed opener pattern: status-only wording such as `Question + answer status: answered`
+- first line must include both the explicit question and direct answer token
+- required opener format: `Question + direct answer: <explicit question>? <direct answer>.`
+- disallowed opener pattern: status-only wording such as `Question + direct answer: answered`
 - for most empirical reports, use question/answer lines as the primary narrative driver in this section
 - only skip explicit Q/A scaffolding when the report is clearly non-question-driven; in that case state objective and outcome explicitly
 - legacy heading fallback: if first summary heading is `Key Takeaways`/`Executive Summary`, apply the same first-line opener rule there
@@ -177,7 +179,12 @@ Include:
 - what was fixed (controls/constants)
 - how samples were assigned/swept/randomized
 - why this design was used
-- evaluation setup/environment(s)
+- answer wording that directly maps to the question terms (no implicit inference required)
+- explicit answer status for this batch (`yes/no/inconclusive` or equivalent) with brief evidence-backed why
+
+### 3) `Eval Setup` (for experiment/search reports)
+
+- place immediately after `Experiment Definition` and before any results/plots section
 - explicit eval-time setup details in plain English:
   - which checkpoint/policy snapshot is evaluated
   - exact eval composition and overrides (for example opponent setup or learned-agent count)
@@ -185,29 +192,27 @@ Include:
   - domain-randomization behavior at eval for key variables (for example fees and starting capital): fixed value(s) vs sampled range(s), and sampling cadence
   - explicit apples-to-apples statement across compared runs/batches
   - if any detail is unknown, mark it `unknown` and include it in `Limitations / Reliability`
-- answer wording that directly maps to the question terms (no implicit inference required)
-- explicit answer status for this batch (`yes/no/inconclusive` or equivalent) with brief evidence-backed why
 
-### 3) `Executive Visual Snapshot`
+### 4) `Executive Visual Snapshot`
 
-- place early, after `Experiment Definition`
+- place early, after `Eval Setup`
 - include compact high-signal visuals first
 - prioritize visuals that answer the report question directly
 
-### 4) `Definitions and Methodology`
+### 5) `Definitions and Methodology`
 
 - define domain terms used in the report context
 - define formulas for derived metrics and signs/directions
 - include `unit unavailable` placeholders for unknown units; do not guess
 
-### 5) `Limitations / Reliability`
+### 6) `Limitations / Reliability`
 
 - include missing data, incomplete runs, comparability gaps, and caveats
 - keep reliability emphasis proportional to impact
 - do not make completion/failure the hero narrative unless it materially changes conclusions
 - when failure rates are not the explicit research target, report them as reliability support (not the primary report focal point)
 
-### 6) `Run Spotlight` (when run-level time-series artifacts exist)
+### 7) `Run Spotlight` (when run-level time-series artifacts exist)
 
 - include 1-3 explicitly selected runs
 - show normalized trajectory views when possible (for example growth from `1.00x`)
@@ -349,11 +354,12 @@ Embedding sequence:
 - after each pass: update same canonical page and re-fetch to verify landing
 - done when:
   - required sections present
-  - opener includes explicit question text and direct answer status
+  - opener includes explicit question text and direct answer token
   - opener question and answer are unambiguous to a cold reader
-- when multiple questions are present, Q/A ordering is explicit and adjacent (`Question n` then `Answer n`)
-- when `Question Decomposition` is present, each `Question n` has adjacent `Answer n` and `Status n` lines, and each `Answer n` includes one concrete empirical evidence line
-  - experiment/comparison reports include explicit eval-time setup, fixed-vs-randomized behavior, and an apples-to-apples statement (or explicit mismatch caveat)
+  - when multiple questions are present, Q/A ordering is explicit and adjacent (`Question n` then `Answer n`)
+  - when `Question Decomposition` is present, each `Question n` has adjacent `Answer n` and `Status n` lines, and each `Answer n` includes one concrete empirical evidence line
+  - experiment/comparison reports include a dedicated `Eval Setup` section immediately after `Experiment Definition`
+  - `Eval Setup` includes explicit fixed-vs-randomized behavior and an apples-to-apples statement (or explicit mismatch caveat)
   - claims are evidence-grounded
   - visual/table labeling standards met
   - no privacy leakage
@@ -363,7 +369,7 @@ Embedding sequence:
 ## Quality checklist (core)
 
 - `Top Takeaways` is first
-- explicit `Question + answer status` opener exists
+- explicit `Question + direct answer` opener exists
 - opener includes explicit question text (not implied) and direct answer (`yes`/`no`/`inconclusive` or equivalent)
 - when `Question Decomposition` exists, it uses strict `Question n` -> `Answer n` -> `Status n` ordering with one empirical evidence line per answer
 - vague status-only opener answers (for example `mixed`, `answered`, `improved`) are non-compliant unless mapped to explicit direct-answer tokens
@@ -374,13 +380,15 @@ Embedding sequence:
 - no vague status-only opener wording (for example `answered`) without explicit question text
 - legacy first-summary sections (`Key Takeaways`/`Executive Summary`) apply the same explicit opener rule when `Top Takeaways` is absent
 - opener emphasis hierarchy is correct
-- `Experiment Definition` includes what varied/fixed/how/why/eval setup/answer
+- `Experiment Definition` includes what varied/fixed/how/why/answer
+- `Eval Setup` appears immediately after `Experiment Definition` and before results/plots sections
+- heading uses `Eval Setup` (never `Eval Setup Clarified`)
 - experiment/comparison reports include explicit eval-time setup details:
   - checkpoint selection at eval
   - eval composition/overrides (for example learned-agent count/opponent setup)
   - domain-randomization behavior for key variables (for example fees/starting capital) at eval
   - explicit apples-to-apples comparability statement
-- `Executive Visual Snapshot` is present for quantitative reports
+- `Executive Visual Snapshot` is present for quantitative reports and appears after `Eval Setup`
 - captions use `Takeaway:` lead-ins
 - axis labels/units/legends are explicit and readable
 - plotted series are not downsampled (or any unavoidable downsampling is explicitly disclosed with method/factor/why)
