@@ -180,6 +180,13 @@ Trade-offs: Quoted frontmatter is slightly more verbose; mitigated by treating q
 Enforcement: Keep punctuation-bearing frontmatter values quoted in `skills/*/SKILL.md`; run `python3 "${CODEX_HOME:-$HOME/.codex}/skills/validate_skills.py"` after skill edits (or `python3 "${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator/scripts/quick_validate.py" <skill_directory>` for targeted checks).
 References: `skills/checkpoint/SKILL.md`, `docs/skills.md`, `skills/validate_skills.py`, `skills/.system/skill-creator/scripts/quick_validate.py`.
 
+Decision: Codex container workflows should expose explicit non-mutating helpers before interactive runs.
+Context: Operators often need a quick setup validation and a deterministic execution preview without starting Docker sessions.
+Rationale: First-class `doctor` and `dry_run` scripts reduce onboarding friction, surface misconfiguration earlier, and make runtime behavior easier to understand.
+Trade-offs: Slightly larger script/documentation surface to maintain.
+Enforcement: Keep `container/doctor.sh` for preflight checks and `container/dry_run.sh` for step-by-step execution preview; document both in onboarding docs.
+References: `container/doctor.sh`, `container/dry_run.sh`, `README.md`, `container/README.md`, `docs/project-preferences.md`.
+
 ## Template
 ```
 Decision:

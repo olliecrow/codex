@@ -23,6 +23,7 @@ These preferences define how `codex` should be maintained as an open-source-read
 ## Verification Expectations
 
 - Run relevant checks for touched areas (container sanity, script checks, skills validation).
+- For container runtime changes, run `./container/doctor.sh` and relevant `./container/dry_run.sh` previews before merge.
 - Capture verification evidence in PR descriptions when practical.
 
 ## Collaboration Preferences
