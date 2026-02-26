@@ -69,6 +69,7 @@ This skill is cross-project by default. It is designed for scientific/empirical 
 - keep the opener focused on the true experiment objective; do not let reliability/failure-rate stats become the lead claim unless failure analysis is the stated question
 - if user scope is a report collection/hub, audit every in-scope report page one-by-one (no sampling)
 - legacy-summary fallback rule: if the first summary section is not `Top Takeaways` (for example `Key Takeaways` or `Executive Summary`), enforce the same explicit question+answer opener in that section's first line
+- for comparative experiment reports, explicitly describe eval-time behavior in plain English (what checkpoint is evaluated, what is fixed vs randomized, and why the comparison is or is not apples-to-apples)
 - reports and report-generation helpers are ephemeral artifacts:
   - keep under `plan/`
   - never commit under tracked code paths (`tools/`, `src/`, `experiments/`, `docs/`)
@@ -177,6 +178,13 @@ Include:
 - how samples were assigned/swept/randomized
 - why this design was used
 - evaluation setup/environment(s)
+- explicit eval-time setup details in plain English:
+  - which checkpoint/policy snapshot is evaluated
+  - exact eval composition and overrides (for example opponent setup or learned-agent count)
+  - what is fixed at eval vs re-sampled/randomized
+  - domain-randomization behavior at eval for key variables (for example fees and starting capital): fixed value(s) vs sampled range(s), and sampling cadence
+  - explicit apples-to-apples statement across compared runs/batches
+  - if any detail is unknown, mark it `unknown` and include it in `Limitations / Reliability`
 - answer wording that directly maps to the question terms (no implicit inference required)
 - explicit answer status for this batch (`yes/no/inconclusive` or equivalent) with brief evidence-backed why
 
@@ -303,6 +311,7 @@ Use `notion-local` for page/database operations and `notion-upload-local` for di
 - keep pages flat under the chosen reports parent; do not create nested report pages inside report pages
 - include one small footer attribution note at end with `Prepared with support from Codex and Claude. codex-managed: true`
   - before finalizing, confirm no other Codex/Claude references remain in title/body
+  - for experiment/comparison reports, verify eval-time configuration details against available experiment definitions/search spaces/results artifacts before claiming comparability
 
 5) Upload visuals:
 - prefer `notion-upload-local` tool path for direct Notion-managed uploads
@@ -344,6 +353,7 @@ Embedding sequence:
   - opener question and answer are unambiguous to a cold reader
 - when multiple questions are present, Q/A ordering is explicit and adjacent (`Question n` then `Answer n`)
 - when `Question Decomposition` is present, each `Question n` has adjacent `Answer n` and `Status n` lines, and each `Answer n` includes one concrete empirical evidence line
+  - experiment/comparison reports include explicit eval-time setup, fixed-vs-randomized behavior, and an apples-to-apples statement (or explicit mismatch caveat)
   - claims are evidence-grounded
   - visual/table labeling standards met
   - no privacy leakage
@@ -365,6 +375,11 @@ Embedding sequence:
 - legacy first-summary sections (`Key Takeaways`/`Executive Summary`) apply the same explicit opener rule when `Top Takeaways` is absent
 - opener emphasis hierarchy is correct
 - `Experiment Definition` includes what varied/fixed/how/why/eval setup/answer
+- experiment/comparison reports include explicit eval-time setup details:
+  - checkpoint selection at eval
+  - eval composition/overrides (for example learned-agent count/opponent setup)
+  - domain-randomization behavior for key variables (for example fees/starting capital) at eval
+  - explicit apples-to-apples comparability statement
 - `Executive Visual Snapshot` is present for quantitative reports
 - captions use `Takeaway:` lead-ins
 - axis labels/units/legends are explicit and readable
