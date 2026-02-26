@@ -85,6 +85,10 @@ This skill is cross-project by default. It is designed for scientific/empirical 
 - default to Notion-managed file/image uploads for report visuals (prefer `notion-upload-local` when available); if upload is unavailable in the current toolchain, add `Artifacts to attach` placeholders rather than using unapproved external hosts
 - hide local paths, hostnames, tokens, and secrets in report body text
 - define acronyms on first use
+- write for first-time readers with no project background; do not assume internal context
+- minimize project-specific jargon in headings, captions, and body text; prefer plain everyday wording
+- when technical terms are required for scientific precision, define them in simple language at first use
+- keep section headings and plot labels self-explanatory so an outside reader can infer the purpose immediately
 
 ## Local-first mode (only when user explicitly requests)
 
