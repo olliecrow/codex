@@ -94,7 +94,6 @@ Authenticate locally before first run.
 - `skills/`: versioned Codex skills
 - `docs/`: long-lived documentation and decisions
 - `plan/`: short lived scratch notes
-- `codex_docs.md`: local copy of Codex docs
 - `AGENTS.md`: repository operating policy
 
 ## Documentation map

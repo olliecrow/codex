@@ -12,4 +12,4 @@ Relationship to `/plan/`:
 - `/docs/` is long-lived; only stable guidance should live here.
 
 Other docs:
-- `codex_docs.md` is a raw upstream snapshot for reference only and may conflict with repo policy. Treat `AGENTS.md` as authoritative.
+- Treat `AGENTS.md` as the authoritative repository policy.

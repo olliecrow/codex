@@ -23,7 +23,6 @@ This repository hosts the Codex CLI container, agent documentation, and reusable
 
 ## Project Structure & Module Organization
 - `container/`: Codex CLI container. Primary entrypoint for sandboxed automation.
-- `codex_docs.md`: Local copy of Codex docs used by this repo.
 - `docs/`: Long-term, agent-focused documentation. Not for humans. Committed to git.
 - `plan/`: Short-term, throwaway scratch space for agents. Not for humans. Do not commit.
 - `skills/`: Version-controlled Codex skills. These are symlinked into `~/.codex/skills` so Codex loads them as user skills.
