@@ -145,6 +145,13 @@ Trade-offs: Adds a small formatting requirement to every report; mitigated by en
 Enforcement: `skills/notion-report/SKILL.md` report behavior and reader-structure pass require `Top Takeaways` first, and the quality checklist requires the section plus the single most important outcome summary.
 References: `skills/notion-report/SKILL.md`, `docs/skills.md`.
 
+Decision: Comparative Notion experiment reports must explicitly disclose eval-time configuration and comparability in plain English.
+Context: Readers repeatedly asked whether reported lifts were driven by training changes or mismatched eval conditions (checkpoint choice, eval composition, randomization behavior).
+Rationale: Making eval setup explicit (what checkpoint was evaluated, what was fixed vs randomized at eval, and whether comparisons are apples-to-apples) prevents ambiguous conclusions and improves trust in reported outcomes.
+Trade-offs: Adds a small amount of report text and verification work; mitigated by integrating checks into the existing report structure and quality checklist.
+Enforcement: `skills/notion-report/SKILL.md` requires explicit eval-time setup fields, fixed-vs-randomized disclosure, and apples-to-apples statements for comparative reports; `skills/notion-report/agents/openai.yaml` default prompt includes the same requirement; `docs/skills.md` mirrors this requirement in skill routing guidance.
+References: `skills/notion-report/SKILL.md`, `skills/notion-report/agents/openai.yaml`, `docs/skills.md`.
+
 Decision: Cluster monitoring should be patience-first and low-intervention, with intervention triggered by systemic failure/low-learning signals rather than isolated job failures.
 Context: Long-running Slurm experiments frequently include expected single-job failures (for example OOM in aggressive hyperparameter corners), and trigger-happy cancellation reduces learning throughput.
 Rationale: Waiting with intermittent polling preserves compute progress and learning signal, while explicit intervention thresholds prevent wasting cycles on clearly broken batches.
