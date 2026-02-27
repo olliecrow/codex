@@ -194,6 +194,27 @@ Trade-offs: Slightly larger script/documentation surface to maintain.
 Enforcement: Keep `container/doctor.sh` for preflight checks and `container/dry_run.sh` for step-by-step execution preview; document both in onboarding docs.
 References: `container/doctor.sh`, `container/dry_run.sh`, `README.md`, `container/README.md`, `docs/project-preferences.md`.
 
+Decision: Skill execution defaults to writing only within the current working directory tree; out-of-tree reads are allowed, but out-of-tree writes require explicit user instruction.
+Context: Recent sessions required consistent boundaries across multi-repo and system-level work to avoid accidental cross-directory edits.
+Rationale: A strict default write boundary reduces accidental blast radius while preserving flexibility to inspect system context when needed.
+Trade-offs: Some legitimate cross-directory maintenance tasks require explicit follow-up instructions.
+Enforcement: Add `cwd` write-scope guardrails to core execution skills (`prime`, `cleanup`, `organise-docs`, `git-commit`, `investigate`, `verify`, `familiarize`, `execute`, `git-review`, `battletest`) and to GitHub-facing skills (`gh-address-comments`, `gh-fix-ci`, `yeet`).
+References: `skills/prime/SKILL.md`, `skills/cleanup/SKILL.md`, `skills/organise-docs/SKILL.md`, `skills/git-commit/SKILL.md`, `skills/investigate/SKILL.md`, `skills/verify/SKILL.md`, `skills/familiarize/SKILL.md`, `skills/execute/SKILL.md`, `skills/git-review/SKILL.md`, `skills/battletest/SKILL.md`, `skills/gh-address-comments/SKILL.md`, `skills/gh-fix-ci/SKILL.md`, `skills/yeet/SKILL.md`.
+
+Decision: GitHub/public-facing skill flows require explicit safety checks for secrets, sensitive data, and local system paths before publishing actions.
+Context: Public repo workflows frequently include commit/PR/comment generation where accidental disclosure can occur.
+Rationale: A mandatory safety sweep before public-facing writes reduces confidentiality leakage risk and aligns with open-source hygiene expectations.
+Trade-offs: Adds a small preflight step before publishing actions.
+Enforcement: Include explicit safety-pass requirements in `git-review`, `git-commit` (public repo commits), `gh-address-comments`, `gh-fix-ci`, `yeet`, and `battletest` (for public repos).
+References: `skills/git-review/SKILL.md`, `skills/git-commit/SKILL.md`, `skills/gh-address-comments/SKILL.md`, `skills/gh-fix-ci/SKILL.md`, `skills/yeet/SKILL.md`, `skills/battletest/SKILL.md`.
+
+Decision: `checkpoint` runs `organise-docs -> cleanup -> git-commit`; push remains opt-in and only occurs when explicitly requested.
+Context: The common milestone pattern in recent sessions includes cleanup before checkpoint commits, while push behavior should stay explicit.
+Rationale: Bundling cleanup into checkpoint improves quality of each checkpoint commit; keeping push explicit avoids unintended remote mutation.
+Trade-offs: Slightly longer checkpoint cycle.
+Enforcement: `skills/checkpoint/SKILL.md` workflow and trigger templates updated to include cleanup and explicit push gating.
+References: `skills/checkpoint/SKILL.md`, `docs/workflows.md`.
+
 ## Template
 ```
 Decision:

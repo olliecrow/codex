@@ -98,3 +98,6 @@ Sanity checks after run:
 ## Agent‑Specific Instructions
 - When editing files under `container/`, preserve: non‑root user, git pin + wrappers, two mounts only, and always‑fresh builds.
 - Do not add new mounts or relax security without explicit approval.
+- Default write scope is the current working directory and its subdirectories.
+- Read operations outside the current working directory are allowed for context, but do not modify outside the current working directory tree unless explicitly requested.
+- For public/open-source repos and GitHub-facing workflows, always run a safety sweep for secrets, sensitive data, and local system paths before commit/push/PR/comment updates.
