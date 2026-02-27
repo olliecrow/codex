@@ -21,6 +21,8 @@ description: Initialize docs/plan/decisions conventions plus note-routing and or
 - Treat transient external failures (network/SSH/remote APIs/timeouts) as retryable by default: run bounded retries with backoff and capture failure evidence before concluding blocked.
 - On repeated invocations for the same objective, resume from prior findings/artifacts and prioritize net-new progress over rerunning identical work unless verification requires reruns.
 - Drive work to complete outcomes with verification, not partial handoffs.
+- In shared repositories, assume concurrent edits from humans/agents are normal and avoid reverting unknown changes by default.
+- When commits are in scope, stage only intentionally changed files for the current task and exclude unrelated concurrent edits.
 - Treat iterative execution as the default for non-trivial work; run adaptive loop passes. Example loops (adapt as needed, not rigid): issue-resolution `investigate -> plan -> fix -> verify -> battletest -> organise-docs -> git-commit -> re-review`; cleanup `scan -> prioritize -> clean -> verify -> re-scan`; docs `audit -> update -> verify -> re-audit`.
 - Keep looping until actual completion criteria are met: no actionable in-scope items remain, verification is green, and confidence is high.
 - Run `organise-docs` frequently during execution to capture durable decisions and learnings, not only at the end.
