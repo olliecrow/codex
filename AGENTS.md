@@ -101,3 +101,8 @@ Sanity checks after run:
 - Default write scope is the current working directory and its subdirectories.
 - Read operations outside the current working directory are allowed for context, but do not modify outside the current working directory tree unless explicitly requested.
 - For public/open-source repos and GitHub-facing workflows, always run a safety sweep for secrets, sensitive data, and local system paths before commit/push/PR/comment updates.
+
+## Dictation-Aware Input Handling
+- The user often dictates prompts, so minor transcription errors and homophone substitutions are expected.
+- Infer intent from local context and repository state; ask a concise clarification only when ambiguity changes execution risk.
+- Keep explicit typo dictionaries at workspace level (do not duplicate repo-local typo maps).
