@@ -45,11 +45,14 @@ Prefer empirical testing with real data and real runs when relevant. Avoid mock 
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
+- Default write scope is the current `cwd` and its subdirectories.
+- Read-only inspection outside the current `cwd` is allowed when needed for context; do not modify outside the `cwd` tree unless the user explicitly requests it.
 - Run a preflight before substantial work: confirm the expected `cwd`, verify required tools with `command -v`, and verify referenced files/directories exist before reading or searching them.
 - State assumptions about scope and coverage; if multiple interpretations exist, surface them.
 - Prefer the simplest tests that meaningfully increase confidence before scaling up.
 - Avoid unrelated code changes; keep any fixes or test additions strictly in scope.
 - Define success criteria and map each to a test or check.
+- For public/open-source repos, include explicit checks for secrets, sensitive data, and local system paths in code, docs, logs, and user-facing examples.
 - Prefer quoted paths and explicit path checks when running shell commands to reduce avoidable glob/path failures.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - If there is nothing left to do, say so explicitly and stop.
@@ -94,6 +97,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
    - Vary configs (feature flags, env vars, build modes).
    - Vary environments (OS, versions, dependencies) when feasible.
    - Vary perspectives (unit, integration, e2e, performance, security, UX, accessibility, API contract, data migration).
+   - Include a user-journey replay pass that runs the project like a real user would (setup, main command flows, common mistakes, and recovery paths).
    - Prefer production-like configurations and real datasets when feasible; document data sources and constraints.
    - Prefer smaller probes before long-running suites, but still run large tests when warranted.
    - If any code changes are made during testing, rerun relevant probes and suites (small before large) to confirm no regressions.
@@ -105,7 +109,7 @@ When you fix an issue, make a change that resolves an issue, or reach an importa
    - On repeated passes, prioritize net-new high-value coverage and avoid repeating the same tests unless regression confirmation requires it.
 
 4. Summarize results:
-   - List tests/checks executed.
+   - List tests/checks executed, including user-journey replay flows and failure-mode drills.
    - Provide conclusions and confidence level.
    - Call out critical red flags or issues.
    - Confirm whether any changes during testing introduced regressions in functionality or performance.

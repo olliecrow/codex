@@ -48,6 +48,13 @@ Prereq: ensure `gh` is authenticated (for example, run `gh auth login` once), th
 - Confirm `gh` availability/auth (`command -v gh`, `gh auth status`).
 - If detached HEAD or branch PR lookup fails, retry with explicit `--repo <owner>/<repo>` and current branch metadata before requesting a PR number/URL.
 - Verify referenced paths exist before reading/writing helper outputs.
+- Default write scope is the current `cwd` and its subdirectories. Read-only inspection outside `cwd` is allowed when needed for context; do not modify outside the `cwd` tree unless explicitly requested by the user.
+
+## Public/open-source safety checks (must run for public repos)
+
+- Before posting PR comments or updating PR metadata, scan staged/current diffs and generated text for secrets, sensitive data, and local system paths.
+- Treat code, docs, commit messages, PR titles/bodies, and review comments as public surfaces.
+- Replace or remove local path disclosures (for example `/Users/...`) in public-facing text unless explicitly required and user-approved.
 
 ## 1) Inspect comments needing attention
 - Run scripts/fetch_comments.py which will print out all the comments and review threads on the PR

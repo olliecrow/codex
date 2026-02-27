@@ -50,6 +50,13 @@ Prereq: authenticate with the standard GitHub CLI once (for example, run `gh aut
 - Confirm `gh` availability/auth (`command -v gh`, `gh auth status`).
 - If detached HEAD or no branch PR is available, require an explicit PR number/URL instead of guessing.
 - Verify referenced paths exist before writing logs or artifacts.
+- Default write scope is the current `cwd` and its subdirectories. Read-only inspection outside `cwd` is allowed when needed for context; do not modify outside the `cwd` tree unless explicitly requested by the user.
+
+## Public/open-source safety checks (must run for public repos)
+
+- Before posting CI-fix updates to PRs or committing/pushing fixes, scan diffs and generated text for secrets, sensitive data, and local system paths.
+- Treat code, docs, logs copied into PR text, commit messages, and PR metadata as public surfaces.
+- Replace or remove local path disclosures (for example `/Users/...`) in public-facing text unless explicitly required and user-approved.
 
 ## Inputs
 

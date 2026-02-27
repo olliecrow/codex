@@ -1,6 +1,6 @@
 ---
 name: checkpoint
-description: "Alias for a checkpoint cycle: run `organise-docs` then `git-commit` to keep docs and commits current during long tasks."
+description: "Alias for a checkpoint cycle: run `organise-docs`, then `cleanup`, then `git-commit` to keep docs and commits current during long tasks."
 ---
 
 # checkpoint
@@ -40,7 +40,8 @@ description: "Alias for a checkpoint cycle: run `organise-docs` then `git-commit
 
 This is a thin alias for the standard checkpoint cycle used in long or multi-step tasks:
 1) run `organise-docs` to promote durable knowledge, then
-2) run `git-commit` to checkpoint verified changes.
+2) run `cleanup` to simplify and de-risk recent changes, then
+3) run `git-commit` to checkpoint verified changes.
 
 ## Trigger phrases
 
@@ -48,22 +49,28 @@ Use this skill when the user asks for:
 - `checkpoint`
 - `commit/docs checkpoint`
 - `organise docs and commit`
+- `organise docs, cleanup, and commit`
 - `run milestone checkpoint`
 - `do docs + commit now`
 
-If the request is the combined docs-promotion and commit cycle, prefer `checkpoint` over invoking both skills separately.
+If the request is the combined docs-promotion and commit cycle, prefer `checkpoint` over invoking separate skills.
+If the user explicitly asks to push in the same request, run the checkpoint cycle first and then push. Do not push by default.
 
 ## Prompt templates
 
 Use these copy-paste templates:
 - `[$checkpoint] run docs promotion + small logical commits for work completed so far.`
-- `[$checkpoint] milestone checkpoint now: organise durable findings, then commit verified changes.`
+- `[$checkpoint] milestone checkpoint now: organise durable findings, cleanup, then commit verified changes.`
 - `[$checkpoint] run one checkpoint cycle and report what was documented and committed.`
+- `[$checkpoint] run checkpoint and then push (explicitly requested).`
 
 ## Workflow
 
 1. Load and follow `../organise-docs/SKILL.md`.
 2. Promote durable findings/decisions and keep `plan/` scratch uncommitted.
-3. Load and follow `../git-commit/SKILL.md`.
-4. Commit in small logical units after relevant checks pass.
-5. If there is any mismatch, prefer canonical `organise-docs` and `git-commit` instructions.
+3. Load and follow `../cleanup/SKILL.md`.
+4. Apply high-confidence cleanup and verify no regressions.
+5. Load and follow `../git-commit/SKILL.md`.
+6. Commit in small logical units after relevant checks pass.
+7. Push only when explicitly requested by the user in the same instruction.
+8. If there is any mismatch, prefer canonical `organise-docs`, `cleanup`, and `git-commit` instructions.

@@ -43,6 +43,12 @@ description: Autonomously maintain repository documentation from the active conv
 
 Extract durable knowledge from the current conversation and convert it into high-signal repository documentation. Focus on decisions, principles, invariants, constraints, and rationale that remain useful over time.
 
+## Scope boundaries (must follow)
+
+- Default write scope is the current `cwd` and its subdirectories.
+- Read-only inspection outside the current `cwd` is allowed when needed for context.
+- Do not modify files outside the current `cwd` tree unless the user explicitly requests out-of-scope edits.
+
 ## Continual compounding mode (must follow)
 
 Run a compounding cycle after each substantial task.
@@ -116,6 +122,7 @@ Apply documentation edits autonomously when confidence is high.
 - Check that new documentation matches current code and tests.
 - Fail fast on contradictions: do not publish a doc update that conflicts with known behavior.
 - Remove low-confidence speculative claims.
+- For public/open-source repos, run a final safety scrub for secrets, sensitive data, and local system paths in any user-visible docs.
 
 8. Report what changed.
 - Summarize files updated and the durable knowledge captured.

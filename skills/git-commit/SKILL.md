@@ -44,6 +44,8 @@ If committing is prohibited by project or system instructions, state that you ca
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
+- Default write scope is the current `cwd` and its subdirectories.
+- Read-only inspection outside the current `cwd` is allowed when needed for context; do not modify outside the `cwd` tree unless the user explicitly requests it.
 - State assumptions explicitly; choose a reasonable grouping without asking and note assumptions in the summary.
 - Keep commits minimal and directly tied to the request; do not include unrelated changes.
 - Prefer the simplest commit structure that preserves logical separation; avoid bundling unrelated changes.
@@ -53,6 +55,7 @@ If committing is prohibited by project or system instructions, state that you ca
 - Do not add new features, refactors, or formatting changes solely to "make the commit nicer."
 - If you must adjust code to capture rationale or fix small issues discovered during review, keep it minimal and directly tied to the request.
 - Do not create any commit until all applicable pre-commit checks, tests, and CI checks have been run and passed.
+- For public/open-source repos, run a safety sweep before commit to catch secrets, sensitive data, and local system paths in staged files and commit messages.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - Treat active-PR title/body updates as in-scope for this skill: if the branch has an active PR and metadata drift is detected, update it.
 - If there is nothing left to do, say so explicitly and stop.

@@ -13,6 +13,12 @@ Start with a fast familiarization sweep of docs and current repo state, then set
 
 Treat `organise-docs` and `git-commit` as an always-on cadence throughout the conversation: after each substantial chunk, promote durable knowledge into `docs/`, and checkpoint with a small commit once verification is green.
 
+## Scope boundaries (must follow)
+
+- Default execution scope is the current working directory (`cwd`) and its subdirectories.
+- Read-only inspection outside the current `cwd` is allowed when needed for context.
+- Do not modify files outside the current `cwd` tree unless the user explicitly requests out-of-scope edits.
+
 ## Multi-agent collaboration
 
 - Encourage use of multiple agents/subagents when it is likely to improve speed, quality, or confidence.
@@ -72,6 +78,7 @@ After priming, the session should have all of the following:
 - A live note-routing setup for this session:
   - ephemeral working notes in `plan/current/` (or in-memory fallback when plan writes are unavailable)
   - durable decisions/findings promoted into `docs/` during execution
+- For public/open-source repos, an explicit safety-check expectation for secrets, sensitive data, and local system paths before publish-facing actions.
 
 ## Workflow
 
@@ -80,6 +87,7 @@ After priming, the session should have all of the following:
 - Confirm working directory/repo root and read project instructions (for example `AGENTS.md`, relevant docs/decision records).
 - Confirm current git state (`git status -sb`) and identify whether the tree is clean or dirty.
 - Confirm available tools and immediate constraints needed for likely work.
+- Confirm active write-scope boundary (`cwd` subtree) and treat outside paths as read-only unless explicitly approved by the user.
 
 ### 2) Run a familiarization sweep
 

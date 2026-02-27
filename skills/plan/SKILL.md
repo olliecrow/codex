@@ -48,6 +48,8 @@ The spec is the primary working artifact for the task and should be saved in `pl
 
 - Use the smallest set of skills that fully covers the request; if multiple skills apply, state the order.
 - Treat the `description` in this file as the primary trigger signal; do not expand scope beyond it.
+- Default write scope is the current `cwd` and its subdirectories.
+- Read-only inspection outside the current `cwd` is allowed when needed for context; do not modify outside the `cwd` tree unless the user explicitly requests it.
 - Use progressive disclosure for context: read only the files you need and summarize, do not bulk-load unrelated material.
 - Prefer skill-provided scripts/templates or existing repo assets over retyping or reinventing workflows.
 - Keep context tight and reduce noise; ask questions only when requirements are ambiguous or blocking.
@@ -61,6 +63,7 @@ The spec is the primary working artifact for the task and should be saved in `pl
 - State assumptions explicitly and surface alternate interpretations; do not pick one silently.
 - Prefer the simplest viable approach and call out overcomplication or speculative scope.
 - Keep the plan surgical: only include work that directly serves the request; mention unrelated opportunities without adding them.
+- For public/open-source repos, include explicit safety checks for secrets, sensitive data, and local system paths as part of the plan.
 - Define success criteria and verification for each step; avoid vague goals.
 - If there is nothing left to plan, say so explicitly and stop.
 

@@ -77,12 +77,15 @@ Use these copy-paste templates:
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
+- Default write scope is the current `cwd` and its subdirectories.
+- Read-only inspection outside the current `cwd` is allowed when needed for context; do not modify outside the `cwd` tree unless the user explicitly requests it.
 - Run a preflight before substantial work: confirm you are at the repo root, verify `git`/required tools with `command -v`, and verify expected refs/remotes before diff/review commands.
 - Do not assume intent; if multiple interpretations exist, state them explicitly.
 - Prefer the simplest explanation for a change and verify it against evidence.
 - Keep review scope surgical: every comment should trace to a specific change.
 - Treat critical red flags and serious issues as the top review objective; investigate them first and report them first.
 - Define explicit readiness criteria and verify them before concluding.
+- For public/open-source repos, run an explicit safety pass for secrets, sensitive data, and local system paths in code, docs, PR text, comments, and commit metadata.
 - If a PR exists, treat review comments and discussion as required inputs (not gospel); investigate each item deeply and determine whether it is addressed, out of scope, or worth action.
 - At the end of the review, check whether the branch has an active PR and update title/body when metadata no longer matches the branch delta.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.

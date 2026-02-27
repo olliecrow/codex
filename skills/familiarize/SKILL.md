@@ -45,9 +45,12 @@ Build a clear, accurate mental model of the codebase: layout, purpose, key flows
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
+- Default write scope is the current `cwd` and its subdirectories.
+- Read-only inspection outside the current `cwd` is allowed when needed for context; do not modify outside the `cwd` tree unless the user explicitly requests it.
 - State assumptions explicitly; if something is unclear or has multiple interpretations, ask.
 - Prefer the simplest explanation supported by evidence; avoid speculative conclusions.
 - Keep scope surgical and read-only unless explicitly asked to edit.
+- For public/open-source repos, call out any discovered secrets, sensitive data exposure risk, or local system path leakage as explicit findings.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 - If there is nothing left to do, say so explicitly and stop.
 

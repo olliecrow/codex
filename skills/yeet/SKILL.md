@@ -38,6 +38,13 @@ description: "Use only when the user explicitly asks to stage, commit, push, and
 
 - Require GitHub CLI `gh`. Check `gh --version`. If missing, attempt a non-interactive install path available on the host (for example `brew`, `apt`, or existing repo bootstrap scripts), then re-check. Ask the user only if installation remains blocked.
 - Require authenticated `gh` session. Run `gh auth status`. If unauthenticated, attempt token-based auth via `GH_TOKEN`/`GITHUB_TOKEN` when available, then re-check. Ask the user to run `gh auth login` only if auth remains blocked.
+- Default write scope is the current `cwd` and its subdirectories. Read-only inspection outside `cwd` is allowed when needed for context; do not modify outside the `cwd` tree unless explicitly requested by the user.
+
+## Public/open-source safety checks (must run for public repos)
+
+- Before commit/push/PR creation, run a safety sweep for secrets, sensitive data, and local system paths in staged files and generated PR/commit text.
+- Treat code, docs, commit messages, PR titles/bodies, and comments as public surfaces.
+- Replace or remove local path disclosures (for example `/Users/...`) in public-facing text unless explicitly required and user-approved.
 
 ## Naming conventions
 

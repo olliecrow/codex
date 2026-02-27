@@ -45,9 +45,12 @@ Relentlessly search for tech debt, bloat, redundancy, unused code, and unnecessa
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
+- Default write scope is the current `cwd` and its subdirectories.
+- Read-only inspection outside the current `cwd` is allowed when needed for context; do not modify outside the `cwd` tree unless the user explicitly requests it.
 - State assumptions explicitly; infer default cleanup scope from request + changed areas, and ask only if competing scopes imply materially different risk.
 - Prefer the simplest change that solves the problem; avoid speculative refactors.
 - Keep changes surgical: do not touch adjacent code, comments, or formatting unless required.
+- For public/open-source repos, include cleanup checks for secrets, sensitive data, and local system paths in changed outputs/files.
 - Prioritize clarity and maintainability over strict backward compatibility when it materially improves the codebase.
 - Define success criteria and verify after cleanup; do not assume no regressions.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.

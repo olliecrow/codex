@@ -45,11 +45,14 @@ Prefer empirical verification with real data and real runs when relevant. Avoid 
 ## Behavioral guardrails (must follow)
 
 - Proceed without permission for standard in-scope steps (read/scan/summarize/plan/tests/edits/analysis). Ask clarifying questions only when requirements are ambiguous, missing inputs, or a risky decision cannot be inferred. Require explicit approval only for destructive/irreversible actions, executing untrusted code or installers, remote-state changes (push/deploy/publish), or changes outside the repo environment.
+- Default write scope is the current `cwd` and its subdirectories.
+- Read-only inspection outside the current `cwd` is allowed when needed for context; do not modify outside the `cwd` tree unless the user explicitly requests it.
 - Run a preflight before substantial work: confirm the expected `cwd`, verify required tools with `command -v`, and verify referenced files/directories exist before reading or searching them.
 - State assumptions explicitly; if requirements are unclear or have multiple interpretations, ask before verifying.
 - Prefer the simplest verification that proves the claim; do not add speculative tests or scope.
 - Keep changes surgical if you must modify code or tests; avoid refactors unrelated to verification.
 - Define explicit success criteria and map each to a concrete check.
+- For public/open-source repos, include checks for secrets, sensitive data, and local system paths in changed code/docs and publish-facing text.
 - Prefer quoted paths and explicit path checks when running shell commands to reduce avoidable glob/path failures.
 - If an environment variable is required, check whether it is already set before asking for it or stating it is missing.
 
